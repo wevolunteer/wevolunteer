@@ -1,0 +1,2 @@
+db_dsn: sqlite3://db.sqlite3
+jwt_secret: "verysecret"

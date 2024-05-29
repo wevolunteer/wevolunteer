@@ -1,0 +1,25 @@
+version: "3"
+
+tasks:
+  build:
+    desc: Build the project
+    cmds:
+      - go build -o bin/wevolunteer cmd/server/main.go
+  run:
+    desc: Run the project
+    cmds:
+      - go run cmd/server/main.go serve
+
+  makemigration:
+    desc: Create a new database migration
+    cmds:
+      - migrate create -ext sql -dir db/migrations -seq migration
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test ./...
+  clean:
+    desc: Clean the project
+    cmds:
+      - rm -rf bin
