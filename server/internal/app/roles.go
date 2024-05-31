@@ -18,8 +18,8 @@ const (
 	OrganizationWrite = "organization:write"
 	ActivityRead      = "activity:read"
 	ActivityWrite     = "activity:write"
-	EnrollmentRead    = "enrollment:read"
-	EnrollmentWrite   = "enrollment:write"
+	ExperienceRead    = "experience:read"
+	ExperienceWrite   = "experience:write"
 	UserRead          = "user:read"
 	UserWrite         = "user:write"
 )
@@ -32,8 +32,8 @@ var rolePermissions = map[Role][]Permission{
 	Volunteer: {
 		OrganizationRead,
 		ActivityRead,
-		EnrollmentRead,
-		EnrollmentWrite,
+		ExperienceRead,
+		ExperienceWrite,
 	},
 	Organization: {
 		OrganizationRead,
@@ -46,8 +46,8 @@ var rolePermissions = map[Role][]Permission{
 		OrganizationWrite,
 		ActivityRead,
 		ActivityWrite,
-		EnrollmentRead,
-		EnrollmentWrite,
+		ExperienceRead,
+		ExperienceWrite,
 		UserRead,
 		UserWrite,
 	},

@@ -2,12 +2,13 @@ package accounts
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/wevolunteer/wevolunteer/internal/app"
+	"github.com/wevolunteer/wevolunteer/internal/app/events"
 	"github.com/wevolunteer/wevolunteer/internal/models"
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -56,6 +57,13 @@ func login(data LoginData) (*TokenData, error) {
 		return nil, err
 	}
 
+	events.Publish(events.Event{
+		Type: events.UserLogin,
+		Payload: events.EventPayload{
+			Data: user,
+		},
+	})
+
 	return &TokenData{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
@@ -68,34 +76,36 @@ func register(data SignupData) (*TokenData, error) {
 		return nil, errors.New("user already exists")
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, err
-	}
-
-	uid := uuid.New()
-
-	user := models.User{
+	user, err := userCreate(&UserCreateData{
 		Name:        data.Name,
-		UID:         uid.String(),
 		Email:       data.Email,
-		Password:    string(hashedPassword),
-		IsRootAdmin: true,
-	}
+		Password:    data.Password,
+		IsSuperUser: false,
+	})
 
-	if err := app.DB.Create(&user).Error; err != nil {
+	if err != nil {
+		fmt.Println("err 1")
 		return nil, err
 	}
 
 	accessToken, err := generateToken(user.Email, accessTokenExpiry)
 	if err != nil {
+		fmt.Println("err 2")
 		return nil, err
 	}
 
 	refreshToken, err := generateToken(user.Email, refreshTokenExpiry)
 	if err != nil {
+		fmt.Println("err 3")
 		return nil, err
 	}
+
+	events.Publish(events.Event{
+		Type: events.UserSignup,
+		Payload: events.EventPayload{
+			Data: user,
+		},
+	})
 
 	return &TokenData{
 		AccessToken:  accessToken,
@@ -135,5 +145,6 @@ func generateToken(email string, expiry time.Duration) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(app.Config.JWT_SECRET)
+
+	return token.SignedString([]byte(app.Config.JWT_SECRET))
 }

@@ -41,7 +41,7 @@ func DatabaseInit(config *DatabaseConfig) error {
 		&models.User{},
 		&models.Organization{},
 		&models.Activity{},
-		&models.Enrollment{},
+		&models.Experience{},
 	)
 
 	// Set up the database connection pool

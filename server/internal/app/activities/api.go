@@ -100,7 +100,7 @@ func ActivityDeleteController(
 	input *ActivityDeleteRequest,
 ) (*ActivityDeleteResponse, error) {
 	ctx := app.FromHTTPContext(c)
-	err := activityDelete(ctx, input.ID)
+	err := ActivityDelete(ctx, input.ID)
 
 	if err != nil {
 		return nil, err

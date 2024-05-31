@@ -6,24 +6,18 @@ import (
 
 type ActivityStatus string
 
-const (
-	ActivityPending   ActivityStatus = "pending"
-	ActivityApproved  ActivityStatus = "approved"
-	ActivityCancelled ActivityStatus = "cancelled"
-	ActivityCompleted ActivityStatus = "completed"
-)
-
 type Activity struct {
-	ID             uint           `gorm:"primarykey" json:"id"`
-	UID            string         `json:"uid" gorm:"uniqueIndex"`
-	CreatedAt      time.Time      `json:"created_at"`
-	UpdatedAt      time.Time      `json:"updated_at"`
-	Image          string         `json:"image"`
-	OrganizationID uint           `json:"organization_id"`
-	Organization   Organization   `json:"organization" gorm:"OnDelete:SET NULL"`
-	Title          string         `json:"title"`
-	Description    string         `json:"description"`
-	Status         ActivityStatus `json:"status" gorm:"default:pending;type:varchar(20);"`
+	ID             uint         `gorm:"primarykey" json:"id"`
+	UID            string       `json:"uid" gorm:"uniqueIndex"`
+	CreatedAt      time.Time    `json:"created_at"`
+	UpdatedAt      time.Time    `json:"updated_at"`
+	OrganizationID uint         `json:"organization_id"`
+	Organization   Organization `json:"organization" gorm:"OnDelete:SET NULL"`
+	Title          string       `json:"title"`
+	Description    string       `json:"description"`
+	Image          string       `json:"image"`
+	CategoryID     uint         `json:"category_id"`
+	Category       Category     `json:"category"`
 
 	// Location
 	Latitude  float64 `json:"latitude"`

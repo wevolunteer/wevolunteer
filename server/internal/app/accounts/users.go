@@ -1,9 +1,10 @@
 package accounts
 
 import (
+	"github.com/google/uuid"
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
-	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func userGet(id uint) (*models.User, error) {
@@ -44,16 +45,23 @@ type UserCreateData struct {
 	Name        string `json:"name"`
 	Phone       string `json:"phone"`
 	Email       string `json:"email"`
+	Password    string `json:"password"`
 	IsSuperUser bool   `json:"is_superuser"`
 }
 
 func userCreate(data *UserCreateData) (*models.User, error) {
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
 
 	uuid := uuid.New()
 
 	user := models.User{
 		UID:         uuid.String(),
 		Name:        data.Name,
+		Password:    string(hashedPassword),
 		Email:       data.Email,
 		Phone:       data.Phone,
 		IsRootAdmin: data.IsSuperUser,

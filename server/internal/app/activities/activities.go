@@ -75,7 +75,7 @@ func ActivityUpdate(ctx *app.Context, id uint, data *ActivityUpdateData) (*model
 	return &activity, nil
 }
 
-func activityDelete(ctx *app.Context, id uint) error {
+func ActivityDelete(ctx *app.Context, id uint) error {
 	var activity models.Activity
 
 	if err := ActivityQuery(ctx).Where("id = ?", id).First(&activity).Error; err != nil {
