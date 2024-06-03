@@ -11,6 +11,30 @@ func RegisterRoutes(api huma.API) {
 	huma.Register(
 		api,
 		huma.Operation{
+			OperationID: "request-code",
+			Method:      http.MethodPost,
+			Summary:     "Request code",
+			Path:        "/auth/request-code",
+			Tags:        []string{"Accounts"},
+		},
+		UserRequestCodeController,
+	)
+
+	huma.Register(
+		api,
+		huma.Operation{
+			OperationID: "verify-code",
+			Method:      http.MethodPost,
+			Summary:     "Verify code",
+			Path:        "/auth/verify-code",
+			Tags:        []string{"Accounts"},
+		},
+		UserVerifyCodeController,
+	)
+
+	huma.Register(
+		api,
+		huma.Operation{
 			OperationID: "login",
 			Method:      http.MethodPost,
 			Summary:     "Login",
@@ -56,7 +80,22 @@ func RegisterRoutes(api huma.API) {
 			},
 			Tags: []string{"Accounts"},
 		},
-		UserInfoController,
+		UserProfileGetController,
+	)
+
+	huma.Register(
+		api,
+		huma.Operation{
+			OperationID: "users-profile-update",
+			Method:      http.MethodPatch,
+			Summary:     "Update user profile",
+			Path:        "/auth/user",
+			Middlewares: huma.Middlewares{
+				app.AuthMiddleware(api),
+			},
+			Tags: []string{"Accounts"},
+		},
+		UserProfileUpdateController,
 	)
 
 	huma.Register(

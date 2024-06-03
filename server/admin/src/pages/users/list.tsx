@@ -22,6 +22,7 @@ export const UserList = () => {
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title={"ID"} />
         <Table.Column dataIndex="name" title={"Name"} />
+        <Table.Column dataIndex="email" title={"Email"} />
         <Table.Column
           dataIndex="is_superuser"
           title="Superuser"
