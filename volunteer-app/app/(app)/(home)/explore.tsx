@@ -7,12 +7,14 @@ import { experiencesMockData } from "@/constants/mocks/experiences";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FlatList, Pressable, View } from "react-native";
 import MapView from "react-native-maps";
 
 export default function ExporeIndexScreen() {
   const [q, setQ] = useState("");
   const [showMap, setShowMap] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView>
@@ -73,14 +75,14 @@ export default function ExporeIndexScreen() {
               <>
                 <Ionicons name="list" size={16} color="#FFF" />
                 <Text variant="body" fontSize={11} color="whiteText">
-                  Vedi come lista
+                  {t("seeAsList", "See as list")}
                 </Text>
               </>
             ) : (
               <>
                 <Ionicons name="map-outline" size={16} color="#FFF" />
                 <Text variant="body" fontSize={11} color="whiteText">
-                  Vedi sulla mappa
+                  {t("seeOnMap", "See on map")}
                 </Text>
               </>
             )}

@@ -4,10 +4,12 @@ import Text from "@/components/ui/Text";
 import { useSession } from "@/contexts/authentication";
 import { Image } from "expo-image";
 import { Redirect, router } from "expo-router";
+import { Trans, useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const { session, isLoading } = useSession();
+  const { t } = useTranslation();
 
   if (isLoading) {
     return <Text>Loading...</Text>;
@@ -30,15 +32,16 @@ export default function Index() {
           }}
         />
         <Text variant="body" textAlign="center">
-          Trova la tua opportunità di volontariato: esprimi i tuoi talenti e coltiva le tue
-          passioni.
+          <Trans i18nKey="welcome">
+            Found your volunteering opportunity: express your talents and cultivate your passions.
+          </Trans>
         </Text>
       </Box>
 
       <Box width="100%" px="l" mb="xl">
         <Button
           variant="outline"
-          label="Continua con Facebook"
+          label={t("continueWithFacebook", "Continue with Facebook")}
           marginBottom="m"
           renderRightIcon={() => (
             <Image
@@ -50,7 +53,7 @@ export default function Index() {
 
         <Button
           variant="outline"
-          label="Continua con Google"
+          label={t("continueWithGoogle", "Continue with Google")}
           renderRightIcon={() => (
             <Image
               style={{ width: 28, height: 28 }}
@@ -61,7 +64,7 @@ export default function Index() {
         <Box marginVertical="l" position="relative" flexDirection="row" justifyContent="center">
           <Box backgroundColor="mainBackground" position="relative" zIndex={2}>
             <Text variant="body" textAlign="center" marginHorizontal="s" fontSize={12}>
-              oppure
+              {t("or", "or")}
             </Text>
           </Box>
           <Box
@@ -77,7 +80,7 @@ export default function Index() {
         </Box>
         <Button
           variant="outline"
-          label="Continua con Email"
+          label={t("continueWithEmail", "Continue with Email")}
           onPress={() => router.push("/sign-in")}
           rightIcon="mail-outline"
         />

@@ -9,6 +9,7 @@ import Topbar from "@/components/ui/Topbar";
 import { experiencesMockData } from "@/constants/mocks/experiences";
 import { useLocalSearchParams } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
+import { Trans, useTranslation } from "react-i18next";
 import { ScrollView } from "react-native-gesture-handler";
 
 interface EnrollmentData {
@@ -20,6 +21,7 @@ interface EnrollmentData {
 
 export default function ExperienceEnrollScreen() {
   const { id } = useLocalSearchParams();
+  const { t } = useTranslation();
 
   const experience = experiencesMockData.find((exp) => exp.id === id);
 
@@ -40,10 +42,10 @@ export default function ExperienceEnrollScreen() {
 
         <Box marginTop="xl" marginBottom="l" marginHorizontal="m">
           <Text variant="header" fontSize={32} lineHeight={38}>
-            Voglio
+            {t("iWantTo", "I want to")}
           </Text>
           <Text variant="header" fontSize={32} lineHeight={38}>
-            aiutare
+            {t("help", "help")}
           </Text>
         </Box>
         <ExperienceCard
@@ -62,7 +64,7 @@ export default function ExperienceEnrollScreen() {
                 name="from_date"
                 render={({ field: { onChange, value } }) => (
                   <InputText
-                    label="Dal"
+                    label={t("from", "From")}
                     value={value}
                     onChangeText={onChange}
                     placeholder="GG/MM/AAAA"
@@ -76,7 +78,7 @@ export default function ExperienceEnrollScreen() {
                 name="to_date"
                 render={({ field: { onChange, value } }) => (
                   <InputText
-                    label="Al"
+                    label={t("to", "To")}
                     value={value}
                     onChangeText={onChange}
                     placeholder="GG/MM/AAAA"
@@ -93,7 +95,9 @@ export default function ExperienceEnrollScreen() {
               <Checkbox value={value || false} onChange={onChange}>
                 <Box flexDirection="row" gap="s" flexWrap="wrap">
                   <Text variant="body">
-                    Confermo di essere in possesso dei requisiti richiesti{" "}
+                    <Trans i18nKey="acceptedRequirements">
+                      I confirm that I meet the required criteria
+                    </Trans>
                   </Text>
                   <Box marginLeft="s">
                     <Text variant="body" color="secondaryText">
@@ -115,7 +119,12 @@ export default function ExperienceEnrollScreen() {
               <Checkbox value={value || false} onChange={onChange}>
                 <Box flexDirection="row" gap="s" flexWrap="wrap">
                   <Text variant="body">
-                    Acconsento alla condivisione dei miei dati con {experience.organization}
+                    <Trans
+                      i18nKey="acceptedOrganizationPrivacy"
+                      values={{ organization: experience.organization }}
+                    >
+                      I consent to share my data with {{ organization: experience.organization }}
+                    </Trans>
                   </Text>
                 </Box>
               </Checkbox>
@@ -123,7 +132,7 @@ export default function ExperienceEnrollScreen() {
           />
 
           <Button
-            label="Continua"
+            label={t("continue", "Continue")}
             marginVertical="s"
             onPress={handleSubmit(onSubmit)}
             // isDisabled={!email || !email.includes("@")}

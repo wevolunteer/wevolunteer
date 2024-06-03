@@ -8,17 +8,19 @@ import { SignInData } from "@/types/data";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignInScreen() {
   const { requestAuthCode } = useSession();
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const { watch, control, handleSubmit } = useForm<SignInData>();
 
   async function onSubmit(data: SignInData) {
     if (data.email === "") {
-      setError("Inserisci la tua email");
+      setError(t("emailRequired", "Email is required"));
       return;
     }
 
@@ -26,20 +28,20 @@ export default function SignInScreen() {
       const response = await requestAuthCode(data);
 
       if (!response) {
-        setError("Errore durante la richiesta del codice di verifica");
+        setError(t("errorRequestingVerificationCode", "Error requesting verification code"));
         return;
       }
       setError(null);
       router.push(`/verify-code?email=${data.email}`);
     } catch (error) {
       console.error(error);
-      setError("Errore durante la richiesta del codice di verifica");
+      setError(t("errorRequestingVerificationCode", "Error requesting verification code"));
     }
   }
 
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: "space-between", alignItems: "center" }}>
-      <Topbar title="Accedi o registrati" goBack />
+      <Topbar title={t("signInOrRegister", "Sign in or register")} goBack />
 
       <Box
         width="100%"
@@ -53,10 +55,10 @@ export default function SignInScreen() {
           control={control}
           render={({ field: { onChange, value } }) => (
             <InputText
-              label="Email"
+              label={t("email", "Email")}
               value={value}
               onChangeText={onChange}
-              placeholder="Inserisci la tua email"
+              placeholder={t("emailPlaceholder", "Insert your email")}
             />
           )}
           name="email"
@@ -70,7 +72,7 @@ export default function SignInScreen() {
         )}
 
         <Button
-          label="Continua"
+          label={t("continue", "Continue")}
           onPress={handleSubmit(onSubmit)}
           // isDisabled={!email || !email.includes("@")}
           variant="primary"

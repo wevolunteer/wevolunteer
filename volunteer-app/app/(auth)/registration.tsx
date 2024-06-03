@@ -10,6 +10,7 @@ import { ProfileData } from "@/types/data";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
+import { Trans, useTranslation } from "react-i18next";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -34,6 +35,7 @@ const schema = Yup.object().shape({
 export default function RegistrationScreen() {
   const { client } = useNetwork();
   const { fetchUser } = useSession();
+  const { t } = useTranslation();
 
   const {
     formState: { errors },
@@ -66,14 +68,17 @@ export default function RegistrationScreen() {
 
       Toast.show({
         type: "success",
-        text1: "Termini di servizio",
-        text2: "È necessario accettare i termini di servizio",
+        text1: t("termsOfService", "Termini di servizio"),
+        text2: t("termsOfServiceDescription", "To continue, you must accept the terms of service"),
       });
     } catch (error) {
       console.error("profile error:", error);
       Toast.show({
         type: "error",
-        text2: "Non è stato possibile aggiornare il profilo. Per favore, riprova",
+        text2: t(
+          "profileUpdateError",
+          "An error occurred while updating your profile. Please try again later.",
+        ),
       });
     }
   }
@@ -81,13 +86,17 @@ export default function RegistrationScreen() {
   return (
     <SafeAreaView>
       <ScrollView>
-        <Topbar title="Completa la registrazione" goBack />
+        <Topbar title={t("completeRegistration", "Complete registration")} goBack />
         <Box flexDirection="column" gap="l" paddingHorizontal="m" marginTop="l">
           <Controller
             control={control}
             name="first_name"
             render={({ field: { onChange, value } }) => (
-              <InputText label="Nome" value={value} onChangeText={onChange} />
+              <InputText
+                label={t("firstName", "First name")}
+                value={value}
+                onChangeText={onChange}
+              />
             )}
           />
           {errors.first_name && <Text variant="error">{errors.first_name.message}</Text>}
@@ -97,12 +106,18 @@ export default function RegistrationScreen() {
               control={control}
               name="last_name"
               render={({ field: { onChange, value } }) => (
-                <InputText label="Cognome" value={value} onChangeText={onChange} />
+                <InputText
+                  label={t("lastName", "Last name")}
+                  value={value}
+                  onChangeText={onChange}
+                />
               )}
             />
             <Text variant="secondary" marginTop="s">
-              Assicurati che il tuo nome e cognome siano gli stessi riportati sul tuo documento
-              d’identità.
+              <Trans i18nKey="registrationNameDescription">
+                Enter your first and last name. Make sure your first and last name match the ones on
+                your ID.
+              </Trans>
             </Text>
             {errors.last_name && <Text variant="error">{errors.last_name.message}</Text>}
           </Box>
@@ -113,7 +128,7 @@ export default function RegistrationScreen() {
               name="date_of_birth"
               render={({ field: { onChange, value } }) => (
                 <InputText
-                  label="Data di nascita"
+                  label={t("dateOfBirth", "Date of birth")}
                   value={value}
                   onChangeText={onChange}
                   placeholder="GG/MM/AAAA"
@@ -121,7 +136,9 @@ export default function RegistrationScreen() {
               )}
             />
             <Text variant="secondary" marginTop="s">
-              Per registrarti a FaXTe devi avere almeno 16 anni.
+              <Trans i18nKey="registrationAgeDescription">
+                To register for FaXTe you must be at least 16 years old.
+              </Trans>
             </Text>
             {errors.date_of_birth && <Text variant="error">{errors.date_of_birth.message}</Text>}
           </Box>
@@ -131,11 +148,11 @@ export default function RegistrationScreen() {
               control={control}
               name="tax_code"
               render={({ field: { onChange, value } }) => (
-                <InputText label="Codice fiscale" value={value} onChangeText={onChange} />
+                <InputText label={t("taxCode", "Tax code")} value={value} onChangeText={onChange} />
               )}
             />
             <Text variant="secondary" marginTop="s">
-              Il codice fiscale ci serve per...
+              <Trans i18nKey="registrationTaxCodeDescription">The tax code is required to...</Trans>
             </Text>
             {errors.tax_code && <Text variant="error">{errors.tax_code.message}</Text>}
           </Box>
@@ -161,14 +178,17 @@ export default function RegistrationScreen() {
             render={({ field: { onChange, value } }) => (
               <Checkbox value={value || false} onChange={onChange}>
                 <Box flexDirection="row" gap="s" flexWrap="wrap">
-                  <Text variant="body">Voglio ricevere comunicazioni sulle </Text>
-                  <Text variant="body">iniziative di FaXTe</Text>
+                  <Text variant="body">
+                    <Trans i18nKey="registrationNewsletterDescription">
+                      I want to receive communications about FaXTe initiatives
+                    </Trans>
+                  </Text>
                 </Box>
               </Checkbox>
             )}
           />
           <Button
-            label="Continua"
+            label={t("continue", "Continue")}
             marginVertical="s"
             onPress={handleSubmit(onSubmit)}
             // isDisabled={!email || !email.includes("@")}

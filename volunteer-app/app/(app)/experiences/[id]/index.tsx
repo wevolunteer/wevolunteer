@@ -6,6 +6,7 @@ import Topbar from "@/components/ui/Topbar";
 import { experiencesMockData } from "@/constants/mocks/experiences";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Pressable } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
@@ -13,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ExperienceScreen() {
   const { id } = useLocalSearchParams();
+  const { t } = useTranslation();
 
   const experience = experiencesMockData.find((exp) => exp.id === id);
 
@@ -73,7 +75,7 @@ export default function ExperienceScreen() {
             </Box>
           </Box>
 
-          <Text variant="header">Opportunità</Text>
+          <Text variant="header">{t("opportunity", "Opportunity")}</Text>
 
           <Text variant="body" color="secondaryText">
             Ti chiediamo di metterti in gioco quando sei in casa, durante la settimana secondo i
@@ -89,7 +91,7 @@ export default function ExperienceScreen() {
 
           <Divider />
 
-          <Text variant="header">Requisiti</Text>
+          <Text variant="header">{t("requirements", "Requirements")}</Text>
 
           <Box marginLeft="s">
             <Text variant="body" color="secondaryText">
@@ -102,11 +104,15 @@ export default function ExperienceScreen() {
 
           <Divider />
 
-          <Text variant="header">Contatti</Text>
+          <Text variant="header">{t("contacts", "Contacts")}</Text>
 
           <Box flexDirection="row" gap="m" marginBottom="2xl">
-            <Button variant="secondary" rightIcon="mail-outline" label="Invia email" />
-            <Button variant="secondary" rightIcon="call-outline" label="Chiama" />
+            <Button
+              variant="secondary"
+              rightIcon="mail-outline"
+              label={t("sendEmail", "Send email")}
+            />
+            <Button variant="secondary" rightIcon="call-outline" label={t("call", "Call")} />
           </Box>
         </Box>
       </ScrollView>
@@ -120,7 +126,7 @@ export default function ExperienceScreen() {
       >
         <Button
           variant="primary"
-          label="Voglio aiutare!"
+          label={t("iWantToHelp", "I want to help!")}
           paddingHorizontal="xl"
           borderRadius="full"
           onPress={() => {

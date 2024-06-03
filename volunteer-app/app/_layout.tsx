@@ -13,10 +13,15 @@ import "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 
 import { NetworkProvider } from "@/contexts/network";
+import LocalesInit from "@/locales";
+import { getLocales } from "expo-localization";
+import i18next from "i18next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+LocalesInit();
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -24,6 +29,10 @@ export default function RootLayout() {
     DMSansMedium: require("../assets/fonts/DMSans-Medium.ttf"),
     DMSansBold: require("../assets/fonts/DMSans-Bold.ttf"),
   });
+
+  const locale = getLocales()[0];
+
+  i18next.changeLanguage(locale.languageCode || "en");
 
   useEffect(() => {
     if (loaded) {

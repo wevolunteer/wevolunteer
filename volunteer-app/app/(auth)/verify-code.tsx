@@ -6,6 +6,7 @@ import { useSession } from "@/contexts/authentication";
 import { useNetwork } from "@/contexts/network";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { Platform, StyleSheet } from "react-native";
 import {
   CodeField,
@@ -25,6 +26,7 @@ export default function VerifyCodeScreen() {
   const { client } = useNetwork();
   const { verifyAuthCode, requestAuthCode } = useSession();
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
@@ -43,7 +45,7 @@ export default function VerifyCodeScreen() {
       });
 
       if (!response) {
-        setError("Errore durante la richiesta del codice di verifica");
+        setError(t("errorRequestingVerificationCode", "Error requesting verification code"));
         return;
       }
       setError(null);
@@ -52,18 +54,18 @@ export default function VerifyCodeScreen() {
         props: {
           icon: "mail-outline",
         },
-        text1: "Codice inviato",
-        text2: "Abbiamo inviato un nuovo codice di verifica all'indirizzo email",
+        text1: t("codeSent", "Code sent"),
+        text2: t("codeSentDescription", "We sent a new verification code to the email address"),
       });
     } catch (error) {
       console.error(error);
-      setError("Errore durante la richiesta del codice di verifica");
+      setError(t("errorRequestingVerificationCode", "Error requesting verification code"));
     }
   }
 
   async function onSubmit() {
     if (value.length < CELL_COUNT) {
-      setError("Inserisci il codice completo");
+      setError(t("insertCompleteCode", "Insert the complete code"));
       return;
     }
 
@@ -75,7 +77,7 @@ export default function VerifyCodeScreen() {
       const response = await verifyAuthCode({ email, code: value });
 
       if (!response) {
-        setError("Il codice inserito non è valido");
+        setError(t("invalidCode", "The code entered is not valid"));
         setValue("");
         return;
       }
@@ -91,7 +93,7 @@ export default function VerifyCodeScreen() {
     } catch (error) {
       console.error(error);
 
-      setError("Il codice inserito non è valido");
+      setError(t("invalidCode", "The code entered is not valid"));
       setValue("");
     }
   }
@@ -109,7 +111,7 @@ export default function VerifyCodeScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: "space-between", alignItems: "center" }}>
-      <Topbar title="Verifica Email" goBack />
+      <Topbar title={t("verifyEmail", "Verify Email")} goBack />
       <Box
         width="100%"
         paddingHorizontal="m"
@@ -119,7 +121,9 @@ export default function VerifyCodeScreen() {
         gap="l"
       >
         <Text variant="body">
-          Inserisci il codice di 5 cifre che abbiamo inviato all’indirizzo {email}
+          <Trans i18nKey="verifyCodeDescription">
+            Insert the 5-digit code we sent to the address {email}
+          </Trans>
         </Text>
 
         <CodeField
@@ -158,18 +162,20 @@ export default function VerifyCodeScreen() {
         )}
 
         <Button
-          label="Invia codice"
+          label={t("sendCode", "Send code")}
           onPress={onSubmit}
           variant="primary"
           isDisabled={!value || value.length < CELL_COUNT}
         />
 
         <Box marginTop="l" alignItems="center">
-          <Text variant="secondary">Non hai ricevuto il codice?</Text>
+          <Text variant="secondary">
+            <Trans i18nKey="didntReceiveCode">You didn't receive the code?</Trans>
+          </Text>
 
           <TouchableOpacity onPress={handleResend}>
             <Text variant="title" marginTop="m" textDecorationLine="underline" fontSize={18}>
-              Invia di nuovo
+              <Trans i18nKey="resend">Send again</Trans>
             </Text>
           </TouchableOpacity>
         </Box>

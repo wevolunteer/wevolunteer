@@ -1,9 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@shopify/restyle";
 import { Tabs } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 export default function AppLayout() {
   const theme = useTheme();
+  const { t } = useTranslation();
 
   return (
     <Tabs
@@ -21,21 +23,21 @@ export default function AppLayout() {
       <Tabs.Screen
         name="explore"
         options={{
-          title: "Esplora",
+          title: t("explore", "Explore"),
           tabBarIcon: ({ color }) => <Ionicons size={28} name="search" color={color} />,
         }}
       />
       <Tabs.Screen
         name="experiences"
         options={{
-          title: "Esperienze",
+          title: t("experiences", "Experiences"),
           tabBarIcon: ({ color }) => <Ionicons size={28} name="settings" color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profilo",
+          title: t("profile", "Profile"),
           tabBarIcon: ({ color }) => (
             <Ionicons size={28} name="person-circle-outline" color={color} />
           ),
