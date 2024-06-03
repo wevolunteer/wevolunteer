@@ -4,6 +4,7 @@ import Checkbox from "@/components/ui/Checkbox";
 import InputText from "@/components/ui/InputText";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
+import { useSession } from "@/contexts/authentication";
 import { useNetwork } from "@/contexts/network";
 import { ProfileData } from "@/types/data";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -32,6 +33,7 @@ const schema = Yup.object().shape({
 
 export default function RegistrationScreen() {
   const { client } = useNetwork();
+  const { fetchUser } = useSession();
 
   const {
     formState: { errors },
@@ -54,6 +56,8 @@ export default function RegistrationScreen() {
       const response = await client.PATCH("/auth/user", {
         body: data,
       });
+
+      await fetchUser();
 
       if (response.data?.accepted_tos) {
         router.replace("/explore");

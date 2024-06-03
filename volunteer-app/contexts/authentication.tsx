@@ -7,12 +7,14 @@ import { useNetwork } from "./network";
 const AuthContext = React.createContext<{
   requestAuthCode: (data: RequestCodeData) => Promise<boolean>;
   verifyAuthCode: (data: VerifyCodeData) => Promise<boolean>;
+  fetchUser: () => Promise<void>;
   signOut: () => void;
   session?: Session | null;
   isLoading: boolean;
 }>({
   requestAuthCode: () => Promise.resolve(false),
   verifyAuthCode: () => Promise.resolve(false),
+  fetchUser: () => Promise.resolve(),
   signOut: () => null,
   session: null,
   isLoading: false,
@@ -41,6 +43,35 @@ export function SessionProvider(props: React.PropsWithChildren) {
       }
       return req;
     },
+    async onResponse(res, options) {
+      if (res.status === 401 && session?.token?.refreshToken) {
+        try {
+          const refreshTokenResponse = await client.POST("/auth/refresh", {
+            body: {
+              refresh_token: session.token.refreshToken,
+            },
+          });
+
+          if (refreshTokenResponse.error) {
+            return res;
+          }
+
+          setSession({
+            user: session.user,
+            token: {
+              accessToken: refreshTokenResponse.data.access_token,
+              refreshToken: refreshTokenResponse.data.refresh_token,
+            },
+          });
+
+          return res;
+        } catch (error) {
+          // Gestisci l'errore di refresh token
+          console.error("Failed to refresh token", error);
+        }
+      }
+      return res;
+    },
   };
 
   client.use(tokenMiddleware);
@@ -48,6 +79,22 @@ export function SessionProvider(props: React.PropsWithChildren) {
   return (
     <AuthContext.Provider
       value={{
+        fetchUser: async () => {
+          if (session?.token?.accessToken) {
+            const data = await client.GET("/auth/user", {
+              headers: {
+                Authorization: `Bearer ${session.token.accessToken}`,
+              },
+            });
+
+            if (data?.data) {
+              setSession({
+                user: data.data,
+                token: session.token,
+              });
+            }
+          }
+        },
         requestAuthCode: async (data) => {
           const response = await client.POST("/auth/request-code", {
             body: data,
