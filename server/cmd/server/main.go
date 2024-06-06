@@ -8,9 +8,12 @@ import (
 	"syscall"
 
 	"github.com/danielgtaylor/huma/v2/humacli"
+	"github.com/spf13/cobra"
+	"github.com/wevolunteer/wevolunteer/cmd/server/fake"
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/app/accounts"
 	"github.com/wevolunteer/wevolunteer/internal/app/activities"
+	"github.com/wevolunteer/wevolunteer/internal/app/categories"
 	"github.com/wevolunteer/wevolunteer/internal/app/experiences"
 	"github.com/wevolunteer/wevolunteer/internal/app/organizations"
 	"github.com/wevolunteer/wevolunteer/internal/utils/logger"
@@ -34,11 +37,7 @@ type CLIOptions struct {
 
 func main() {
 	cli := humacli.New(func(hooks humacli.Hooks, opts *CLIOptions) {
-		var a *app.Application
-
-		var err error
-
-		a, err = app.Init(opts.ConfigFile)
+		a, err := app.Init(opts.ConfigFile)
 
 		if err != nil {
 			panic(err) // TODO: handle this case
@@ -49,6 +48,7 @@ func main() {
 		organizations.RegisterRoutes(a.Api)
 		activities.RegisterRoutes(a.Api)
 		experiences.RegisterRoutes(a.Api)
+		categories.RegisterRoutes(a.Api)
 
 		hooks.OnStart(func() {
 			log.Infof("Starting API server at http://%s:%d\n", opts.Host, opts.Port)
@@ -71,9 +71,23 @@ func main() {
 	})
 
 	cmd := cli.Root()
-
 	cmd.Use = CLI_CMD
 	cmd.Version = VERSION
+
+	cmd.AddCommand(&cobra.Command{
+		Use:   "fake-data",
+		Short: "Generate fake data",
+		Run: humacli.WithOptions(func(cmd *cobra.Command, args []string, opts *CLIOptions) {
+
+			_, err := app.Init(opts.ConfigFile)
+			if err != nil {
+				panic(err)
+			}
+
+			fake.FakeDataCommand()
+			fmt.Println("")
+		}),
+	})
 
 	cli.Run()
 }
