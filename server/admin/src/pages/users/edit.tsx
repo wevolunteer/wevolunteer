@@ -8,8 +8,19 @@ export const UserEdit = () => {
     <Edit saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
         <Form.Item
-          label={"Name"}
-          name={["name"]}
+          label={"First Name"}
+          name={["first_name"]}
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label={"Last Name"}
+          name={["last_name"]}
           rules={[
             {
               required: true,
