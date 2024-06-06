@@ -9,6 +9,7 @@ import { useNetwork } from "@/contexts/network";
 import { ProfileData } from "@/types/data";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { router } from "expo-router";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { ScrollView } from "react-native-gesture-handler";
@@ -40,15 +41,17 @@ export default function RegistrationScreen() {
   const {
     formState: { errors },
     control,
+    watch,
+    setValue,
     handleSubmit,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      first_name: "test",
-      last_name: "test",
-      date_of_birth: "20/12/1980",
-      tax_code: "test",
-      accepted_tos: true,
+      // first_name: "test",
+      // last_name: "test",
+      // date_of_birth: "20/12/1980",
+      // tax_code: "test",
+      // accepted_tos: true,
       accepted_newsletter: false,
     },
   });
@@ -82,6 +85,22 @@ export default function RegistrationScreen() {
       });
     }
   }
+
+  const dateOfBirth = watch("date_of_birth");
+
+  useEffect(() => {
+    if (dateOfBirth && dateOfBirth.length == 2) {
+      setValue("date_of_birth", dateOfBirth + "/");
+    }
+
+    if (dateOfBirth && dateOfBirth.length == 5) {
+      setValue("date_of_birth", dateOfBirth + "/");
+    }
+
+    if (dateOfBirth && dateOfBirth.length == 11) {
+      setValue("date_of_birth", dateOfBirth.slice(0, 10));
+    }
+  }, [dateOfBirth]);
 
   return (
     <SafeAreaView>
@@ -131,6 +150,8 @@ export default function RegistrationScreen() {
                   label={t("dateOfBirth", "Date of birth")}
                   value={value}
                   onChangeText={onChange}
+                  keyboardType="numeric"
+                  maxLength={10}
                   placeholder="GG/MM/AAAA"
                 />
               )}

@@ -6,6 +6,8 @@ export const experiencesMockData = [
     location: "Trento",
     date: "1/06 — 7/07",
     image: require("@/assets/images/mocks/experience1.png"),
+    latitude: 46.0679,
+    longitude: 11.1211,
   },
   {
     id: "2",
@@ -14,6 +16,8 @@ export const experiencesMockData = [
     location: "Pinzolo, Madonna di Campiglio",
     date: "Sempre attiva",
     image: require("@/assets/images/mocks/experience2.png"),
+    latitude: 46.1591,
+    longitude: 10.7852,
   },
   {
     id: "3",
@@ -22,6 +26,8 @@ export const experiencesMockData = [
     location: "Torino",
     date: "1/06 — 7/07",
     image: require("@/assets/images/mocks/experience3.png"),
+    latitude: 45.0703,
+    longitude: 7.6869,
   },
   {
     id: "4",
@@ -30,6 +36,8 @@ export const experiencesMockData = [
     location: "Trento",
     date: "1/06 — 7/07",
     image: require("@/assets/images/mocks/experience1.png"),
+    latitude: 46.0679,
+    longitude: 11.1211,
   },
   {
     id: "5",
@@ -38,6 +46,8 @@ export const experiencesMockData = [
     location: "Pinzolo, Madonna di Campiglio",
     date: "Sempre attiva",
     image: require("@/assets/images/mocks/experience2.png"),
+    latitude: 46.1591,
+    longitude: 10.7852,
   },
   {
     id: "6",
@@ -46,5 +56,7 @@ export const experiencesMockData = [
     location: "Torino",
     date: "1/06 — 7/07",
     image: require("@/assets/images/mocks/experience3.png"),
+    latitude: 45.0703,
+    longitude: 7.6869,
   },
 ];

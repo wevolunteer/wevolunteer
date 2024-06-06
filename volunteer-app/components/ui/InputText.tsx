@@ -3,17 +3,24 @@ import { TextInput, TextInputProps } from "react-native";
 import Box from "./Box";
 import Text from "./Text";
 
+const SIZES = {
+  s: 48,
+  m: 56,
+  l: 64,
+};
+
 interface InputTextProps {
-  label: string;
+  label?: string;
   error?: string;
+  size?: keyof typeof SIZES;
 }
 
-const InputText: FC<TextInputProps & InputTextProps> = ({ label, error, ...rest }) => {
+const InputText: FC<TextInputProps & InputTextProps> = ({ label, size, error, ...rest }) => {
   const [isSecure, setIsSecure] = useState(rest.secureTextEntry || false);
 
   return (
     <Box width="100%">
-      <Text variant="inputLabel">{label}</Text>
+      {label && <Text variant="inputLabel">{label}</Text>}
       <Box
         alignItems="center"
         borderWidth={1}
@@ -21,7 +28,7 @@ const InputText: FC<TextInputProps & InputTextProps> = ({ label, error, ...rest 
         borderRadius="m"
         width="100%"
         position="relative"
-        height={56}
+        height={size ? SIZES[size] : SIZES.m}
       >
         <TextInput
           style={{ flex: 1, width: "100%", paddingHorizontal: 16 }}

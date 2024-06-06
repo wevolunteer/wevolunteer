@@ -121,8 +121,8 @@ export default function VerifyCodeScreen() {
         gap="l"
       >
         <Text variant="body">
-          <Trans i18nKey="verifyCodeDescription">
-            Insert the 5-digit code we sent to the address {email}
+          <Trans i18nKey="verifyCodeDescription" email={email}>
+            Insert the 5-digit code we sent to the address {{ email }}
           </Trans>
         </Text>
 

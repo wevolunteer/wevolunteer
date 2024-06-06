@@ -34,7 +34,6 @@ export default function SignInScreen() {
       setError(null);
       router.push(`/verify-code?email=${data.email}`);
     } catch (error) {
-      console.error(error);
       setError(t("errorRequestingVerificationCode", "Error requesting verification code"));
     }
   }

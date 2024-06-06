@@ -53,6 +53,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
           });
 
           if (refreshTokenResponse.error) {
+            setSession(null);
             return res;
           }
 
@@ -66,6 +67,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
 
           return res;
         } catch (error) {
+          setSession(null);
           // Gestisci l'errore di refresh token
           console.error("Failed to refresh token", error);
         }

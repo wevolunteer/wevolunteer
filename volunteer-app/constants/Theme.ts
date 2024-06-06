@@ -14,6 +14,7 @@ const theme = createTheme({
     primaryLightBackground: palette.pink100,
     darkBackground: palette.gray900,
     shadow: palette.gray700,
+    lightBorder: palette.gray50,
     mainBorder: palette.gray100,
     disabledBackground: palette.gray100,
   },

@@ -3,6 +3,7 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
   "/activities": {
     /** List activities */
@@ -11,6 +12,8 @@ export interface paths {
     post: operations["activities-create"];
   };
   "/activities/{id}": {
+    /** Get activity */
+    get: operations["activities-get"];
     /** Update activity */
     put: operations["activities-update"];
     /** Delete activity */
@@ -33,6 +36,18 @@ export interface paths {
   "/auth/verify-code": {
     /** Verify code */
     post: operations["verify-code"];
+  };
+  "/categories": {
+    /** List categories */
+    get: operations["category-list"];
+    /** Create category */
+    post: operations["category-create"];
+  };
+  "/categories/{id}": {
+    /** Update category */
+    put: operations["category-update"];
+    /** Delete category */
+    delete: operations["category-delete"];
   };
   "/experiences": {
     /** List enrollments */
@@ -111,6 +126,7 @@ export interface components {
       /** Format: date-time */
       end_date: string;
       end_time: string;
+      friday: boolean;
       /** Format: int64 */
       id: number;
       image: string;
@@ -119,19 +135,24 @@ export interface components {
       latitude: number;
       /** Format: double */
       longitude: number;
+      monday: boolean;
       organization: components["schemas"]["Organization"];
       /** Format: int64 */
       organization_id: number;
       published: boolean;
-      schedule: components["schemas"]["ActivitySchedule"];
+      saturday: boolean;
       /** Format: date-time */
       start_date: string;
       start_time: string;
       state: string;
+      sunday: boolean;
+      thursday: boolean;
       title: string;
+      tuesday: boolean;
       uid: string;
       /** Format: date-time */
       updated_at: string;
+      wednesday: boolean;
       zip_code: string;
     };
     ActivityCreateData: {
@@ -148,18 +169,8 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
+      page_info: components["schemas"]["PaginationInfo"];
       results: components["schemas"]["Activity"][];
-    };
-    ActivitySchedule: {
-      friday: boolean;
-      /** Format: int64 */
-      id: number;
-      monday: boolean;
-      saturday: boolean;
-      sunday: boolean;
-      thursday: boolean;
-      tuesday: boolean;
-      wednesday: boolean;
     };
     ActivityUpdateData: {
       /**
@@ -170,9 +181,40 @@ export interface components {
       title: string;
     };
     Category: {
+      /**
+       * Format: uri
+       * @description A URL to the JSON Schema for this object.
+       */
+      $schema?: string;
       code: string;
       /** Format: int64 */
       id: number;
+      name: string;
+    };
+    CategoryCreateData: {
+      /**
+       * Format: uri
+       * @description A URL to the JSON Schema for this object.
+       */
+      $schema?: string;
+      code: string;
+      name: string;
+    };
+    CategoryListData: {
+      /**
+       * Format: uri
+       * @description A URL to the JSON Schema for this object.
+       */
+      $schema?: string;
+      results: components["schemas"]["Category"][];
+    };
+    CategoryUpdateData: {
+      /**
+       * Format: uri
+       * @description A URL to the JSON Schema for this object.
+       */
+      $schema?: string;
+      code: string;
       name: string;
     };
     DeletedAt: {
@@ -254,6 +296,7 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
+      page_info: components["schemas"]["PaginationInfo"];
       results: components["schemas"]["Experience"][];
     };
     ExperienceUpdateData: {
@@ -331,6 +374,14 @@ export interface components {
       name: string;
       phone: string;
     };
+    PaginationInfo: {
+      /** Format: int64 */
+      page: number;
+      /** Format: int64 */
+      per_page: number;
+      /** Format: int64 */
+      total: number;
+    };
     RefreshTokenData: {
       /**
        * Format: uri
@@ -385,6 +436,8 @@ export interface components {
       id: number;
       is_email_verified: boolean;
       is_superuser: boolean;
+      /** Format: double */
+      "json:": number;
       last_name: string;
       phone: string;
       tax_code: string;
@@ -460,11 +513,18 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
+
   /** List activities */
   "activities-list": {
     parameters: {
       query?: {
+        page?: number;
+        per_page?: number;
         q?: string;
+        distance?: number;
+        date_start?: string;
+        date_end?: string;
+        categories?: number[];
       };
     };
     responses: {
@@ -487,6 +547,28 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["ActivityCreateData"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Activity"];
+        };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** Get activity */
+  "activities-get": {
+    parameters: {
+      path: {
+        id: number;
       };
     };
     responses: {
@@ -654,10 +736,103 @@ export interface operations {
       };
     };
   };
+  /** List categories */
+  "category-list": {
+    parameters: {
+      query?: {
+        q?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["CategoryListData"];
+        };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** Create category */
+  "category-create": {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CategoryCreateData"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Category"];
+        };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** Update category */
+  "category-update": {
+    parameters: {
+      path: {
+        id: number;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CategoryUpdateData"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Category"];
+        };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** Delete category */
+  "category-delete": {
+    parameters: {
+      path: {
+        id: number;
+      };
+    };
+    responses: {
+      /** @description No Content */
+      204: {
+        content: never;
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
   /** List enrollments */
   "experiences-list": {
     parameters: {
       query?: {
+        page?: number;
+        per_page?: number;
         q?: string;
       };
     };
@@ -771,6 +946,8 @@ export interface operations {
   "organizations-list": {
     parameters: {
       query?: {
+        page?: number;
+        per_page?: number;
         q?: string;
       };
     };
@@ -906,7 +1083,9 @@ export interface operations {
   "users-list": {
     parameters: {
       query?: {
-        query?: string;
+        page?: number;
+        per_page?: number;
+        q?: string;
       };
     };
     responses: {
