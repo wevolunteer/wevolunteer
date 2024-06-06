@@ -3,11 +3,13 @@ import Button from "@/components/ui/Button";
 import Divider from "@/components/ui/Divider";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
-import { experiencesMockData } from "@/constants/mocks/experiences";
+import { useNetwork } from "@/contexts/network";
 import { Ionicons } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Pressable } from "react-native";
+import { Linking, Pressable } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,10 +17,28 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function ExperienceScreen() {
   const { id } = useLocalSearchParams();
   const { t } = useTranslation();
+  const { client } = useNetwork();
+  if (!id || Array.isArray(id)) {
+    throw new Error("id should be a string");
+  }
 
-  const experience = experiencesMockData.find((exp) => exp.id === id);
+  const activityId = parseInt(id);
 
-  if (!experience) {
+  const { data } = useQuery({
+    queryKey: ["activities", id],
+    queryFn: async () => {
+      const response = await client.GET("/activities/{id}", {
+        params: {
+          path: {
+            id: activityId,
+          },
+        },
+      });
+      return response.data;
+    },
+  });
+
+  if (!data) {
     return null;
   }
 
@@ -34,8 +54,7 @@ export default function ExperienceScreen() {
           }
         />
         <Animated.Image
-          source={experience.image}
-          sharedTransitionTag={`test2`}
+          source={{ uri: data.image }}
           style={{
             width: "100%",
             height: 390,
@@ -44,10 +63,10 @@ export default function ExperienceScreen() {
         <Box marginHorizontal="m" marginVertical="l" gap="l">
           {/* Organization and title */}
           <Text variant="body" color="accentText">
-            {experience.organization}
+            {data.organization.name}
           </Text>
           <Text fontSize={32} fontFamily="DMSansMedium" lineHeight={38}>
-            {experience.title}
+            {data.title}
           </Text>
 
           {/* Location and dates */}
@@ -61,16 +80,28 @@ export default function ExperienceScreen() {
             >
               <Ionicons name="location-outline" size={32} color="black" />
               <Box>
-                <Text variant="body">Piazza delle poste, 3</Text>
-                <Text variant="body">{experience.location}</Text>
+                <Text variant="body">{data.address}</Text>
+                <Text variant="body">{data.city}</Text>
               </Box>
             </Box>
             <Box flexDirection="row" padding="m" gap="m">
               <Ionicons name="calendar-clear-outline" size={32} color="black" />
 
               <Box>
-                <Text variant="body">Dal 7 giugno 2024</Text>
-                <Text variant="body">Al 18 giugno 2024</Text>
+                <Text variant="body">
+                  {data.start_date && (
+                    <>
+                      {t("from", "From")} {format(new Date(data.start_date), "d MMMM yyyy")}
+                    </>
+                  )}
+                </Text>
+                <Text variant="body">
+                  {data.end_date && (
+                    <>
+                      {t("to", "To")} {format(new Date(data.end_date), "d MMMM yyyy")}
+                    </>
+                  )}
+                </Text>
               </Box>
             </Box>
           </Box>
@@ -78,15 +109,7 @@ export default function ExperienceScreen() {
           <Text variant="header">{t("opportunity", "Opportunity")}</Text>
 
           <Text variant="body" color="secondaryText">
-            Ti chiediamo di metterti in gioco quando sei in casa, durante la settimana secondo i
-            tuoi tempi e i tuoi orari e in qualche weekend: passando del tempo con chi abita qui,
-            nell’aiutarci in alcuni servizi della casa, il tutto, ovviamente, senza tralasciare i
-            tuoi impegni e le tue relazioni. Stai frequentando l’università? Svolgi il servizio
-            civile, o lavori a Trento? Il Volontariato Residenziale è un viaggio di ricerca,
-            un’opportunità per vivere relazioni e incontri unici! Vivere nella nostra casa come
-            volontariə residenziale vuol dire fare un’esperienza molto significativa sotto il
-            profilo umano. Sarai a contatto con una realtà impegnata da decenni nel sociale e sarà
-            un’occasione di crescita come cittadinə consapevolə ed impegnatə.
+            {data.description}
           </Text>
 
           <Divider />
@@ -111,8 +134,14 @@ export default function ExperienceScreen() {
               variant="secondary"
               rightIcon="mail-outline"
               label={t("sendEmail", "Send email")}
+              onPress={() => Linking.openURL(`mailto:${data.organization.email}`)}
             />
-            <Button variant="secondary" rightIcon="call-outline" label={t("call", "Call")} />
+            <Button
+              variant="secondary"
+              rightIcon="call-outline"
+              label={t("call", "Call")}
+              onPress={() => Linking.openURL(`tel:${data.organization.phone}`)}
+            />
           </Box>
         </Box>
       </ScrollView>

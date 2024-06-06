@@ -1,4 +1,4 @@
-import { ExperienceCard } from "@/components/ExperienceCard";
+import { ActivityCard } from "@/components/ActivityCard";
 import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
 import Checkbox from "@/components/ui/Checkbox";
@@ -6,8 +6,9 @@ import InputText from "@/components/ui/InputText";
 import SafeAreaView from "@/components/ui/SafeAreaView";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
-import { experiencesMockData } from "@/constants/mocks/experiences";
-import { useLocalSearchParams } from "expo-router";
+import { useNetwork } from "@/contexts/network";
+import { useQuery } from "@tanstack/react-query";
+import { router, useLocalSearchParams } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { ScrollView } from "react-native-gesture-handler";
@@ -22,17 +23,38 @@ interface EnrollmentData {
 export default function ExperienceEnrollScreen() {
   const { id } = useLocalSearchParams();
   const { t } = useTranslation();
+  const { client } = useNetwork();
 
-  const experience = experiencesMockData.find((exp) => exp.id === id);
+  if (!id || Array.isArray(id)) {
+    throw new Error("id should be a string");
+  }
+
+  const activityId = parseInt(id);
+
+  const { data } = useQuery({
+    queryKey: ["activities", id],
+    queryFn: async () => {
+      const response = await client.GET("/activities/{id}", {
+        params: {
+          path: {
+            id: activityId,
+          },
+        },
+      });
+      return response.data;
+    },
+  });
 
   const { control, handleSubmit } = useForm<EnrollmentData>();
 
-  if (!experience) {
+  if (!data) {
     return null;
   }
 
   async function onSubmit(data: EnrollmentData) {
     console.log(data); // TODO: send data to API
+
+    router.replace(`/experiences/${id}/confirm`);
   }
 
   return (
@@ -48,14 +70,7 @@ export default function ExperienceEnrollScreen() {
             {t("help", "help")}
           </Text>
         </Box>
-        <ExperienceCard
-          id={experience.id}
-          organization={experience.organization}
-          title={experience.title}
-          location={experience.location}
-          date={experience.date}
-          image={experience.image}
-        />
+        <ActivityCard activity={data} />
         <Box marginHorizontal="m" gap="l" marginTop="m">
           <Box flexDirection="row" justifyContent="space-between" marginVertical="m" gap="m">
             <Box flex={1}>
@@ -121,9 +136,9 @@ export default function ExperienceEnrollScreen() {
                   <Text variant="body">
                     <Trans
                       i18nKey="acceptedOrganizationPrivacy"
-                      values={{ organization: experience.organization }}
+                      values={{ organization: data.organization.name }}
                     >
-                      I consent to share my data with {{ organization: experience.organization }}
+                      I consent to share my data with {{ organization: data.organization.name }}
                     </Trans>
                   </Text>
                 </Box>
