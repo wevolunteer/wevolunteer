@@ -1,2 +1,2 @@
-db_dsn: sqlite3://db.sqlite3
+db_dsn: postgres://postgres:postgres@localhost:5432/wevolunteer
 jwt_secret: "verysecret"
