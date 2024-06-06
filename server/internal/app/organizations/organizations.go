@@ -3,14 +3,15 @@ package organizations
 import (
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 func OrganizationQuery(c *app.Context) *gorm.DB {
 	q := app.DB.Model(&models.Organization{})
+	q = q.Preload("Category")
 
 	if c.Role != app.SuperUser {
 		q = q.Where("published = ?", true)
@@ -29,28 +30,40 @@ func OrganizationGet(c *app.Context, id uint) (*models.Organization, error) {
 	return &organization, nil
 }
 
-type OrganizationList struct {
-	Results []models.Organization `json:"results"`
-	Total   int                   `json:"total"`
+type OrganizationFilters struct {
+	app.PaginationInput
+	Query string `query:"q"`
 }
 
-func OrganizationsList(c *app.Context, query string) (*OrganizationList, error) {
-	var organizations []models.Organization
+type OrganizationList struct {
+	Results  []models.Organization `json:"results"`
+	PageInfo *app.PaginationInfo   `json:"page_info"`
+}
+
+func OrganizationsList(c *app.Context, filters *OrganizationFilters) (*OrganizationList, error) {
+	data := &OrganizationList{}
 
 	q := OrganizationQuery(c)
 
-	if query != "" {
-		q = q.Where("name LIKE ?", "%"+query+"%")
+	if filters != nil {
+		if filters.Query != "" {
+			q = q.Where("name LIKE ?", "%"+filters.Query+"%")
+		}
 	}
 
-	if err := q.Find(&organizations).Error; err != nil {
+	pageInfo, err := app.PageInfo(q, filters.PaginationInput)
+
+	if err != nil {
 		return nil, err
 	}
 
-	return &OrganizationList{
-		Results: organizations,
-		Total:   len(organizations),
-	}, nil
+	data.PageInfo = pageInfo
+
+	if err := q.Find(&data.Results).Error; err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 type OrganizationCreateData struct {

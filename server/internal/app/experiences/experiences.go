@@ -27,27 +27,40 @@ func ExperienceQuery(ctx *app.Context) *gorm.DB {
 	return q
 }
 
-type ExperienceListData struct {
-	Results []models.Experience `json:"results"`
+type ExperienceFilters struct {
+	app.PaginationInput
+	Query string `query:"q"`
 }
 
-func ExperienceList(ctx *app.Context, query string) (*ExperienceListData, error) {
+type ExperienceListData struct {
+	Results  []models.Experience `json:"results"`
+	PageInfo *app.PaginationInfo `json:"page_info"`
+}
 
-	var activities []models.Experience
+func ExperienceList(ctx *app.Context, filters *ExperienceFilters) (*ExperienceListData, error) {
+	data := &ExperienceListData{}
 
 	q := ExperienceQuery(ctx)
 
-	if query != "" {
-		q = q.Where("name LIKE ?", "%"+query+"%")
+	if filters != nil {
+		if filters.Query != "" {
+			q = q.Where("name LIKE ?", "%"+filters.Query+"%")
+		}
 	}
 
-	if err := q.Find(&activities).Error; err != nil {
+	pageInfo, err := app.PageInfo(q, filters.PaginationInput)
+
+	if err != nil {
 		return nil, err
 	}
 
-	return &ExperienceListData{
-		Results: activities,
-	}, nil
+	data.PageInfo = pageInfo
+
+	if err := q.Find(&data.Results).Error; err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 type ExperienceCreateData struct {

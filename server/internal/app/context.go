@@ -13,7 +13,10 @@ type Context struct {
 }
 
 func FromHTTPContext(c context.Context) *Context {
-	user := c.Value("user").(*models.User)
+	user, ok := c.Value("user").(*models.User)
+	if ok {
+		user = nil
+	}
 
 	role, ok := c.Value("role").(Role)
 

@@ -22,6 +22,8 @@ const (
 	ExperienceWrite   = "experience:write"
 	UserRead          = "user:read"
 	UserWrite         = "user:write"
+	CategoryRead      = "category:read"
+	CategoryWrite     = "category:write"
 )
 
 var rolePermissions = map[Role][]Permission{

@@ -8,20 +8,16 @@ import (
 	"github.com/wevolunteer/wevolunteer/internal/models"
 )
 
-type ExperienceListRequest struct {
-	Query string `query:"q" required:"false"`
-}
-
 type ExperienceListResponse struct {
 	Body ExperienceListData
 }
 
 func ExperienceListController(
 	c context.Context,
-	input *ExperienceListRequest,
+	input *ExperienceFilters,
 ) (*ExperienceListResponse, error) {
 	ctx := app.FromHTTPContext(c)
-	data, err := ExperienceList(ctx, input.Query)
+	data, err := ExperienceList(ctx, input)
 
 	if err != nil {
 		return nil, err

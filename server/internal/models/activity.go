@@ -42,22 +42,15 @@ type Activity struct {
 	EndTime   string `json:"end_time"`
 
 	// Recurrence
-	IsRecurring bool              `json:"is_recurring"`
-	Schedule    *ActivitySchedule `json:"schedule"`
+	IsRecurring bool `json:"is_recurring"`
+	Monday      bool `json:"monday"`
+	Tuesday     bool `json:"tuesday"`
+	Wednesday   bool `json:"wednesday"`
+	Thursday    bool `json:"thursday"`
+	Friday      bool `json:"friday"`
+	Saturday    bool `json:"saturday"`
+	Sunday      bool `json:"sunday"`
 
 	// Visibility
 	Published bool `json:"published"`
-}
-
-type ActivitySchedule struct {
-	ID         uint     `gorm:"primarykey" json:"id"`
-	ActivityID uint     `json:"-"`
-	Activity   Activity `json:"-"`
-	Monday     bool     `json:"monday"`
-	Tuesday    bool     `json:"tuesday"`
-	Wednesday  bool     `json:"wednesday"`
-	Thursday   bool     `json:"thursday"`
-	Friday     bool     `json:"friday"`
-	Saturday   bool     `json:"saturday"`
-	Sunday     bool     `json:"sunday"`
 }

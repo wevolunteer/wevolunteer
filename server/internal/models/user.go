@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-	"math/rand"
 	"time"
 
 	"gorm.io/gorm"
@@ -29,24 +27,10 @@ type User struct {
 	OTPCode               string         `json:"-"`
 	OTPCodeExpireAt       time.Time      `json:"-"`
 	IsRootAdmin           bool           `json:"is_superuser" gorm:"default:false"`
-	Latitude              float64        `json:"-"`
-	Longitude             float64        `json:"-"`
+	Latitude              float64        `json:"json:"latitude"`
+	Longitude             float64        `json:"json:"longitude"`
 	Bio                   string         `json:"bio"`
 	IsEmailVerified       bool           `json:"is_email_verified" gorm:"default:false"`
 	HasAcceptedTOS        bool           `json:"accepted_tos" gorm:"default:false"`
 	HasAcceptedNewsletter bool           `json:"accepted_newsletter" gorm:"default:false"`
-}
-
-func (u *User) RefreshOTPCode(db *gorm.DB) error {
-	otp := ""
-	for i := 0; i < OTPCodeLength; i++ {
-		otp += fmt.Sprintf("%d", rand.Intn(10))
-	}
-
-	u.OTPCode = otp
-	u.OTPCodeExpireAt = time.Now().Add(time.Minute * time.Duration(OTPCodeTTL))
-
-	err := db.Save(u).Error
-
-	return err
 }

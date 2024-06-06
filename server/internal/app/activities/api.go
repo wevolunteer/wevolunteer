@@ -2,14 +2,36 @@ package activities
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 )
 
-type ActivityListRequest struct {
-	Query string `query:"q" required:"false"`
+type ActivivtyGetRequest struct {
+	ID uint `path:"id"`
+}
+
+type ActitivyGetResponse struct {
+	Body models.Activity
+}
+
+func ActivityGetController(c context.Context, input *ActivivtyGetRequest) (*ActitivyGetResponse, error) {
+	ctx := app.FromHTTPContext(c)
+	data, err := ActivityGet(ctx, input.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if data == nil {
+		return nil, &app.ErrNotAuthorized{}
+	}
+
+	resp := &ActitivyGetResponse{}
+
+	resp.Body = *data
+
+	return resp, nil
 }
 
 type ActivityListResponse struct {
@@ -18,16 +40,14 @@ type ActivityListResponse struct {
 
 func ActivityListController(
 	c context.Context,
-	input *ActivityListRequest,
+	input *ActivityFilters,
 ) (*ActivityListResponse, error) {
 	ctx := app.FromHTTPContext(c)
-	data, err := ActivityList(ctx, input.Query)
+	data, err := ActivityList(ctx, input)
 
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(data)
 
 	resp := &ActivityListResponse{}
 

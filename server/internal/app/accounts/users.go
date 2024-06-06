@@ -24,28 +24,42 @@ func UserGet(id uint) (*models.User, error) {
 	return &user, nil
 }
 
-type UserList struct {
-	Results []models.User `json:"results"`
-	Total   int           `json:"total"`
+type UserListData struct {
+	Results  []models.User       `json:"results"`
+	PageInfo *app.PaginationInfo `json:"page_info"`
 }
 
-func UsersList(query string) (*UserList, error) {
-	var users []models.User
+type UserFilters struct {
+	app.PaginationInput
+	Query string `query:"q"`
+}
 
-	q := app.DB.Model(&models.User{})
+func UsersList(ctx *app.Context, filters *UserFilters) (*UserListData, error) {
+	data := &UserListData{}
 
-	if query != "" {
-		q = q.Where("name LIKE ?", "%"+query+"%")
+	q := UserQuery()
+
+	if filters != nil {
+		if filters.Query != "" {
+			q = q.Where("name LIKE ?", "%"+filters.Query+"%")
+		}
 	}
 
-	if err := q.Find(&users).Error; err != nil {
+	pageInfo, err := app.PageInfo(q, filters.PaginationInput)
+
+	if err != nil {
 		return nil, err
 	}
 
-	return &UserList{
-		Results: users,
-		Total:   len(users),
-	}, nil
+	data.PageInfo = pageInfo
+
+	q = q.Scopes(app.Paginate(filters.PaginationInput))
+
+	if err := q.Find(&data.Results).Error; err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 type UserCreateData struct {
@@ -144,13 +158,7 @@ func UserProfileUpdate(user *models.User, data UserProfileUpdateData) error {
 		user.Longitude = *data.Longitude
 	}
 
-	fmt.Println(data)
-	fmt.Println(user)
-	fmt.Println(user.ID)
-
 	if err := app.DB.Save(&user).Error; err != nil {
-		fmt.Println("ERRORR")
-		fmt.Println(err)
 		return err
 	}
 

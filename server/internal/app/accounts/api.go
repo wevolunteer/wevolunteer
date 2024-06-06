@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/danielgtaylor/huma/v2"
+	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 )
 
@@ -118,16 +119,13 @@ func UserProfileUpdateController(c context.Context, input *UserProfileUpdateRequ
 
 }
 
-type UserListRequest struct {
-	Query string `query:"query"`
-}
-
 type UserListResponse struct {
 	Body []models.User
 }
 
-func UserListController(c context.Context, input *UserListRequest) (*UserListResponse, error) {
-	users, err := UsersList(input.Query)
+func UserListController(c context.Context, input *UserFilters) (*UserListResponse, error) {
+	ctx := app.FromHTTPContext(c)
+	users, err := UsersList(ctx, input)
 
 	if err != nil {
 		return nil, err

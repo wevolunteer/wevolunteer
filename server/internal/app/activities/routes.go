@@ -20,6 +20,17 @@ func RegisterRoutes(api huma.API) {
 	}, ActivityListController)
 
 	huma.Register(api, huma.Operation{
+		OperationID: "activities-get",
+		Summary:     "Get activity",
+		Method:      http.MethodGet,
+		Path:        "/activities/{id}",
+		Tags:        []string{"Activities"},
+		Middlewares: huma.Middlewares{
+			app.RoleMiddleware(api, app.ActivityRead),
+		},
+	}, ActivityGetController)
+
+	huma.Register(api, huma.Operation{
 		OperationID: "activities-create",
 		Summary:     "Create activity",
 		Method:      http.MethodPost,

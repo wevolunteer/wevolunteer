@@ -8,35 +8,79 @@ import (
 
 func ActivityQuery(ctx *app.Context) *gorm.DB {
 	q := app.DB.Model(&models.Activity{})
-
-	if ctx.Role == app.Volunteer || ctx.Role == app.Public {
-		q = q.Where("published = ?", true)
-	}
+	q = q.Preload("Category")
+	q = q.Preload("Organization")
 
 	return q
 }
 
-type ActivityListData struct {
-	Results []models.Activity `json:"results"`
-}
+func ActivityGet(c *app.Context, id uint) (*models.Activity, error) {
+	var activity models.Activity
 
-func ActivityList(ctx *app.Context, query string) (*ActivityListData, error) {
-
-	var activities []models.Activity
-
-	q := ActivityQuery(ctx)
-
-	if query != "" {
-		q = q.Where("name LIKE ?", "%"+query+"%")
-	}
-
-	if err := q.Find(&activities).Error; err != nil {
+	if err := ActivityQuery(c).Where("id = ?", id).First(&activity).Error; err != nil {
 		return nil, err
 	}
 
-	return &ActivityListData{
-		Results: activities,
-	}, nil
+	return &activity, nil
+}
+
+type ActivityListData struct {
+	Results  []models.Activity   `json:"results"`
+	PageInfo *app.PaginationInfo `json:"page_info"`
+}
+
+type ActivityFilters struct {
+	app.PaginationInput
+	Query      string  `query:"q"`
+	Distance   float64 `query:"distance"`
+	DateStart  string  `query:"date_start"`
+	DateEnd    string  `query:"date_end"`
+	Categories []uint  `query:"categories"`
+}
+
+func ActivityList(ctx *app.Context, filters *ActivityFilters) (*ActivityListData, error) {
+	data := &ActivityListData{}
+
+	q := ActivityQuery(ctx)
+
+	if filters != nil {
+		if filters.DateStart != "" {
+			q = q.Where("start_time >= ?", filters.DateStart)
+		}
+
+		if filters.DateEnd != "" {
+			q = q.Where("end_time <= ?", filters.DateEnd)
+		}
+
+		if filters.Distance != 0 && ctx.User != nil && ctx.User.Latitude != 0 && ctx.User.Longitude != 0 {
+			q = q.Where("ST_Distance_Sphere(point(longitude, latitude), point(?, ?)) <= ?", ctx.User.Longitude, ctx.User.Latitude, filters.Distance)
+		}
+
+		if filters.Query != "" {
+			q = q.Where("title LIKE ?", "%"+filters.Query+"%")
+		}
+
+		if len(filters.Categories) > 0 {
+			q = q.Where("category_id IN ?", filters.Categories)
+		}
+
+	}
+
+	pageInfo, err := app.PageInfo(q, filters.PaginationInput)
+
+	if err != nil {
+		return nil, err
+	}
+
+	data.PageInfo = pageInfo
+
+	q = q.Scopes(app.Paginate(filters.PaginationInput))
+
+	if err := q.Find(&data.Results).Error; err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 type ActivityCreateData struct {
