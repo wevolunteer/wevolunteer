@@ -1,4 +1,4 @@
-import { Theme } from "@/constants/Theme";
+import { Theme } from "@/config/theme";
 import { createBox } from "@shopify/restyle";
 
 const Box = createBox<Theme>();

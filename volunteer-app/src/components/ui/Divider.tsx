@@ -1,4 +1,4 @@
-import { Theme } from "@/constants/Theme";
+import { Theme } from "@/config/theme";
 import { BoxProps } from "@shopify/restyle";
 import { FC } from "react";
 import Box from "./Box";

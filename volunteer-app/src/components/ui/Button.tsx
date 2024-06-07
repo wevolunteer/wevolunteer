@@ -15,7 +15,7 @@ import {
 } from "@shopify/restyle";
 import { TouchableOpacity } from "react-native";
 
-import { Theme } from "@/constants/Theme";
+import { Theme } from "@/config/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useMemo } from "react";
 import Box from "./Box";

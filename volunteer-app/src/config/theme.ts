@@ -1,5 +1,5 @@
 import { createTheme } from "@shopify/restyle";
-import { palette } from "./Colors";
+import { palette } from "./colors";
 
 const theme = createTheme({
   colors: {

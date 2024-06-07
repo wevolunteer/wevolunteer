@@ -1,4 +1,4 @@
-import { Theme } from "@/constants/Theme";
+import { Theme } from "@/config/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@shopify/restyle";
 import { FC } from "react";

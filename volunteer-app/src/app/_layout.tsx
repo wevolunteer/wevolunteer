@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { toastConfig } from "@/components/ui/Toast";
-import theme from "@/constants/Theme";
+import theme from "@/config/theme";
 import { SessionProvider } from "@/contexts/authentication";
 import { ThemeProvider } from "@shopify/restyle";
 import { StatusBar } from "expo-status-bar";

@@ -1,4 +1,4 @@
-import { Theme } from "@/constants/Theme";
+import { Theme } from "@/config/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useTheme } from "@shopify/restyle";

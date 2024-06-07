@@ -1,4 +1,4 @@
-import { Theme } from "@/constants/Theme";
+import { Theme } from "@/config/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { BaseToastProps, ErrorToast } from "react-native-toast-message";
