@@ -16,6 +16,7 @@ import (
 	"github.com/wevolunteer/wevolunteer/internal/app/categories"
 	"github.com/wevolunteer/wevolunteer/internal/app/experiences"
 	"github.com/wevolunteer/wevolunteer/internal/app/organizations"
+	"github.com/wevolunteer/wevolunteer/internal/app/places"
 	"github.com/wevolunteer/wevolunteer/internal/utils/logger"
 
 	_ "github.com/wevolunteer/wevolunteer/internal/app/notifications" // Import notifications package to subscribe to events
@@ -49,6 +50,7 @@ func main() {
 		activities.RegisterRoutes(a.Api)
 		experiences.RegisterRoutes(a.Api)
 		categories.RegisterRoutes(a.Api)
+		places.RegisterRoutes(a.Api)
 
 		hooks.OnStart(func() {
 			log.Infof("Starting API server at http://%s:%d\n", opts.Host, opts.Port)

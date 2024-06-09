@@ -2,6 +2,8 @@ package app
 
 import (
 	"fmt"
+	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -19,11 +21,20 @@ const (
 
 var DB *gorm.DB
 
+type PostgresDSN struct {
+	User     string
+	Password string
+	Host     string
+	Port     string
+	DBName   string
+}
+
 type DatabaseConfig struct {
 	dsn          string
 	maxOpenConns int
 	maxIdleConns int
 	maxLifetime  time.Duration
+	test         bool
 }
 
 func DatabaseInit(config *DatabaseConfig) error {
@@ -33,6 +44,8 @@ func DatabaseInit(config *DatabaseConfig) error {
 	if len(dsn) != 2 {
 		return fmt.Errorf("invalid dsn")
 	}
+
+	config.test = os.Getenv("GO_ENV") == "test"
 
 	DB, err = openDatabase(config)
 
@@ -60,12 +73,39 @@ func DatabaseInit(config *DatabaseConfig) error {
 	return nil
 }
 
+func DatabaseClose(config *DatabaseConfig) error {
+	sqlDB, err := DB.DB()
+	if err != nil {
+		return fmt.Errorf("failed to get database connection pool: %w", err)
+	}
+
+	if config.test {
+		var dsn *PostgresDSN
+		dsn, err = parsePostgresDSN(config.dsn)
+
+		if err != nil {
+			return fmt.Errorf("invalid dsn")
+		}
+
+		if err := destroyTestDatabase(dsn); err != nil {
+			return fmt.Errorf("failed to destroy test database: %w", err)
+		}
+	}
+
+	return sqlDB.Close()
+}
+
 func openDatabase(config *DatabaseConfig) (*gorm.DB, error) {
 	var db *gorm.DB
-	var err error
 
-	if !strings.Contains(config.dsn, "postgres://") {
+	dsn, err := parsePostgresDSN(config.dsn)
+
+	if err != nil {
 		return nil, fmt.Errorf("invalid dsn")
+	}
+
+	if config.test {
+		return openTestDatabase(dsn)
 	}
 
 	db, err = gorm.Open(postgres.Open(config.dsn), &gorm.Config{})
@@ -74,6 +114,81 @@ func openDatabase(config *DatabaseConfig) (*gorm.DB, error) {
 	}
 
 	return db, nil
+}
+
+func openTestDatabase(dsn *PostgresDSN) (*gorm.DB, error) {
+	testDBName := fmt.Sprintf("%s_test", dsn.DBName)
+
+	gormDsn := fmt.Sprintf("host=%s user=%s password=%s port=%s sslmode=disable TimeZone=UTC", dsn.Host, dsn.User, dsn.Password, dsn.Port)
+
+	db, err := gorm.Open(postgres.Open(gormDsn), &gorm.Config{})
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to open test database: %w", err)
+	}
+
+	db.Exec(fmt.Sprintf("DROP DATABASE IF EXISTS %s;", testDBName))
+	db.Exec(fmt.Sprintf("CREATE DATABASE %s;", testDBName))
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get database connection pool: %w", err)
+	}
+
+	sqlDB.Close()
+
+	db, err = gorm.Open(postgres.Open(fmt.Sprintf("host=%s user=%s password=%s port=%s dbname=%s sslmode=disable TimeZone=UTC", dsn.Host, dsn.User, dsn.Password, dsn.Port, testDBName)), &gorm.Config{})
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to open test database: %w", err)
+	}
+
+	return db, nil
+}
+
+func destroyTestDatabase(dsn *PostgresDSN) error {
+	testDBName := fmt.Sprintf("%s_test", dsn.DBName)
+
+	gormDsn := fmt.Sprintf("host=%s user=%s password=%s port=%s sslmode=disable TimeZone=UTC", dsn.Host, dsn.User, dsn.Password, dsn.Port)
+
+	db, err := gorm.Open(postgres.Open(gormDsn), &gorm.Config{})
+
+	if err != nil {
+		return fmt.Errorf("failed to open test database: %w", err)
+	}
+
+	db.Exec(fmt.Sprintf("DROP DATABASE IF EXISTS %s;", testDBName))
+
+	return nil
+}
+
+func parsePostgresDSN(dsn string) (*PostgresDSN, error) {
+	u, err := url.Parse(dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	if u.Scheme != "postgres" {
+		return nil, fmt.Errorf("invalid DSN scheme: %s", u.Scheme)
+	}
+
+	user := u.User.Username()
+	password, _ := u.User.Password()
+
+	hostParts := strings.Split(u.Host, ":")
+	host := hostParts[0]
+	port := ""
+	if len(hostParts) > 1 {
+		port = hostParts[1]
+	}
+
+	return &PostgresDSN{
+		User:     user,
+		Password: password,
+		Host:     host,
+		Port:     port,
+		DBName:   strings.TrimPrefix(u.Path, "/"),
+	}, nil
 }
 
 type PaginationInput struct {
