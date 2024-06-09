@@ -11,6 +11,7 @@ export default function SafeAreaView({ children, style }: SafeAreaViewProps) {
     <BaseSafeAreaView
       style={{
         backgroundColor: "#FFFFFF",
+        width: "100%",
         flex: 1,
         ...style,
       }}
