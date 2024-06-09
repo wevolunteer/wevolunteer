@@ -5,8 +5,9 @@ import { useNetwork } from "@/contexts/network";
 import { Activity } from "@/types/data";
 import { Ionicons } from "@expo/vector-icons";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import * as Location from "expo-location";
 import { router } from "expo-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import MapView, { Marker } from "react-native-maps";
@@ -15,10 +16,20 @@ const pinBlack = require("@/assets/images/location-pin-black.png");
 const pinPink = require("@/assets/images/location-pin-pink.png");
 
 export default function ExporeMapScreen() {
-  const [q, setQ] = useState("");
-  const [showMap, setShowMap] = useState(false);
   const { t } = useTranslation();
   const { client } = useNetwork();
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      console.log(location);
+    })();
+  }, []);
 
   const { data, fetchNextPage } = useInfiniteQuery({
     queryKey: ["experiences"],
