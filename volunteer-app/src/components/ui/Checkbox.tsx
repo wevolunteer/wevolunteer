@@ -2,7 +2,7 @@ import { Theme } from "@/config/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@shopify/restyle";
 import React, { FC } from "react";
-import { Pressable } from "react-native";
+import { LayoutAnimation, Pressable } from "react-native";
 import Box from "./Box";
 
 interface CheckboxProps {
@@ -13,9 +13,15 @@ interface CheckboxProps {
 
 const Checkbox: FC<CheckboxProps> = ({ children, value, onChange }) => {
   const theme = useTheme<Theme>();
+
+  function handlePress() {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    onChange(!value);
+  }
+
   return (
     <Box flexDirection="row" alignItems="flex-start" gap="m">
-      <Pressable onPress={() => onChange(!value)}>
+      <Pressable onPress={handlePress}>
         <Box
           width={32}
           height={32}

@@ -16,6 +16,7 @@ import { NetworkProvider } from "@/contexts/network";
 import LocalesInit from "@/locales";
 import { getLocales } from "expo-localization";
 import i18next from "i18next";
+import { Platform, UIManager } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -42,6 +43,12 @@ export default function RootLayout() {
 
   if (!loaded) {
     return null;
+  }
+
+  if (Platform.OS === "android") {
+    if (UIManager.setLayoutAnimationEnabledExperimental) {
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
   }
 
   return (
