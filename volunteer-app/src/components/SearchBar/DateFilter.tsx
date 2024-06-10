@@ -68,8 +68,8 @@ const DateFilter: FC<DateFilterProps> = ({ title, value, onChange }) => {
   return (
     <SearchbarFilter
       title={showCustomDates ? t("chooseDates", "Choose dates") : title}
-      label={value ? dateIntervalToString(value) : title}
-      selected={!!value}
+      label={!!value?.from || !!value?.to ? dateIntervalToString(value) : title}
+      selected={!!value?.from || !!value?.to}
       onConfirm={console.log}
       onBack={showCustomDates ? () => setShowCustomDates(false) : undefined}
       onReset={() => {

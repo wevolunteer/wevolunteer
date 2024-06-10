@@ -1,25 +1,31 @@
 import { ActivityCard } from "@/components/ActivityCard";
 import Box from "@/components/ui/Box";
 import Text from "@/components/ui/Text";
+import { useFilters } from "@/contexts/filters";
 import { useNetwork } from "@/contexts/network";
+import { Activity } from "@/types/data";
 import { Ionicons } from "@expo/vector-icons";
+import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default function ExporeListScreen() {
   const { t } = useTranslation();
   const { client } = useNetwork();
+  const listRef = useRef<FlashList<Activity>>(null);
 
-  const { data, fetchNextPage } = useInfiniteQuery({
+  const { filters } = useFilters();
+
+  const { data, fetchNextPage, refetch, isLoading } = useInfiniteQuery({
     queryKey: ["experiences"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await client.GET("/activities", {
         params: {
           query: {
+            ...filters,
             page: pageParam,
           },
         },
@@ -34,12 +40,22 @@ export default function ExporeListScreen() {
     return data?.pages.flatMap((page) => page?.results || []) || [];
   }, [data]);
 
-  console.log(activities);
+  useEffect(() => {
+    refetch();
+
+    listRef.current?.scrollToOffset({ offset: 0, animated: true });
+  }, [filters, refetch]);
+
   return (
     <Box flex={1}>
-      <FlatList
+      <FlashList
+        ref={listRef}
+        estimatedItemSize={195}
+        refreshing={isLoading}
+        onRefresh={() => refetch()}
         data={activities || []}
         keyExtractor={(item) => `a-${item.id}`}
+        onEndReachedThreshold={0.8}
         onEndReached={() => fetchNextPage()}
         renderItem={({ item }) => (
           <ActivityCard
