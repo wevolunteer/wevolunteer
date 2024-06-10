@@ -13,7 +13,7 @@ import {
   useRestyle,
   useTheme,
 } from "@shopify/restyle";
-import { TouchableOpacity } from "react-native";
+import { ActivityIndicator, TouchableOpacity } from "react-native";
 
 import { Theme } from "@/config/theme";
 import { Ionicons } from "@expo/vector-icons";
@@ -51,6 +51,7 @@ type Props = RestyleProps & {
   onPress?: () => void;
   label: string;
   isDisabled?: boolean;
+  isLoading?: boolean;
   rightIcon?: IconNames;
   leftIcon?: IconNames;
   renderRightIcon?: () => React.ReactNode;
@@ -63,6 +64,7 @@ const Button = ({
   rightIcon,
   leftIcon,
   isDisabled,
+  isLoading,
   ...rest
 }: Props) => {
   rest.variant = isDisabled ? "disabled" : rest.variant;
@@ -93,6 +95,7 @@ const Button = ({
         flexDirection="row"
         alignItems="center"
         justifyContent="center"
+        opacity={isLoading ? 0.5 : 1}
         gap="m"
         {...props}
         position="relative"
@@ -107,16 +110,21 @@ const Button = ({
             <Ionicons name={rightIcon} size={28} color={iconColor} />
           </Box>
         )}
-        <Text
-          marginLeft={rightIcon ? "xl" : "s"}
-          marginRight={rightIcon ? "m" : "s"}
-          variant="body"
-          color={textColor}
-          textAlign="center"
-          fontSize={16}
-        >
-          {label}
-        </Text>
+
+        {isLoading ? (
+          <ActivityIndicator color={iconColor} />
+        ) : (
+          <Text
+            marginLeft={rightIcon ? "xl" : "s"}
+            marginRight={rightIcon ? "m" : "s"}
+            variant="body"
+            color={textColor}
+            textAlign="center"
+            fontSize={16}
+          >
+            {label}
+          </Text>
+        )}
         {leftIcon && (
           <Box position="absolute" right={15} top={12}>
             <Ionicons name="logo-facebook" size={28} color={iconColor} />

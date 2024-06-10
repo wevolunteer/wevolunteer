@@ -27,6 +27,7 @@ export default function VerifyCodeScreen() {
   const { verifyAuthCode, requestAuthCode } = useSession();
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
+  const [isLoading, setIsLoading] = useState(false);
 
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
@@ -40,6 +41,7 @@ export default function VerifyCodeScreen() {
     }
 
     try {
+      setIsLoading(true);
       const response = await requestAuthCode({
         email,
       });
@@ -49,6 +51,7 @@ export default function VerifyCodeScreen() {
         return;
       }
       setError(null);
+      setIsLoading(false);
       Toast.show({
         type: "success",
         props: {
@@ -59,6 +62,7 @@ export default function VerifyCodeScreen() {
       });
     } catch (error) {
       console.error(error);
+      setIsLoading(false);
       setError(t("errorRequestingVerificationCode", "Error requesting verification code"));
     }
   }
@@ -165,6 +169,7 @@ export default function VerifyCodeScreen() {
           label={t("sendCode", "Send code")}
           onPress={onSubmit}
           variant="primary"
+          isLoading={isLoading}
           isDisabled={!value || value.length < CELL_COUNT}
         />
 

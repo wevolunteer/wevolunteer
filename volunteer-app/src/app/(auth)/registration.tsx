@@ -9,7 +9,7 @@ import { useNetwork } from "@/contexts/network";
 import { ProfileData } from "@/types/data";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { router } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { ScrollView } from "react-native-gesture-handler";
@@ -37,6 +37,7 @@ export default function RegistrationScreen() {
   const { client } = useNetwork();
   const { fetchUser } = useSession();
   const { t } = useTranslation();
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     formState: { errors },
@@ -58,11 +59,13 @@ export default function RegistrationScreen() {
 
   async function onSubmit(data: RegistrationData) {
     try {
+      setIsLoading(true);
       const response = await client.PATCH("/auth/user", {
         body: data,
       });
 
       await fetchUser();
+      setIsLoading(false);
 
       if (response.data?.accepted_tos) {
         router.replace("/explore");
@@ -76,6 +79,7 @@ export default function RegistrationScreen() {
       });
     } catch (error) {
       console.error("profile error:", error);
+      setIsLoading(false);
       Toast.show({
         type: "error",
         text2: t(
@@ -89,18 +93,18 @@ export default function RegistrationScreen() {
   const dateOfBirth = watch("date_of_birth");
 
   useEffect(() => {
-    if (dateOfBirth && dateOfBirth.length == 2) {
+    if (dateOfBirth && dateOfBirth.length === 2) {
       setValue("date_of_birth", dateOfBirth + "/");
     }
 
-    if (dateOfBirth && dateOfBirth.length == 5) {
+    if (dateOfBirth && dateOfBirth.length === 5) {
       setValue("date_of_birth", dateOfBirth + "/");
     }
 
-    if (dateOfBirth && dateOfBirth.length == 11) {
+    if (dateOfBirth && dateOfBirth.length === 11) {
       setValue("date_of_birth", dateOfBirth.slice(0, 10));
     }
-  }, [dateOfBirth]);
+  }, [dateOfBirth, setValue]);
 
   return (
     <SafeAreaView>
@@ -212,6 +216,7 @@ export default function RegistrationScreen() {
             label={t("continue", "Continue")}
             marginVertical="s"
             onPress={handleSubmit(onSubmit)}
+            isLoading={isLoading}
             // isDisabled={!email || !email.includes("@")}
             variant="primary"
           />

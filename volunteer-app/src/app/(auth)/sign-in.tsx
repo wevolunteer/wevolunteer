@@ -15,8 +15,9 @@ export default function SignInScreen() {
   const { requestAuthCode } = useSession();
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { watch, control, handleSubmit } = useForm<SignInData>();
+  const { control, handleSubmit } = useForm<SignInData>();
 
   async function onSubmit(data: SignInData) {
     if (data.email === "") {
@@ -25,16 +26,19 @@ export default function SignInScreen() {
     }
 
     try {
+      setIsLoading(true);
       const response = await requestAuthCode(data);
 
       if (!response) {
         setError(t("errorRequestingVerificationCode", "Error requesting verification code"));
         return;
       }
-      setError(null);
       router.push(`/verify-code?email=${data.email}`);
+      setError(null);
+      setIsLoading(false);
     } catch (error) {
       setError(t("errorRequestingVerificationCode", "Error requesting verification code"));
+      setIsLoading(false);
     }
   }
 
@@ -73,6 +77,7 @@ export default function SignInScreen() {
         <Button
           label={t("continue", "Continue")}
           onPress={handleSubmit(onSubmit)}
+          isLoading={isLoading}
           // isDisabled={!email || !email.includes("@")}
           variant="primary"
         />
