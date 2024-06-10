@@ -4,10 +4,11 @@ import Text from "@/components/ui/Text";
 import { useNetwork } from "@/contexts/network";
 import { Activity } from "@/types/data";
 import { Ionicons } from "@expo/vector-icons";
+import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import * as Location from "expo-location";
 import { router } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import MapView, { Marker } from "react-native-maps";
@@ -18,6 +19,7 @@ const pinPink = require("@/assets/images/location-pin-pink.png");
 export default function ExporeMapScreen() {
   const { t } = useTranslation();
   const { client } = useNetwork();
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   useEffect(() => {
     (async () => {
@@ -53,6 +55,19 @@ export default function ExporeMapScreen() {
     return data?.pages.flatMap((page) => page?.results || []) || [];
   }, [data]);
 
+  function handleMarkerPress(experience: Activity) {
+    if (!selectedActivity) {
+      bottomSheetModalRef.current?.present();
+    }
+    setSelectedActivity(experience);
+  }
+
+  function handleCloseExperience() {
+    if (selectedActivity) {
+      bottomSheetModalRef.current?.dismiss();
+    }
+  }
+
   return (
     <Box flex={1}>
       <MapView
@@ -64,6 +79,7 @@ export default function ExporeMapScreen() {
         }}
         moveOnMarkerPress={false}
         rotateEnabled={false}
+        onRegionChange={handleCloseExperience}
         style={{
           width: "100%",
           height: "100%",
@@ -77,7 +93,7 @@ export default function ExporeMapScreen() {
               latitude: experience.latitude,
               longitude: experience.longitude,
             }}
-            onSelect={() => setSelectedActivity(experience)}
+            onSelect={() => handleMarkerPress(experience)}
           />
         ))}
       </MapView>
@@ -91,17 +107,7 @@ export default function ExporeMapScreen() {
         justifyContent="center"
         alignItems="center"
       >
-        {selectedActivity ? (
-          <Box width="100%">
-            <ActivityCard
-              activity={selectedActivity}
-              onPress={() => {
-                router.push(`experiences/${selectedActivity.id}`);
-              }}
-              onClose={() => setSelectedActivity(null)}
-            />
-          </Box>
-        ) : (
+        {!selectedActivity && (
           <TouchableOpacity onPress={() => router.push("/explore")}>
             <Box
               backgroundColor="darkBackground"
@@ -122,6 +128,33 @@ export default function ExporeMapScreen() {
           </TouchableOpacity>
         )}
       </Box>
+      <BottomSheetModalProvider>
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          index={0}
+          enablePanDownToClose={true}
+          onDismiss={() => setSelectedActivity(null)}
+          enableDynamicSizing={true}
+          handleComponent={null}
+          backgroundStyle={{
+            backgroundColor: "rgba(0,0,0,0)",
+          }}
+        >
+          <BottomSheetView style={{}}>
+            <Box width="100%" paddingBottom="l">
+              {selectedActivity && (
+                <ActivityCard
+                  activity={selectedActivity}
+                  onPress={() => {
+                    router.push(`experiences/${selectedActivity.id}`);
+                  }}
+                  onClose={handleCloseExperience}
+                />
+              )}
+            </Box>
+          </BottomSheetView>
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
     </Box>
   );
 }
