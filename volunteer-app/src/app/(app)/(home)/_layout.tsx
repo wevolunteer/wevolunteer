@@ -1,8 +1,24 @@
+import Box from "@/components/ui/Box";
+import Text from "@/components/ui/Text";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useTheme } from "@shopify/restyle";
 import { Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { Pressable } from "react-native";
+
+interface TabBarIconProps {
+  name: string;
+  focused: boolean;
+}
+
+const TabBarIcon: React.FC<TabBarIconProps> = ({ name, focused }) => {
+  return (
+    <Box justifyContent="center" alignItems="center">
+      <Text color={focused ? "accentText" : "mainText"}>{name}</Text>
+    </Box>
+  );
+};
 
 export default function AppLayout() {
   const theme = useTheme();
@@ -11,7 +27,7 @@ export default function AppLayout() {
   return (
     <BottomSheetModalProvider>
       <Tabs
-        screenOptions={{
+        screenOptions={({ route }) => ({
           tabBarActiveTintColor: "blue",
           headerShown: false,
           tabBarStyle: {
@@ -20,7 +36,25 @@ export default function AppLayout() {
             paddingTop: 12,
             height: 74,
           },
-        }}
+          tabBarButton: (props) => (
+            <Pressable
+              {...props}
+              android_ripple={{
+                color: "rgba(0, 0, 0, 0.05)",
+                borderless: true,
+              }}
+              style={({ pressed }) => [
+                {
+                  opacity: pressed ? 0.5 : 1,
+                },
+                props.style,
+              ]}
+            >
+              {props.children}
+            </Pressable>
+          ),
+          tabBarIcon: ({ focused }) => <TabBarIcon name={route.name} focused={focused} />,
+        })}
       >
         <Tabs.Screen
           name="explore"
@@ -46,6 +80,6 @@ export default function AppLayout() {
           }}
         />
       </Tabs>
-    </BottomSheetModalProvider >
+    </BottomSheetModalProvider>
   );
 }
