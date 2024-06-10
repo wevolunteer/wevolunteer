@@ -2,7 +2,7 @@ import { ActivityCard } from "@/components/ActivityCard";
 import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
 import Checkbox from "@/components/ui/Checkbox";
-import InputText from "@/components/ui/InputText";
+import InputDate from "@/components/ui/InputDate";
 import SafeAreaView from "@/components/ui/SafeAreaView";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
@@ -78,7 +78,7 @@ export default function ExperienceEnrollScreen() {
                 control={control}
                 name="from_date"
                 render={({ field: { onChange, value } }) => (
-                  <InputText
+                  <InputDate
                     label={t("from", "From")}
                     value={value}
                     onChangeText={onChange}
@@ -92,7 +92,7 @@ export default function ExperienceEnrollScreen() {
                 control={control}
                 name="to_date"
                 render={({ field: { onChange, value } }) => (
-                  <InputText
+                  <InputDate
                     label={t("to", "To")}
                     value={value}
                     onChangeText={onChange}
