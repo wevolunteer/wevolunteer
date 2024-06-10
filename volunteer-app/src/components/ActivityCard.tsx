@@ -59,9 +59,9 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, onPress, onClose
           </Box>
           <Text variant="body">{activity.city}</Text>
           <Text variant="secondary">
-            {activity.start_date ? format(new Date(activity.start_date), "d MMM") : ""}
+            {activity.start_date ? format(new Date(activity.start_date), "d/MM") : ""}
 
-            {activity.end_date ? ` - ${format(new Date(activity.end_date), "d MMM")}` : ""}
+            {activity.end_date ? ` - ${format(new Date(activity.end_date), "d/MM")}` : ""}
           </Text>
         </Box>
         <Box flex={1}>
