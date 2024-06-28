@@ -56,9 +56,7 @@ const PlaceFilter: FC<PlaceFilterProps> = ({ value, onChange }) => {
             </Pressable>
             <Box marginHorizontal="m" marginTop="m" gap="m">
               <Icon name="marker" size={48} />
-              <Text variant="header" fontSize={32} lineHeight={39}>
-                {t("choosePlace", "Choose place")}
-              </Text>
+              <Text variant="header">{t("choosePlace", "Choose place")}</Text>
               <InputText value={value} onChangeText={onChange} />
 
               <Box flexDirection="row" gap="s">

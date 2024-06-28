@@ -28,7 +28,7 @@ export default function ExperienceEnrollConfirmScreen() {
         />
 
         <Box width="70%" marginBottom="l">
-          <Text variant="header" fontSize={32} lineHeight={38} textAlign="center">
+          <Text variant="header" lineHeight={38} textAlign="center">
             {t("thankYouForYourHelp", "Thank you for you help!")}
           </Text>
         </Box>

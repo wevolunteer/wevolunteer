@@ -93,9 +93,9 @@ const theme = createTheme({
       lineHeight: 17.6,
     },
     header: {
-      fontSize: 20,
+      fontSize: 32,
       fontFamily: "DMSansMedium",
-      lineHeight: 24,
+      lineHeight: 38,
     },
     title: {
       fontSize: 16,
@@ -103,12 +103,12 @@ const theme = createTheme({
       fontFamily: "DMSansBold",
     },
     body: {
-      fontSize: 15,
+      fontSize: 16,
       lineHeight: 18.8,
       fontFamily: "DMSansRegular",
     },
     link: {
-      fontSize: 15,
+      fontSize: 16,
       lineHeight: 18.8,
       fontFamily: "DMSansMedium",
       fontWeight: "700",

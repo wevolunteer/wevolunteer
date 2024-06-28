@@ -9,13 +9,14 @@ interface TopbarProps {
   title?: string;
   goBack?: boolean;
   rightComponent?: React.ReactNode;
+  empty?: boolean;
 }
 
-const Topbar: FC<TopbarProps> = ({ title, goBack, rightComponent }) => {
+const Topbar: FC<TopbarProps> = ({ title, goBack, rightComponent, empty }) => {
   return (
     <Box
       height={48}
-      borderBottomWidth={1}
+      borderBottomWidth={empty ? 0 : 1}
       flexDirection="row"
       borderBottomColor="mainBorder"
       width="100%"

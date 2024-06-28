@@ -106,7 +106,7 @@ export default function ExperienceScreen() {
             </Box>
           </Box>
 
-          <Text variant="header">{t("opportunity", "Opportunity")}</Text>
+          <Text variant="title">{t("opportunity", "Opportunity")}</Text>
 
           <Text variant="body" color="secondaryText">
             {data.description}
@@ -114,7 +114,7 @@ export default function ExperienceScreen() {
 
           <Divider />
 
-          <Text variant="header">{t("requirements", "Requirements")}</Text>
+          <Text variant="title">{t("requirements", "Requirements")}</Text>
 
           <Box marginLeft="s">
             <Text variant="body" color="secondaryText">
@@ -127,7 +127,7 @@ export default function ExperienceScreen() {
 
           <Divider />
 
-          <Text variant="header">{t("contacts", "Contacts")}</Text>
+          <Text variant="title">{t("contacts", "Contacts")}</Text>
 
           <Box flexDirection="row" gap="m" marginBottom="2xl">
             <Button

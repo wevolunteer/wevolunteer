@@ -63,12 +63,8 @@ export default function ExperienceEnrollScreen() {
         <Topbar goBack title="Conferma esperienza" />
 
         <Box marginTop="xl" marginBottom="l" marginHorizontal="m">
-          <Text variant="header" fontSize={32} lineHeight={38}>
-            {t("iWantTo", "I want to")}
-          </Text>
-          <Text variant="header" fontSize={32} lineHeight={38}>
-            {t("help", "help")}
-          </Text>
+          <Text variant="header">{t("iWantTo", "I want to")}</Text>
+          <Text variant="header">{t("help", "help")}</Text>
         </Box>
         <ActivityCard activity={data} />
         <Box marginHorizontal="m" gap="l" marginTop="m">
