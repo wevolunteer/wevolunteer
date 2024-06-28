@@ -1,11 +1,11 @@
 import Box from "@/components/ui/Box";
 import Text from "@/components/ui/Text";
 import { Activity } from "@/types/data";
-import { Ionicons } from "@expo/vector-icons";
 import { format } from "date-fns";
 import { FC } from "react";
 import { Pressable } from "react-native";
 import Animated from "react-native-reanimated";
+import Icon from "./ui/Icon";
 
 export interface ActivityCardProps {
   activity: Activity;
@@ -48,7 +48,7 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, onPress, onClose
               borderWidth={1}
               borderColor="mainBorder"
             >
-              <Ionicons name="close" size={20} color="#000" />
+              <Icon name="close" size={20} color="#000" />
             </Box>
           </Pressable>
         )}

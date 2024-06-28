@@ -1,11 +1,11 @@
 import { Theme } from "@/config/theme";
-import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useTheme } from "@shopify/restyle";
 import { FC, useCallback, useRef } from "react";
 import { StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Box from "../ui/Box";
+import Icon from "../ui/Icon";
 import Text from "../ui/Text";
 import FilterFooter from "./FilterFooter";
 import FilterHeader from "./FilterHeader";
@@ -51,7 +51,6 @@ const SearchbarFilter: FC<SearchbarFilterProps> = ({
         borderWidth={1}
         borderColor={selected ? "accentText" : "mainBorder"}
         flexDirection="row"
-        alignItems="flex-end"
         borderRadius="s"
         paddingHorizontal="m"
         backgroundColor={selected ? "primaryLightBackground" : "mainBackground"}
@@ -61,35 +60,31 @@ const SearchbarFilter: FC<SearchbarFilterProps> = ({
         <Text variant="secondary" color={selected ? "accentText" : "secondaryText"} fontSize={13}>
           {label || title}
         </Text>
-        <Ionicons
-          name="caret-down-outline"
-          size={10}
+        <Icon
+          name="caret-down"
+          size={8}
+          marginTop="s"
+          fill={selected ? theme.colors.accentText : theme.colors.secondaryText}
           color={selected ? theme.colors.accentText : theme.colors.secondaryText}
-          style={{ paddingBottom: 3 }}
         />
-        <BottomSheetModal
-          ref={bottomSheetModalRef}
-          index={0}
-          enablePanDownToClose={true}
-          enableDynamicSizing={true}
-          handleComponent={null}
-          backgroundStyle={styles.modalBackground}
-          backdropComponent={(props) => (
-            <BottomSheetBackdrop
-              opacity={0.6}
-              {...props}
-              disappearsOnIndex={-1}
-              appearsOnIndex={0}
-            />
-          )}
-        >
-          <BottomSheetView style={{}}>
-            <FilterHeader title={title} onClose={handleCloseModalPress} onBack={onBack} />
-            {children}
-            <FilterFooter onConfirm={onConfirm && handleConfirm} onReset={onReset} />
-          </BottomSheetView>
-        </BottomSheetModal>
       </Box>
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={0}
+        enablePanDownToClose={true}
+        enableDynamicSizing={true}
+        handleComponent={null}
+        backgroundStyle={styles.modalBackground}
+        backdropComponent={(props) => (
+          <BottomSheetBackdrop opacity={0.6} {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
+        )}
+      >
+        <BottomSheetView style={{}}>
+          <FilterHeader title={title} onClose={handleCloseModalPress} onBack={onBack} />
+          {children}
+          <FilterFooter onConfirm={onConfirm && handleConfirm} onReset={onReset} />
+        </BottomSheetView>
+      </BottomSheetModal>
     </TouchableOpacity>
   );
 };

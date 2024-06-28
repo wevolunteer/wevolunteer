@@ -78,6 +78,7 @@ export default function VerifyCodeScreen() {
     }
 
     try {
+      setIsLoading(true);
       const response = await verifyAuthCode({ email, code: value });
 
       if (!response) {
@@ -90,14 +91,17 @@ export default function VerifyCodeScreen() {
 
       if (data?.accepted_tos) {
         router.dismissAll();
+        setIsLoading(false);
         return;
       }
 
       router.replace("registration");
+      setIsLoading(false);
     } catch (error) {
       console.error(error);
 
       setError(t("invalidCode", "The code entered is not valid"));
+      setIsLoading(false);
       setValue("");
     }
   }

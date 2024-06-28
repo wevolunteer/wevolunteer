@@ -1,13 +1,13 @@
 import { Theme } from "@/config/theme";
-import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { BaseToastProps, ErrorToast } from "react-native-toast-message";
 import Box from "./Box";
+import Icon, { IconName } from "./Icon";
 import Text from "./Text";
 
 type IconToastProps = {
   props: {
-    icon?: keyof typeof Ionicons.glyphMap;
+    icon?: IconName;
   };
 } & BaseToastProps;
 
@@ -49,7 +49,7 @@ export const toastConfig = (theme: Theme) => {
               height={40}
               mr="m"
             >
-              <Ionicons name={props.props.icon} size={24} color={theme.colors.whiteText} />
+              <Icon name={props.props.icon} size={24} color={theme.colors.whiteText} />
             </Box>
           )}
           <Box pr="m" flex={1}>

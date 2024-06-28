@@ -1,9 +1,9 @@
 import { ActivityCard } from "@/components/ActivityCard";
 import Box from "@/components/ui/Box";
+import Icon from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
 import { useNetwork } from "@/contexts/network";
 import { Activity } from "@/types/data";
-import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import * as Location from "expo-location";
@@ -108,7 +108,7 @@ export default function ExporeMapScreen() {
         alignItems="center"
       >
         {!selectedActivity && (
-          <TouchableOpacity onPress={() => router.push("/explore")}>
+          <TouchableOpacity onPress={() => router.back()}>
             <Box
               backgroundColor="darkBackground"
               paddingHorizontal="l"
@@ -116,14 +116,12 @@ export default function ExporeMapScreen() {
               borderRadius="full"
               flexDirection="row"
               alignItems="center"
-              gap="s"
+              gap="m"
             >
-              <>
-                <Ionicons name="list" size={16} color="#FFF" />
-                <Text variant="body" fontSize={11} color="whiteText">
-                  {t("seeAsList", "See as list")}
-                </Text>
-              </>
+              <Icon name="list" size={28} color="#FFF" />
+              <Text variant="body" fontSize={13} color="whiteText">
+                {t("seeAsList", "See as list")}
+              </Text>
             </Box>
           </TouchableOpacity>
         )}

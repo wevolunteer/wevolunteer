@@ -1,9 +1,9 @@
 import { Theme } from "@/config/theme";
-import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@shopify/restyle";
 import { FC } from "react";
 import { Pressable } from "react-native";
 import Box from "../ui/Box";
+import Icon from "../ui/Icon";
 import Text from "../ui/Text";
 
 interface ChoiceListItemProps {
@@ -30,8 +30,12 @@ const ChoiceListItem: FC<ChoiceListItemProps> = ({ label, section, selected, onP
           {label}
         </Text>
 
-        {selected && <Ionicons name="checkmark" size={24} color={theme.colors.accentText} />}
-        {section && <Ionicons name="chevron-forward" size={24} color={theme.colors.mainText} />}
+        {selected && (
+          <Icon name="check" size={24} color={theme.colors.accentText} strokeWith="1.5" />
+        )}
+        {section && (
+          <Icon name="chevron-right" size={24} color={theme.colors.mainText} strokeWith="1.5" />
+        )}
       </Box>
     </Pressable>
   );

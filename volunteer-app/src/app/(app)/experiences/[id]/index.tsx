@@ -1,10 +1,10 @@
 import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
 import Divider from "@/components/ui/Divider";
+import Icon from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useNetwork } from "@/contexts/network";
-import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { router, useLocalSearchParams } from "expo-router";
@@ -49,7 +49,7 @@ export default function ExperienceScreen() {
           goBack
           rightComponent={
             <Pressable>
-              <Ionicons name="share-outline" size={24} />
+              <Icon name="share" />
             </Pressable>
           }
         />
@@ -78,14 +78,14 @@ export default function ExperienceScreen() {
               borderBottomWidth={1}
               borderBottomColor="mainBorder"
             >
-              <Ionicons name="location-outline" size={32} color="black" />
+              <Icon name="marker" size={32} color="black" strokeWith="1.5" />
               <Box>
                 <Text variant="body">{data.address}</Text>
                 <Text variant="body">{data.city}</Text>
               </Box>
             </Box>
             <Box flexDirection="row" padding="m" gap="m">
-              <Ionicons name="calendar-clear-outline" size={32} color="black" />
+              <Icon name="calendar" size={32} color="black" strokeWith="1.5" />
 
               <Box>
                 <Text variant="body">

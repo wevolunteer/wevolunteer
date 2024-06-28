@@ -1,7 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
 import { FC } from "react";
 import { Pressable } from "react-native";
 import Box from "../ui/Box";
+import Icon from "../ui/Icon";
 import Text from "../ui/Text";
 
 interface FilterHeaderProps {
@@ -26,13 +26,13 @@ const FilterHeader: FC<FilterHeaderProps> = ({ title, onClose, onBack }) => {
       <Box minWidth={20}>
         {onClose && !onBack && (
           <Pressable onPress={onClose}>
-            <Ionicons name="close" size={28} />
+            <Icon name="close" />
           </Pressable>
         )}
 
         {onBack && (
           <Pressable onPress={onBack}>
-            <Ionicons name="chevron-back" size={28} />
+            <Icon name="chevron-left" />
           </Pressable>
         )}
       </Box>

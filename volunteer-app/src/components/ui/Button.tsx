@@ -16,9 +16,9 @@ import {
 import { ActivityIndicator, TouchableOpacity } from "react-native";
 
 import { Theme } from "@/config/theme";
-import { Ionicons } from "@expo/vector-icons";
 import { useMemo } from "react";
 import Box from "./Box";
+import Icon, { IconName } from "./Icon";
 import Text from "./Text";
 
 const variant = createVariant<Theme, "buttonVariants">({
@@ -30,8 +30,6 @@ const variant = createVariant<Theme, "buttonVariants">({
     borderRadius: "m",
   },
 });
-
-type IconNames = keyof typeof Ionicons.glyphMap;
 
 type RestyleProps = SpacingProps<Theme> &
   VariantProps<Theme, "buttonVariants"> &
@@ -52,8 +50,8 @@ type Props = RestyleProps & {
   label: string;
   isDisabled?: boolean;
   isLoading?: boolean;
-  rightIcon?: IconNames;
-  leftIcon?: IconNames;
+  rightIcon?: IconName;
+  leftIcon?: IconName;
   renderRightIcon?: () => React.ReactNode;
 };
 
@@ -107,7 +105,7 @@ const Button = ({
         )}
         {rightIcon && (
           <Box position="absolute" left={15} top={12}>
-            <Ionicons name={rightIcon} size={28} color={iconColor} />
+            <Icon name={rightIcon} color={iconColor} />
           </Box>
         )}
 
@@ -127,7 +125,7 @@ const Button = ({
         )}
         {leftIcon && (
           <Box position="absolute" right={15} top={12}>
-            <Ionicons name="logo-facebook" size={28} color={iconColor} />
+            <Icon name={leftIcon} color={iconColor} />
           </Box>
         )}
       </Box>

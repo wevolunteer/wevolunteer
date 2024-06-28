@@ -11,13 +11,20 @@ import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+function validateEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
 export default function SignInScreen() {
   const { requestAuthCode } = useSession();
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { control, handleSubmit } = useForm<SignInData>();
+  const { control, handleSubmit, watch } = useForm<SignInData>();
+
+  const email = watch("email");
 
   async function onSubmit(data: SignInData) {
     if (data.email === "") {
@@ -60,6 +67,8 @@ export default function SignInScreen() {
             <InputText
               label={t("email", "Email")}
               value={value}
+              autoFocus
+              keyboardType="email-address"
               onChangeText={onChange}
               placeholder={t("emailPlaceholder", "Insert your email")}
             />
@@ -78,7 +87,7 @@ export default function SignInScreen() {
           label={t("continue", "Continue")}
           onPress={handleSubmit(onSubmit)}
           isLoading={isLoading}
-          // isDisabled={!email || !email.includes("@")}
+          isDisabled={!validateEmail(email) || isLoading}
           variant="primary"
         />
       </Box>

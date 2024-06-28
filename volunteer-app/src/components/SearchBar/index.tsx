@@ -1,16 +1,15 @@
 import { useFilters } from "@/contexts/filters";
 import { ActivityFilters } from "@/types/data";
-import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { FC, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Box from "../ui/Box";
+import Icon from "../ui/Icon";
 import Text from "../ui/Text";
 import CategoryFilter from "./CategoryFilter";
 import DateFilter from "./DateFilter";
-import DistanceFilter from "./DistanceFilter";
 import PlaceFilter from "./PlaceFilter";
 import SearchModal from "./SearchModal";
 
@@ -43,7 +42,7 @@ const SearchBar: FC<SearchBarProps> = ({ value, onChange }) => {
           shadowColor="shadow"
           elevation={6}
         >
-          <Ionicons name="search" size={28} color="mainText" />
+          <Icon name="search" />
           <Box marginLeft="m">
             <Text variant="body" fontWeight="bold" lineHeight={20}>
               {t("search", "Search")}
@@ -59,26 +58,6 @@ const SearchBar: FC<SearchBarProps> = ({ value, onChange }) => {
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <Box flexDirection="row" gap="s" alignItems="center">
           <PlaceFilter />
-          <CategoryFilter
-            title={t("category", "Category")}
-            values={filters.categories || []}
-            onChange={(values) => {
-              setFilters({
-                ...filters,
-                categories: values,
-              });
-            }}
-          />
-          <DistanceFilter
-            title={t("distanceFromYou", "Distance from you")}
-            value={filters.distance || null}
-            onChange={(value) => {
-              setFilters({
-                ...filters,
-                distance: value || undefined,
-              });
-            }}
-          />
           <DateFilter
             title={t("date", "Date")}
             value={{
@@ -90,6 +69,16 @@ const SearchBar: FC<SearchBarProps> = ({ value, onChange }) => {
                 ...filters,
                 date_start: value?.from || undefined,
                 date_end: value?.to || undefined,
+              });
+            }}
+          />
+          <CategoryFilter
+            title={t("causes", "Causes")}
+            values={filters.categories || []}
+            onChange={(values) => {
+              setFilters({
+                ...filters,
+                categories: values,
               });
             }}
           />

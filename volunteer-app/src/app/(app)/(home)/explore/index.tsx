@@ -1,10 +1,10 @@
 import { ActivityCard } from "@/components/ActivityCard";
 import Box from "@/components/ui/Box";
+import Icon from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
 import { useFilters } from "@/contexts/filters";
 import { useNetwork } from "@/contexts/network";
 import { Activity } from "@/types/data";
-import { Ionicons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
@@ -83,14 +83,12 @@ export default function ExporeListScreen() {
             borderRadius="full"
             flexDirection="row"
             alignItems="center"
-            gap="s"
+            gap="m"
           >
-            <>
-              <Ionicons name="map-outline" size={16} color="#FFF" />
-              <Text variant="body" fontSize={11} color="whiteText">
-                {t("seeOnMap", "See on map")}
-              </Text>
-            </>
+            <Icon name="map" size={28} color="#FFF" />
+            <Text variant="body" fontSize={13} color="whiteText">
+              {t("seeOnMap", "See on map")}
+            </Text>
           </Box>
         </TouchableOpacity>
       </Box>

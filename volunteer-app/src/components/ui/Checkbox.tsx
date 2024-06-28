@@ -1,9 +1,9 @@
 import { Theme } from "@/config/theme";
-import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@shopify/restyle";
 import React, { FC } from "react";
 import { LayoutAnimation, Pressable } from "react-native";
 import Box from "./Box";
+import Icon from "./Icon";
 
 interface CheckboxProps {
   children: React.ReactNode;
@@ -31,7 +31,7 @@ const Checkbox: FC<CheckboxProps> = ({ children, value, onChange }) => {
           justifyContent="center"
           alignItems="center"
         >
-          {value && <Ionicons name="checkmark" size={24} color={theme.colors.whiteText} />}
+          {value && <Icon name="check" size={24} color={theme.colors.whiteText} />}
         </Box>
       </Pressable>
       <Box flex={1}>{children}</Box>

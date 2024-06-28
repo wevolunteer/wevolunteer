@@ -39,7 +39,7 @@ export default function Index() {
       </Box>
 
       <Box width="100%" px="l" mb="xl">
-        <Button
+        {/* <Button
           variant="outline"
           label={t("continueWithFacebook", "Continue with Facebook")}
           marginBottom="m"
@@ -60,8 +60,8 @@ export default function Index() {
               source={require("@/assets/images/google-icon-logo.png")}
             />
           )}
-        />
-        <Box marginVertical="l" position="relative" flexDirection="row" justifyContent="center">
+        /> */}
+        {/* <Box marginVertical="l" position="relative" flexDirection="row" justifyContent="center">
           <Box backgroundColor="mainBackground" position="relative" zIndex={2}>
             <Text variant="body" textAlign="center" marginHorizontal="s" fontSize={12}>
               {t("or", "or")}
@@ -77,12 +77,12 @@ export default function Index() {
             borderTopColor="mainBorder"
             zIndex={1}
           />
-        </Box>
+        </Box> */}
         <Button
-          variant="outline"
+          variant="primary"
           label={t("continueWithEmail", "Continue with Email")}
           onPress={() => router.push("/sign-in")}
-          rightIcon="mail-outline"
+          rightIcon="mail"
         />
       </Box>
     </SafeAreaView>

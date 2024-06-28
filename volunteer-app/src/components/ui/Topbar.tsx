@@ -1,8 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { FC } from "react";
 import { Pressable } from "react-native";
 import Box from "./Box";
+import Icon from "./Icon";
 import Text from "./Text";
 
 interface TopbarProps {
@@ -27,7 +27,7 @@ const Topbar: FC<TopbarProps> = ({ title, goBack, rightComponent }) => {
       <Box minWidth={20}>
         {goBack && (
           <Pressable onPress={() => router.back()}>
-            <Ionicons name="chevron-back" size={24} />
+            <Icon name="chevron-left" size={24} />
           </Pressable>
         )}
       </Box>

@@ -1,7 +1,7 @@
 import Box from "@/components/ui/Box";
+import Icon from "@/components/ui/Icon";
 import SafeAreaView from "@/components/ui/SafeAreaView";
 import Text from "@/components/ui/Text";
-import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { Trans, useTranslation } from "react-i18next";
@@ -13,7 +13,7 @@ export default function ExperienceEnrollConfirmScreen() {
     <SafeAreaView>
       <Box padding="m">
         <Pressable onPress={() => router.dismissAll()}>
-          <Ionicons name="close" size={24} color="black" />
+          <Icon name="close" size={24} color="black" />
         </Pressable>
       </Box>
       <Box paddingTop="3xl" alignItems="center" marginHorizontal="m" flex={1}>
