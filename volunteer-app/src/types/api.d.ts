@@ -79,6 +79,10 @@ export interface paths {
     /** Update organization */
     patch: operations["organizations-update"];
   };
+  "/places": {
+    /** List places */
+    get: operations["places-list"];
+  };
   "/signup": {
     /** Signup */
     post: operations["signup"];
@@ -382,6 +386,24 @@ export interface components {
       /** Format: int64 */
       total: number;
     };
+    Place: {
+      /** Format: int64 */
+      id: number;
+      /** Format: double */
+      latitude: number;
+      /** Format: double */
+      longitude: number;
+      name: string;
+    };
+    PlaceListData: {
+      /**
+       * Format: uri
+       * @description A URL to the JSON Schema for this object.
+       */
+      $schema?: string;
+      page_info: components["schemas"]["PaginationInfo"];
+      results: components["schemas"]["Place"][];
+    };
     RefreshTokenData: {
       /**
        * Format: uri
@@ -428,17 +450,24 @@ export interface components {
       accepted_tos: boolean;
       avatar: string;
       bio: string;
+      city: string;
       /** Format: date-time */
       created_at: string;
+      /** Format: date-time */
+      date_of_birth: string;
       email: string;
       first_name: string;
       /** Format: int64 */
       id: number;
       is_email_verified: boolean;
       is_superuser: boolean;
-      /** Format: double */
-      "json:": number;
+      job: string;
+      languages: string;
       last_name: string;
+      /** Format: double */
+      latitude: number;
+      /** Format: double */
+      longitude: number;
       phone: string;
       tax_code: string;
       uid: string;
@@ -468,9 +497,12 @@ export interface components {
       accepted_tos?: boolean;
       avatar?: string;
       bio?: string;
+      city?: string;
       date_of_birth?: string;
       email?: string;
       first_name?: string;
+      job?: string;
+      languages?: string;
       last_name?: string;
       /** Format: double */
       latitude?: number;
@@ -1047,6 +1079,30 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Organization"];
+        };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** List places */
+  "places-list": {
+    parameters: {
+      query?: {
+        page?: number;
+        per_page?: number;
+        q?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PlaceListData"];
         };
       };
       /** @description Error */

@@ -1,24 +1,119 @@
-import Button from "@/components/ui/Button";
+import ProfileAvatar from "@/components/profile/ProfileAvatar";
+import Box from "@/components/ui/Box";
+import SafeAreaView from "@/components/ui/SafeAreaView";
 import Text from "@/components/ui/Text";
+import Topbar from "@/components/ui/Topbar";
 import { useSession } from "@/contexts/authentication";
-import { router } from "expo-router";
-import { View } from "react-native";
+import { Link, router } from "expo-router";
+import { FC } from "react";
+import { useTranslation } from "react-i18next";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function ProfileScreen() {
-  const { signOut } = useSession();
+  const { t } = useTranslation();
+  const { session } = useSession();
 
-  function handleSignOut() {
-    signOut();
-    router.replace("/");
+  if (!session || !session.user) {
+    router.push("/");
+    return null;
   }
 
-  return (
-    <View style={{ flex: 1, justifyContent: "space-between", alignItems: "center" }}>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text variant="header">Profile</Text>
+  const user = session.user;
 
-        <Button variant="outline" onPress={handleSignOut} label="Sign out" />
-      </View>
-    </View>
+  return (
+    <SafeAreaView>
+      <ScrollView>
+        <Topbar
+          empty
+          rightComponent={
+            <Link href="/profile/edit">
+              <Text variant="link">{t("edit", "Edit")}</Text>
+            </Link>
+          }
+        />
+        <Box my="l" gap="l" px="m">
+          <Box alignItems="center" gap="l">
+            <ProfileAvatar url={user.avatar} />
+            <Text variant="header">
+              {user.first_name} {user.last_name}
+            </Text>
+          </Box>
+
+          <ProfileStats years={2} experiences={14} />
+
+          <Box>
+            <ProfileItem label={t("profile.iLiveIn", "I live in")} value={user.phone || "-"} />
+            <ProfileItem label={t("profile.myJob", "My Job")} value={user.phone || "-"} />
+            <ProfileItem label={t("profile.myCauses", "My Causes")} value={user.phone || "-"} />
+            <ProfileItem
+              label={t("profile.myLanguages", "My Languages")}
+              value={user.phone || "-"}
+            />
+          </Box>
+
+          <Text variant="title">{t("profile.aboutMe", "About me")}</Text>
+          <Text variant="body">
+            {user.bio ||
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse eget orci fermentum, maximus augue id, rutrum eros. Proin rutrum, lorem in iaculis varius, justo erat feugiat nulla, nec volutpat lorem nunc non leo. Vivamus in dapibus purus. Proin sollicitudin rhoncus egestas. Vestibulum id lorem sagittis, iaculis ante ac, suscipit dolor. Fusce vulputate nibh sit amet tristique scelerisque. Ut pharetra, diam ac porta porta, lectus eros aliquam lacus, at iaculis velit est in lacus."}
+          </Text>
+        </Box>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
+
+interface ProfileStatsProps {
+  years: number;
+  experiences: number;
+}
+
+const ProfileStats: FC<ProfileStatsProps> = ({ years, experiences }) => {
+  const { t } = useTranslation();
+  return (
+    <Box
+      borderRadius="m"
+      borderWidth={1}
+      borderColor="lightBorder"
+      flexDirection="row"
+      width="100%"
+    >
+      <Box padding="m" flex={1}>
+        <Text textAlign="center" variant="header">
+          {years}
+        </Text>
+        <Text textAlign="center" variant="secondary">
+          {t("yearOnFaxte", "years on FaXte")}
+        </Text>
+      </Box>
+      <Box width={1} height="100%" borderLeftWidth={1} borderLeftColor="lightBorder" />
+      <Box padding="m" flex={1}>
+        <Text textAlign="center" variant="header">
+          {experiences}
+        </Text>
+        <Text textAlign="center" variant="secondary">
+          {t("experiences", "experiences")}
+        </Text>
+      </Box>
+    </Box>
+  );
+};
+
+interface ProfileItemProps {
+  label: string;
+  value: string;
+}
+
+const ProfileItem: FC<ProfileItemProps> = ({ label, value }) => {
+  return (
+    <Box
+      flexDirection="row"
+      justifyContent="space-between"
+      paddingVertical="m"
+      borderBottomWidth={1}
+      borderBottomColor="lightBorder"
+    >
+      <Text variant="secondary">{label}</Text>
+      <Text variant="body">{value}</Text>
+    </Box>
+  );
+};

@@ -2,7 +2,7 @@ import { ViewStyle } from "react-native";
 import { SafeAreaView as BaseSafeAreaView } from "react-native-safe-area-context";
 
 interface SafeAreaViewProps {
-  children?: React.ReactNode;
+  children?: React.ReactNode | React.ReactNode[];
   style?: ViewStyle;
 }
 
