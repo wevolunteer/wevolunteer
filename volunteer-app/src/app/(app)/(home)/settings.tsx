@@ -37,7 +37,7 @@ export default function SettingsListScreen() {
       <Box flex={1} px="m" mt="2xl">
         <Text variant="header">{t("settings", "Settings")}</Text>
 
-        <Box mt="2xl" borderTopWidth={1} borderTopColor="mainBorder">
+        <Box my="2xl" borderTopWidth={1} borderTopColor="mainBorder">
           <SettingsItem
             title={t("accounts", "Account")}
             onPress={() => router.push("/settings/account")}
@@ -47,6 +47,8 @@ export default function SettingsListScreen() {
             onPress={() => router.push("/settings/notifications")}
           />
         </Box>
+
+        <Text variant="link">{t("credits", "Credits")}</Text>
       </Box>
     </SafeAreaView>
   );

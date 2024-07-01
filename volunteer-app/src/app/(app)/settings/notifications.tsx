@@ -28,7 +28,9 @@ const NotificationItem: FC<NotificationItemProps> = ({ text, value, onChange }) 
 export default function SettingsNotificationsScreen() {
   const { t } = useTranslation();
 
-  const [value, setValue] = useState<boolean>(true);
+  const [value1, setValue1] = useState<boolean>(true);
+  const [value2, setValue2] = useState<boolean>(false);
+  const [value3, setValue3] = useState<boolean>(true);
 
   return (
     <SafeAreaView>
@@ -39,18 +41,18 @@ export default function SettingsNotificationsScreen() {
         <Box borderTopWidth={1} borderTopColor="lightBorder" mt="2xl">
           <NotificationItem
             text="Nuova richiesta di volontariato vicino a te"
-            value={value}
-            onChange={setValue}
+            value={value1}
+            onChange={setValue1}
           />
           <NotificationItem
             text="Nuova richiesta di volontariato dall’organizzazione che segui"
-            value={value}
-            onChange={setValue}
+            value={value2}
+            onChange={setValue2}
           />
           <NotificationItem
             text="La tua esperienza di volontariato si avvicina"
-            value={value}
-            onChange={setValue}
+            value={value3}
+            onChange={setValue3}
           />
         </Box>
       </Box>

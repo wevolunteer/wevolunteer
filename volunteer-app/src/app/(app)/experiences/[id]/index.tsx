@@ -129,20 +129,31 @@ export default function ExperienceScreen() {
 
           <Text variant="title">{t("contacts", "Contacts")}</Text>
 
-          <Box flexDirection="row" gap="m" marginBottom="2xl">
-            <Button
-              variant="secondary"
-              rightIcon="mail-outline"
-              label={t("sendEmail", "Send email")}
-              onPress={() => Linking.openURL(`mailto:${data.organization.email}`)}
-            />
-            <Button
-              variant="secondary"
-              rightIcon="call-outline"
-              label={t("call", "Call")}
-              onPress={() => Linking.openURL(`tel:${data.organization.phone}`)}
-            />
-          </Box>
+          <ScrollView horizontal>
+            <Box flexDirection="row" gap="m" marginBottom="3xl">
+              <Button
+                variant="secondary"
+                leftIcon="mail"
+                size="s"
+                label={t("email", "Email")}
+                onPress={() => Linking.openURL(`mailto:${data.organization.email}`)}
+              />
+              <Button
+                variant="secondary"
+                leftIcon="phone"
+                size="s"
+                label={t("call", "Call")}
+                onPress={() => Linking.openURL(`tel:${data.organization.phone}`)}
+              />
+              <Button
+                variant="secondary"
+                leftIcon="globe"
+                size="s"
+                label={t("website", "Website")}
+                onPress={() => Linking.openURL(`${data.organization.website}`)}
+              />
+            </Box>
+          </ScrollView>
         </Box>
       </ScrollView>
       <Box
@@ -155,7 +166,7 @@ export default function ExperienceScreen() {
       >
         <Button
           variant="primary"
-          label={t("iWantToHelp", "I want to help!")}
+          label={t("iWantToPartecipate", "I want to partecipate!")}
           paddingHorizontal="xl"
           borderRadius="full"
           onPress={() => {

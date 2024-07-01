@@ -8,11 +8,12 @@ import Text from "./Text";
 interface TopbarProps {
   title?: string;
   goBack?: boolean;
+  goBackFn?: () => void;
   rightComponent?: React.ReactNode;
   empty?: boolean;
 }
 
-const Topbar: FC<TopbarProps> = ({ title, goBack, rightComponent, empty }) => {
+const Topbar: FC<TopbarProps> = ({ title, goBack, goBackFn, rightComponent, empty }) => {
   return (
     <Box
       height={48}
@@ -28,6 +29,11 @@ const Topbar: FC<TopbarProps> = ({ title, goBack, rightComponent, empty }) => {
       <Box minWidth={20}>
         {goBack && (
           <Pressable onPress={() => router.back()}>
+            <Icon name="chevron-left" size={24} />
+          </Pressable>
+        )}
+        {goBackFn && (
+          <Pressable onPress={goBackFn}>
             <Icon name="chevron-left" size={24} />
           </Pressable>
         )}

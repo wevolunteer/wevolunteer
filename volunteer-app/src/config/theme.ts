@@ -6,7 +6,7 @@ const theme = createTheme({
     mainText: palette.black,
     secondaryText: palette.gray500,
     accentText: palette.pink500,
-    errorText: palette.red500,
+    errorText: palette.red400,
     whiteText: palette.white,
     mainBackground: palette.white,
     invertedBackground: palette.black,
@@ -65,6 +65,10 @@ const theme = createTheme({
       backgroundColor: "mainBackground",
       borderWidth: 1,
       color: "mainText",
+    },
+    danger: {
+      backgroundColor: "errorText",
+      color: "whiteText",
     },
     disabled: {
       backgroundColor: "disabledBackground",

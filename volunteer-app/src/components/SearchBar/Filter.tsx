@@ -5,7 +5,7 @@ import { FC, useCallback, useRef } from "react";
 import { StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Box from "../ui/Box";
-import Icon from "../ui/Icon";
+import Icon, { IconName } from "../ui/Icon";
 import Text from "../ui/Text";
 import FilterFooter from "./FilterFooter";
 import FilterHeader from "./FilterHeader";
@@ -13,6 +13,7 @@ import FilterHeader from "./FilterHeader";
 interface SearchbarFilterProps {
   title: string;
   label?: string | null;
+  icon?: IconName;
   selected?: boolean;
   children?: React.ReactNode | React.ReactNode[];
   onConfirm?: () => void;
@@ -24,6 +25,7 @@ const SearchbarFilter: FC<SearchbarFilterProps> = ({
   title,
   label,
   selected,
+  icon,
   children,
   onConfirm,
   onReset,
@@ -49,21 +51,30 @@ const SearchbarFilter: FC<SearchbarFilterProps> = ({
     <TouchableOpacity onPress={handlePresentModalPress}>
       <Box
         borderWidth={1}
-        borderColor={selected ? "accentText" : "mainBorder"}
+        borderColor={selected ? "primaryLightBackground" : "mainBorder"}
         flexDirection="row"
         borderRadius="s"
+        alignItems="center"
         paddingHorizontal="m"
         backgroundColor={selected ? "primaryLightBackground" : "mainBackground"}
         paddingVertical="s"
         gap="s"
       >
+        {icon && (
+          <Icon
+            name={icon}
+            size={16}
+            // shadowColor={selected ? theme.colors.accentText : theme.colors.secondaryText}
+            strokeWith="0"
+            fill={selected ? theme.colors.accentText : theme.colors.secondaryText}
+          />
+        )}
         <Text variant="secondary" color={selected ? "accentText" : "secondaryText"} fontSize={13}>
           {label || title}
         </Text>
         <Icon
           name="caret-down"
           size={8}
-          marginTop="s"
           fill={selected ? theme.colors.accentText : theme.colors.secondaryText}
           color={selected ? theme.colors.accentText : theme.colors.secondaryText}
         />

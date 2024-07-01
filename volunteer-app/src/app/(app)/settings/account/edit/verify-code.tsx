@@ -3,37 +3,33 @@ import Button from "@/components/ui/Button";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useSession } from "@/contexts/authentication";
-import { useNetwork } from "@/contexts/network";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { Platform, StyleSheet } from "react-native";
+import { Platform, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
 import {
   CodeField,
   Cursor,
   useBlurOnFulfill,
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
-const CELL_COUNT = 5;
-
-export default function VerifyCodeScreen() {
+export default function SettingsVerifyEditAccountScreen() {
   const [value, setValue] = useState("");
   const { email } = useLocalSearchParams();
-  const { client } = useNetwork();
   const { verifyAuthCode, requestAuthCode } = useSession();
-  const [error, setError] = useState<string | null>(null);
-  const { t } = useTranslation();
-  const [isLoading, setIsLoading] = useState(false);
 
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const CELL_COUNT = 5;
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
     value,
     setValue,
   });
+
+  const { t } = useTranslation();
 
   async function handleResend() {
     if (!email || Array.isArray(email)) {
@@ -77,63 +73,18 @@ export default function VerifyCodeScreen() {
       return;
     }
 
-    try {
-      setIsLoading(true);
-      const response = await verifyAuthCode({ email, code: value });
-
-      if (!response) {
-        setError(t("invalidCode", "The code entered is not valid"));
-        setValue("");
-        return;
-      }
-
-      const { data } = await client.GET("/auth/user");
-
-      if (data?.accepted_tos) {
-        router.dismissAll();
-        setIsLoading(false);
-        return;
-      }
-
-      router.replace("registration");
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-
-      setError(t("invalidCode", "The code entered is not valid"));
-      setIsLoading(false);
-      setValue("");
-    }
-  }
-
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.focus();
-    }
-  }, [ref]);
-
-  if (!email) {
-    router.push("/sign-in");
-    return null;
+    router.push(`/settings/account/edit/confirm?email=${email}&code=${value}`);
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, justifyContent: "space-between", alignItems: "center" }}>
-      <Topbar title={t("verifyEmail", "Verify Email")} goBack />
-      <Box
-        width="100%"
-        flex={1}
-        flexDirection="column"
-        paddingTop="l"
-        paddingHorizontal="m"
-        gap="l"
-      >
-        <Text variant="body">
-          <Trans i18nKey="verifyCodeDescription" email={email}>
-            Insert the 5-digit code we sent to the address {{ email }}
-          </Trans>
-        </Text>
+    <SafeAreaView>
+      <Topbar goBack title={t("editEmail", "Edit Email")} />
+      <Box px="m" mt="l">
+        <Text variant="title">{t("checkYourEmail", "Check your email")}</Text>
+        <Text variant="body">{t("insert5Code", "Please enter the 5-digit code we sent to")}</Text>
+      </Box>
 
+      <Box paddingTop="l" paddingHorizontal="m" gap="l">
         <CodeField
           ref={ref}
           {...props}
@@ -176,18 +127,18 @@ export default function VerifyCodeScreen() {
           isLoading={isLoading}
           isDisabled={!value || value.length < CELL_COUNT}
         />
+      </Box>
 
-        <Box marginTop="l" alignItems="center">
-          <Text variant="secondary">
-            <Trans i18nKey="didntReceiveCode">You didn't receive the code?</Trans>
+      <Box marginTop="l" alignItems="center">
+        <Text variant="secondary">
+          <Trans i18nKey="didntReceiveCode">You didn't receive the code?</Trans>
+        </Text>
+
+        <TouchableOpacity onPress={handleResend}>
+          <Text variant="title" marginTop="m" textDecorationLine="underline" fontSize={18}>
+            <Trans i18nKey="resend">Send again</Trans>
           </Text>
-
-          <TouchableOpacity onPress={handleResend}>
-            <Text variant="title" marginTop="m" textDecorationLine="underline" fontSize={18}>
-              <Trans i18nKey="resend">Send again</Trans>
-            </Text>
-          </TouchableOpacity>
-        </Box>
+        </TouchableOpacity>
       </Box>
     </SafeAreaView>
   );

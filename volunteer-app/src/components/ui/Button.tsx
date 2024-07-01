@@ -21,6 +21,29 @@ import Box from "./Box";
 import Icon, { IconName } from "./Icon";
 import Text from "./Text";
 
+type ButtonSize = "s" | "m" | "l";
+
+const SIZES = {
+  s: {
+    iconSize: 16,
+    fontSize: 14,
+    paddingHorizontal: "s",
+    gap: "s",
+  },
+  m: {
+    iconSize: 28,
+    fontSize: 16,
+    paddingHorizontal: "m",
+    gap: "m",
+  },
+  l: {
+    iconSize: 32,
+    fontSize: 18,
+    paddingHorizontal: "l",
+    gap: "l",
+  },
+};
+
 const variant = createVariant<Theme, "buttonVariants">({
   themeKey: "buttonVariants",
   defaults: {
@@ -53,6 +76,7 @@ type Props = RestyleProps & {
   rightIcon?: IconName;
   leftIcon?: IconName;
   renderRightIcon?: () => React.ReactNode;
+  size?: ButtonSize;
 };
 
 const Button = ({
@@ -63,16 +87,19 @@ const Button = ({
   leftIcon,
   isDisabled,
   isLoading,
+  size,
   ...rest
 }: Props) => {
   rest.variant = isDisabled ? "disabled" : rest.variant;
 
   const theme = useTheme<Theme>();
   const props = useRestyle(restyleFunctions, rest);
+  const currentSize = SIZES[size || "m"];
 
   const textColor = useMemo(() => {
     switch (rest.variant) {
       case "primary":
+      case "danger":
         return "whiteText";
       case "secondary":
         return "accentText";
@@ -92,42 +119,26 @@ const Button = ({
       <Box
         flexDirection="row"
         alignItems="center"
-        justifyContent="center"
+        justifyContent="space-between"
         opacity={isLoading ? 0.5 : 1}
-        gap="m"
+        gap={currentSize.gap as any}
         {...props}
-        position="relative"
       >
-        {renderLeftIcon && (
-          <Box position="absolute" left={15} top={12}>
-            {renderLeftIcon()}
-          </Box>
-        )}
-        {rightIcon && (
-          <Box position="absolute" left={15} top={12}>
-            <Icon name={rightIcon} color={iconColor} />
-          </Box>
+        {renderLeftIcon ? (
+          <Box>{renderLeftIcon()}</Box>
+        ) : (
+          <Box>{leftIcon && <Icon name={leftIcon} color={iconColor} />}</Box>
         )}
 
         {isLoading ? (
           <ActivityIndicator color={iconColor} />
         ) : (
-          <Text
-            marginLeft={rightIcon ? "xl" : "s"}
-            marginRight={rightIcon ? "m" : "s"}
-            variant="body"
-            color={textColor}
-            textAlign="center"
-            fontSize={16}
-          >
+          <Text variant="body" color={textColor} fontSize={currentSize.fontSize}>
             {label}
           </Text>
         )}
-        {leftIcon && (
-          <Box position="absolute" right={15} top={12}>
-            <Icon name={leftIcon} color={iconColor} />
-          </Box>
-        )}
+
+        <Box>{rightIcon && <Icon name={rightIcon} color={iconColor} />}</Box>
       </Box>
     </TouchableOpacity>
   );
