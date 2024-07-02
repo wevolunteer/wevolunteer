@@ -7,11 +7,11 @@ import Topbar from "@/components/ui/Topbar";
 import { useNetwork } from "@/contexts/network";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Linking, Pressable } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ExperienceScreen() {
@@ -53,8 +53,8 @@ export default function ExperienceScreen() {
             </Pressable>
           }
         />
-        <Animated.Image
-          source={{ uri: data.image }}
+        <Image
+          source={data.image}
           style={{
             width: "100%",
             height: 390,

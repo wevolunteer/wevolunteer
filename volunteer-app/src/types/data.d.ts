@@ -14,5 +14,6 @@ type User = components["schemas"]["User"];
 
 type Activity = components["schemas"]["Activity"];
 type Experience = components["schemas"]["Experience"];
+type Organization = components["schemas"]["Organization"];
 
 type ActivityFilters = NonNullable<paths["/activities"]["get"]["parameters"]["query"]>;

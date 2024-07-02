@@ -367,6 +367,15 @@ export interface components {
       name: string;
       phone: string;
     };
+    OrganizationListData: {
+      /**
+       * Format: uri
+       * @description A URL to the JSON Schema for this object.
+       */
+      $schema?: string;
+      page_info: components["schemas"]["PaginationInfo"];
+      results: components["schemas"]["Organization"][];
+    };
     OrganizationUpdateData: {
       /**
        * Format: uri
@@ -557,6 +566,7 @@ export interface operations {
         date_start?: string;
         date_end?: string;
         categories?: number[];
+        organization?: number;
       };
     };
     responses: {
@@ -987,7 +997,7 @@ export interface operations {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["Organization"][];
+          "application/json": components["schemas"]["OrganizationListData"];
         };
       };
       /** @description Error */

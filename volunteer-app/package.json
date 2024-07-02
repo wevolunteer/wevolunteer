@@ -5,7 +5,7 @@
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "clientgen": "openapi-typescript http://0.0.0.0:3000/api/openapi.yaml -o types/api.d.ts",
+    "clientgen": "openapi-typescript http://0.0.0.0:3000/api/openapi.yaml -o src/types/api.d.ts",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",

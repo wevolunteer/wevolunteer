@@ -1,19 +1,19 @@
 import Box from "@/components/ui/Box";
 import Text from "@/components/ui/Text";
-import { Activity } from "@/types/data";
+import { Experience } from "@/types/data";
 import { format } from "date-fns";
 import { FC } from "react";
 import { Pressable } from "react-native";
 import Animated from "react-native-reanimated";
 import Icon from "./ui/Icon";
 
-export interface ActivityCardProps {
-  activity: Activity;
+export interface ExperienceCardProps {
+  experience: Experience;
   onPress?: () => void;
   onClose?: () => void;
 }
 
-export const ActivityCard: FC<ActivityCardProps> = ({ activity, onPress, onClose }) => {
+export const ExperienceCard: FC<ExperienceCardProps> = ({ experience, onPress, onClose }) => {
   return (
     <Pressable onPress={onPress}>
       <Box
@@ -53,21 +53,22 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, onPress, onClose
           </Pressable>
         )}
         <Box flex={1} padding="m">
-          <Text variant="secondary">{activity.organization.name}</Text>
+          <Text variant="secondary">{experience.activity.organization.name}</Text>
           <Box flex={1} marginVertical="s">
             <Text variant="title" fontSize={16}>
-              {activity.title}
+              {experience.activity.title}
             </Text>
           </Box>
-          <Text variant="body">{activity.city}</Text>
+          <Text variant="body">{experience.activity.city}</Text>
           <Text variant="secondary">
-            {activity.start_date ? format(new Date(activity.start_date), "d/MM") : ""}
-
-            {activity.end_date ? ` - ${format(new Date(activity.end_date), "d/MM")}` : ""}
+            {experience.date ? format(new Date(experience.date), "d/MM") : ""}
           </Text>
         </Box>
         <Box flex={1}>
-          <Animated.Image source={{ uri: activity.image }} style={{ width: "100%", height: 179 }} />
+          <Animated.Image
+            source={{ uri: experience.activity.image }}
+            style={{ width: "100%", height: 179 }}
+          />
         </Box>
       </Box>
     </Pressable>

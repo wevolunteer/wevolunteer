@@ -15,7 +15,7 @@ const theme = createTheme({
     darkBackground: palette.gray900,
     shadow: palette.gray700,
     lightBorder: palette.gray50,
-    mainBorder: palette.gray100,
+    mainBorder: palette.gray50,
     disabledBackground: palette.gray100,
   },
   spacing: {
@@ -102,9 +102,9 @@ const theme = createTheme({
       lineHeight: 38,
     },
     title: {
-      fontSize: 16,
-      lineHeight: 17.6,
-      fontFamily: "DMSansBold",
+      fontSize: 24,
+      lineHeight: 25,
+      fontFamily: "DMSansRegular",
     },
     body: {
       fontSize: 16,

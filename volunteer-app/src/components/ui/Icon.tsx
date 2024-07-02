@@ -1,7 +1,6 @@
 import { Theme } from "@/config/theme";
 import { BoxProps } from "@shopify/restyle";
 import Svg, { Path } from "react-native-svg";
-import Box from "./Box";
 
 type IconConf = {
   d: string;
@@ -48,7 +47,7 @@ const icons: IconConfMap = {
     viewBoxY: 1,
   },
   heart: {
-    d: "M15.7 4C18.87 4 21 6.98 21 9.76C21 15.39 12.16 20 12 20C11.84 20 3 15.39 3 9.76C3 6.98 5.13 4 8.3 4C10.12 4 11.31 4.91 12 5.71C12.69 4.91 13.88 4 15.7 4Z",
+    d: "M16 7.84928C13.4008 4.81428 9.05767 3.87633 5.8011 6.65547C2.54454 9.43461 2.08606 14.0812 4.64346 17.3681C6.76976 20.1009 13.2047 25.8647 15.3137 27.7302C15.5497 27.9389 15.6677 28.0433 15.8053 28.0843C15.9254 28.1201 16.0568 28.1201 16.1769 28.0843C16.3145 28.0433 16.4325 27.9389 16.6685 27.7302C18.7775 25.8647 25.2124 20.1009 27.3387 17.3681C29.8961 14.0812 29.4936 9.40538 26.1811 6.65547C22.8685 3.90556 18.5992 4.81428 16 7.84928Z",
   },
   map: {
     d: "M9 20L3 17V4L9 7M9 20L15 17M9 20V7M15 17L21 20V7L15 4M15 17V4M9 7L15 4",
@@ -100,20 +99,22 @@ const Icon: React.FC<IconProps> = ({ name, color, size, strokeWith, fill, ...res
   const realSize = size || 28;
 
   return (
-    <Box width={realSize} height={realSize} {...rest}>
-      <Svg
-        viewBox={`0 0 ${realSize * (icon.viewBoxX || 0.8)} ${realSize * (icon.viewBoxY || 0.8)}`}
-      >
-        <Path
-          d={icon.d}
-          fill={fill || "#00000000"}
-          stroke={color || "#000"}
-          strokeWidth={strokeWith || "1.8"}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </Svg>
-    </Box>
+    <Svg
+      width={realSize}
+      height={realSize}
+      viewBox={`0 0 ${realSize * (icon.viewBoxX || 0.8)} ${realSize * (icon.viewBoxY || 0.8)}`}
+    >
+      <Path
+        d={icon.d}
+        fill={fill || "#00000000"}
+        stroke={color || "#000"}
+        strokeWidth={strokeWith || "1.8"}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fillRule="evenodd"
+        clipRule="evenodd"
+      />
+    </Svg>
   );
 };
 
