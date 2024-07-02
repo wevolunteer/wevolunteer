@@ -110,6 +110,9 @@ type UserProfileUpdateData struct {
 	AcceptTOS             *bool    `json:"accepted_tos,omitempty"`
 	HasAcceptedNewsletter *bool    `json:"accepted_newsletter,omitempty"`
 	TaxCode               *string  `json:"tax_code,omitempty"`
+	City                  *string  `json:"city,omitempty"`
+	Languages             *string  `json:"languages,omitempty"`
+	Job                   *string  `json:"job,omitempty"`
 	Bio                   *string  `json:"bio,omitempty"`
 	Latitude              *float64 `json:"latitude,omitempty"`
 	Longitude             *float64 `json:"longitude,omitempty"`

@@ -7,15 +7,15 @@ import (
 	"github.com/wevolunteer/wevolunteer/internal/models"
 )
 
-type ActivivtyGetRequest struct {
+type ActivityGetRequest struct {
 	ID uint `path:"id"`
 }
 
-type ActitivyGetResponse struct {
+type ActivityGetResponse struct {
 	Body models.Activity
 }
 
-func ActivityGetController(c context.Context, input *ActivivtyGetRequest) (*ActitivyGetResponse, error) {
+func ActivityGetController(c context.Context, input *ActivityGetRequest) (*ActivityGetResponse, error) {
 	ctx := app.FromHTTPContext(c)
 	data, err := ActivityGet(ctx, input.ID)
 
@@ -27,7 +27,7 @@ func ActivityGetController(c context.Context, input *ActivivtyGetRequest) (*Acti
 		return nil, &app.ErrNotAuthorized{}
 	}
 
-	resp := &ActitivyGetResponse{}
+	resp := &ActivityGetResponse{}
 
 	resp.Body = *data
 

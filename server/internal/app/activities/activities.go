@@ -31,11 +31,12 @@ type ActivityListData struct {
 
 type ActivityFilters struct {
 	app.PaginationInput
-	Query      string  `query:"q"`
-	Distance   float64 `query:"distance"`
-	DateStart  string  `query:"date_start"`
-	DateEnd    string  `query:"date_end"`
-	Categories []uint  `query:"categories"`
+	Query        string  `query:"q"`
+	Distance     float64 `query:"distance"`
+	DateStart    string  `query:"date_start"`
+	DateEnd      string  `query:"date_end"`
+	Categories   []uint  `query:"categories"`
+	Organization uint    `query:"organization"`
 }
 
 func ActivityList(ctx *app.Context, filters *ActivityFilters) (*ActivityListData, error) {
@@ -62,6 +63,10 @@ func ActivityList(ctx *app.Context, filters *ActivityFilters) (*ActivityListData
 
 		if len(filters.Categories) > 0 {
 			q = q.Where("category_id IN ?", filters.Categories)
+		}
+
+		if filters.Organization > 0 {
+			q = q.Where("organization_id = ?", filters.Organization)
 		}
 
 	}

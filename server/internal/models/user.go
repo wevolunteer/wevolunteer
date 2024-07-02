@@ -27,9 +27,13 @@ type User struct {
 	OTPCode               string         `json:"-"`
 	OTPCodeExpireAt       time.Time      `json:"-"`
 	IsRootAdmin           bool           `json:"is_superuser" gorm:"default:false"`
-	Latitude              float64        `json:"json:"latitude"`
-	Longitude             float64        `json:"json:"longitude"`
+	Latitude              float64        `json:"latitude"`
+	Longitude             float64        `json:"longitude"`
+	DateOfBirth           time.Time      `json:"date_of_birth"`
+	City                  string         `json:"city"`
+	Languages             string         `json:"languages"`
 	Bio                   string         `json:"bio"`
+	Job                   string         `json:"job"`
 	IsEmailVerified       bool           `json:"is_email_verified" gorm:"default:false"`
 	HasAcceptedTOS        bool           `json:"accepted_tos" gorm:"default:false"`
 	HasAcceptedNewsletter bool           `json:"accepted_newsletter" gorm:"default:false"`

@@ -10,6 +10,10 @@ func (e *ErrNotAuthorized) Error() string {
 	return fmt.Sprintf("not authorized: %s", e.Message)
 }
 
+func (e *ErrNotAuthorized) GetStatus() int {
+	return 401
+}
+
 type ErrNotFound struct {
 	Message string
 }

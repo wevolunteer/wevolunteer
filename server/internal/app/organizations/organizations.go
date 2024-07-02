@@ -35,13 +35,13 @@ type OrganizationFilters struct {
 	Query string `query:"q"`
 }
 
-type OrganizationList struct {
+type OrganizationListData struct {
 	Results  []models.Organization `json:"results"`
 	PageInfo *app.PaginationInfo   `json:"page_info"`
 }
 
-func OrganizationsList(c *app.Context, filters *OrganizationFilters) (*OrganizationList, error) {
-	data := &OrganizationList{}
+func OrganizationsList(c *app.Context, filters *OrganizationFilters) (*OrganizationListData, error) {
+	data := &OrganizationListData{}
 
 	q := OrganizationQuery(c)
 
@@ -58,6 +58,8 @@ func OrganizationsList(c *app.Context, filters *OrganizationFilters) (*Organizat
 	}
 
 	data.PageInfo = pageInfo
+
+	q = q.Scopes(app.Paginate(filters.PaginationInput))
 
 	if err := q.Find(&data.Results).Error; err != nil {
 		return nil, err

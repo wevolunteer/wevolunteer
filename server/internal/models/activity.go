@@ -7,7 +7,7 @@ import (
 type ActivityStatus string
 
 type Activity struct {
-	ID             uint         `gorm:"primarykey" json:"id"`
+	ID             uint         `json:"id" gorm:"primarykey"`
 	UID            string       `json:"uid" gorm:"uniqueIndex"`
 	CreatedAt      time.Time    `json:"created_at"`
 	UpdatedAt      time.Time    `json:"updated_at"`

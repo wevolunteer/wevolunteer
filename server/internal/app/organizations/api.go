@@ -9,7 +9,7 @@ import (
 )
 
 type OrganizationListResponse struct {
-	Body []models.Organization
+	Body *OrganizationListData
 }
 
 func OrganizationListController(c context.Context, input *OrganizationFilters) (*OrganizationListResponse, error) {
@@ -22,7 +22,7 @@ func OrganizationListController(c context.Context, input *OrganizationFilters) (
 	}
 
 	resp := &OrganizationListResponse{
-		Body: data.Results,
+		Body: data,
 	}
 
 	return resp, nil

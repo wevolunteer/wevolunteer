@@ -9,7 +9,7 @@ import (
 
 	"github.com/danielgtaylor/huma/v2/humacli"
 	"github.com/spf13/cobra"
-	"github.com/wevolunteer/wevolunteer/cmd/server/fake"
+	"github.com/wevolunteer/wevolunteer/cmd/cli/commands"
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/app/accounts"
 	"github.com/wevolunteer/wevolunteer/internal/app/activities"
@@ -86,7 +86,22 @@ func main() {
 				panic(err)
 			}
 
-			fake.FakeDataCommand()
+			commands.FakeDataCommand()
+			fmt.Println("")
+		}),
+	})
+
+	cmd.AddCommand(&cobra.Command{
+		Use:   "geo-data",
+		Short: "Initialize GEO data",
+		Run: humacli.WithOptions(func(cmd *cobra.Command, args []string, opts *CLIOptions) {
+
+			_, err := app.Init(opts.ConfigFile)
+			if err != nil {
+				panic(err)
+			}
+
+			commands.GeoDataCommand()
 			fmt.Println("")
 		}),
 	})

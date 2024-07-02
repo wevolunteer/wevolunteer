@@ -29,7 +29,7 @@ func PlaceList(ctx *app.Context, filters *PlaceFilters) (*PlaceListData, error) 
 
 	if filters != nil {
 		if filters.Query != "" {
-			q = q.Where("name LIKE ?", filters.Query+"%")
+			q = q.Where("name ILIKE ?", filters.Query+"%")
 		}
 	}
 
