@@ -13,7 +13,7 @@ func OrganizationQuery(c *app.Context) *gorm.DB {
 	q := app.DB.Model(&models.Organization{})
 	q = q.Preload("Category")
 
-	if c.Role != app.SuperUser {
+	if c.Role != app.RoleSuperUser {
 		q = q.Where("published = ?", true)
 	}
 
@@ -120,7 +120,7 @@ func OrganizationUpdate(c *app.Context, id uint, data *OrganizationUpdateData) (
 func OrganizationDelete(c *app.Context, id uint) error {
 	var organization models.Organization
 
-	if c.Role != app.SuperUser {
+	if c.Role != app.RoleSuperUser {
 		return &app.ErrNotAuthorized{
 			Message: fmt.Sprintf("role %s is not authorized to delete organizations", c.Role),
 		}

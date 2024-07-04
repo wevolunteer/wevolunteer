@@ -11,15 +11,15 @@ import (
 func ExperienceQuery(ctx *app.Context) *gorm.DB {
 	q := app.DB.Model(&models.Experience{})
 
-	if ctx.Role == app.Public {
+	if ctx.Role == app.RolePublic {
 		q = q.Where("1 != 1")
 	}
 
-	if ctx.Role == app.Volunteer {
+	if ctx.Role == app.RoleVolunteer {
 		q = q.Where("user_id = ?", ctx.User.ID)
 	}
 
-	if ctx.Role == app.Organization {
+	if ctx.Role == app.RoleOrganization {
 		q = q.Joins("JOIN activities ON activities.id = enrollments.activity_id").
 			Where("activities.organization_id = ?", ctx.User.ID)
 	}
@@ -65,7 +65,10 @@ func ExperienceList(ctx *app.Context, filters *ExperienceFilters) (*ExperienceLi
 
 type ExperienceCreateData struct {
 	ActivityID uint      `json:"activity_id"`
-	Date       time.Time `json:"date"`
+	StartDate  time.Time `json:"start_date"`
+	EndDate    time.Time `json:"end_date"`
+	StartTime  string    `json:"start_time"`
+	EndTime    string    `json:"end_time"`
 	Message    string    `json:"message"`
 }
 
@@ -73,7 +76,10 @@ func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Exp
 	enrollment := models.Experience{
 		UserID:     ctx.User.ID,
 		ActivityID: data.ActivityID,
-		Date:       data.Date,
+		StartDate:  data.StartDate,
+		EndDate:    data.EndDate,
+		StartTime:  data.StartTime,
+		EndTime:    data.EndTime,
 		Message:    data.Message,
 	}
 
@@ -85,25 +91,31 @@ func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Exp
 }
 
 type ExperienceUpdateData struct {
-	Date    time.Time `json:"date"`
-	Message string    `json:"message"`
+	StartDate time.Time `json:"start_date"`
+	EndDate   time.Time `json:"end_date"`
+	StartTime string    `json:"start_time"`
+	EndTime   string    `json:"end_time"`
+	Message   string    `json:"message"`
 }
 
 func ExperienceUpdate(ctx *app.Context, id uint, data *ExperienceUpdateData) (*models.Experience, error) {
-	var enrollment models.Experience
+	var experience models.Experience
 
-	if err := ExperienceQuery(ctx).Where("id = ?", id).First(&enrollment).Error; err != nil {
+	if err := ExperienceQuery(ctx).Where("id = ?", id).First(&experience).Error; err != nil {
 		return nil, err
 	}
 
-	enrollment.Date = data.Date
-	enrollment.Message = data.Message
+	experience.StartDate = data.StartDate
+	experience.EndDate = data.StartDate
+	experience.StartTime = data.StartTime
+	experience.EndTime = data.EndTime
+	experience.Message = data.Message
 
-	if err := app.DB.Save(&enrollment).Error; err != nil {
+	if err := app.DB.Save(&experience).Error; err != nil {
 		return nil, err
 	}
 
-	return &enrollment, nil
+	return &experience, nil
 }
 
 func ExperienceDelete(ctx *app.Context, id uint) error {

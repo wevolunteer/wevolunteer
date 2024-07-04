@@ -21,7 +21,7 @@ func FromHTTPContext(c context.Context) *Context {
 	role, ok := c.Value("role").(Role)
 
 	if !ok {
-		role = Public
+		role = RolePublic
 	}
 
 	return &Context{

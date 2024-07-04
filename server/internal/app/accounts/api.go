@@ -89,8 +89,14 @@ func UserProfileGetController(c context.Context, input *struct{}) (*UserInfoResp
 		return nil, huma.Error401Unauthorized("user not found")
 	}
 
+	data, err := UserProfileGet(&user)
+
+	if err != nil {
+		return nil, err
+	}
+
 	return &UserInfoResponse{
-		Body: user,
+		Body: *data,
 	}, nil
 }
 

@@ -54,16 +54,16 @@ func AuthMiddleware(api huma.API) func(ctx huma.Context, next func(huma.Context)
 
 func RoleMiddleware(api huma.API, permission Permission) func(ctx huma.Context, next func(huma.Context)) {
 	return func(ctx huma.Context, next func(huma.Context)) {
-		var user_role Role = Public
+		var user_role Role = RolePublic
 
 		user, ok := ctx.Context().Value("user").(models.User)
 
 		if ok {
-			user_role = Volunteer
+			user_role = RoleVolunteer
 		}
 
 		if user.IsRootAdmin {
-			user_role = SuperUser
+			user_role = RoleSuperUser
 		}
 
 		ok = HasPermission(user_role, permission)

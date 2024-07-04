@@ -111,7 +111,7 @@ func verifyCode(data VerifyCodeData) (*TokenData, error) {
 		return nil, err
 	}
 
-	token, err := generateToken(&user, app.Volunteer)
+	token, err := generateToken(&user, app.RoleVolunteer)
 
 	if err != nil {
 		return nil, err
@@ -123,8 +123,6 @@ func verifyCode(data VerifyCodeData) (*TokenData, error) {
 			Data: user,
 		},
 	})
-
-	fmt.Println(token)
 
 	return token, nil
 }
@@ -139,7 +137,7 @@ func login(data LoginData) (*TokenData, error) {
 		return nil, &app.ErrBadInput{Message: "invalid email or password"}
 	}
 
-	return generateToken(&user, app.Volunteer)
+	return generateToken(&user, app.RoleVolunteer)
 }
 
 func register(data SignupData) (*TokenData, error) {
@@ -161,7 +159,7 @@ func register(data SignupData) (*TokenData, error) {
 		return nil, err
 	}
 
-	return generateToken(user, app.Volunteer)
+	return generateToken(user, app.RoleVolunteer)
 }
 
 func refreshToken(data RefreshTokenData) (*TokenData, error) {
@@ -180,7 +178,7 @@ func refreshToken(data RefreshTokenData) (*TokenData, error) {
 		return nil, errors.New("user not found")
 	}
 
-	return generateToken(&user, app.Volunteer)
+	return generateToken(&user, app.RoleVolunteer)
 }
 
 func generateToken(user *models.User, role app.Role) (*TokenData, error) {

@@ -5,10 +5,10 @@ import "context"
 type Role string
 
 const (
-	Public       = "public"
-	Volunteer    = "volunteer"
-	Organization = "organization"
-	SuperUser    = "superuser"
+	RolePublic       = "public"
+	RoleVolunteer    = "volunteer"
+	RoleOrganization = "organization"
+	RoleSuperUser    = "superuser"
 )
 
 type Permission string
@@ -27,23 +27,23 @@ const (
 )
 
 var rolePermissions = map[Role][]Permission{
-	Public: {
+	RolePublic: {
 		OrganizationRead,
 		ActivityRead,
 	},
-	Volunteer: {
+	RoleVolunteer: {
 		OrganizationRead,
 		ActivityRead,
 		ExperienceRead,
 		ExperienceWrite,
 	},
-	Organization: {
+	RoleOrganization: {
 		OrganizationRead,
 		OrganizationWrite,
 		ActivityRead,
 		ActivityWrite,
 	},
-	SuperUser: {
+	RoleSuperUser: {
 		OrganizationRead,
 		OrganizationWrite,
 		ActivityRead,
