@@ -1,9 +1,10 @@
-import { useFilters } from "@/contexts/filters";
+import { FiltersProvider, useFilters } from "@/contexts/filters";
+import { SearchesProvider } from "@/contexts/searches";
 import { ActivityFilters } from "@/types/data";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { FC, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable } from "react-native";
+import { Keyboard, Pressable } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Box from "../ui/Box";
 import Icon from "../ui/Icon";
@@ -88,6 +89,7 @@ const SearchBar: FC<SearchBarProps> = ({ value, onChange }) => {
         ref={bottomSheetModalRef}
         index={0}
         snapPoints={["100%"]}
+        onDismiss={Keyboard.dismiss}
         handleComponent={null}
       >
         <BottomSheetView
@@ -96,7 +98,16 @@ const SearchBar: FC<SearchBarProps> = ({ value, onChange }) => {
             alignItems: "center",
           }}
         >
-          <SearchModal />
+          <SearchesProvider>
+            <FiltersProvider>
+              <SearchModal
+                onClose={() => {
+                  Keyboard.dismiss();
+                  bottomSheetModalRef.current?.dismiss();
+                }}
+              />
+            </FiltersProvider>
+          </SearchesProvider>
         </BottomSheetView>
       </BottomSheetModal>
     </Box>

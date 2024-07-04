@@ -3,42 +3,21 @@ import Box from "@/components/ui/Box";
 import Icon from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
 import { useFilters } from "@/contexts/filters";
-import { useNetwork } from "@/contexts/network";
+import { useActivities } from "@/hooks/useExperiences";
 import { Activity } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default function ExporeListScreen() {
   const { t } = useTranslation();
-  const { client } = useNetwork();
   const listRef = useRef<FlashList<Activity>>(null);
 
   const { filters } = useFilters();
 
-  const { data, fetchNextPage, refetch, isLoading } = useInfiniteQuery({
-    queryKey: ["experiences"],
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await client.GET("/activities", {
-        params: {
-          query: {
-            ...filters,
-            page: pageParam,
-          },
-        },
-      });
-      return response.data;
-    },
-    getNextPageParam: (lastPage) => (lastPage?.page_info.page ? lastPage?.page_info.page + 1 : 1),
-    initialPageParam: 1,
-  });
-
-  const activities = useMemo(() => {
-    return data?.pages.flatMap((page) => page?.results || []) || [];
-  }, [data]);
+  const { activities, fetchNextPage, refetch, isLoading } = useActivities();
 
   useEffect(() => {
     refetch();

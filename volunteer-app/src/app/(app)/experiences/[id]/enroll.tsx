@@ -1,4 +1,3 @@
-import { ActivityCard } from "@/components/ActivityCard";
 import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
 import Checkbox from "@/components/ui/Checkbox";
@@ -62,11 +61,12 @@ export default function ExperienceEnrollScreen() {
       <ScrollView>
         <Topbar goBack title="Conferma esperienza" />
 
-        <Box marginTop="xl" marginBottom="l" marginHorizontal="m">
-          <Text variant="header">{t("iWantTo", "I want to")}</Text>
-          <Text variant="header">{t("help", "help")}</Text>
+        <Box marginTop="xl" marginBottom="l" marginHorizontal="m" gap="s">
+          <Text variant="header" color="secondaryText">
+            {t("iWantToHelp", "I want to help")}
+          </Text>
+          <Text variant="header">{data.organization.name}</Text>
         </Box>
-        <ActivityCard activity={data} />
         <Box marginHorizontal="m" gap="l" marginTop="m">
           <Box flexDirection="row" justifyContent="space-between" marginVertical="m" gap="m">
             <Box flex={1}>

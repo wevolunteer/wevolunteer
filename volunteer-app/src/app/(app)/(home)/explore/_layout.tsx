@@ -19,8 +19,8 @@ function ExlporeHeader() {
 export default function ExporeLayout() {
   const theme = useTheme<Theme>();
   return (
-    <SafeAreaView>
-      <FiltersProvider>
+    <FiltersProvider>
+      <SafeAreaView>
         <ExlporeHeader />
         <Stack
           screenOptions={{
@@ -31,7 +31,7 @@ export default function ExporeLayout() {
             },
           }}
         />
-      </FiltersProvider>
-    </SafeAreaView>
+      </SafeAreaView>
+    </FiltersProvider>
   );
 }
