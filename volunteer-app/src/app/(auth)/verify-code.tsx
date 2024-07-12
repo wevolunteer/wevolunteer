@@ -84,6 +84,7 @@ export default function VerifyCodeScreen() {
       if (!response) {
         setError(t("invalidCode", "The code entered is not valid"));
         setValue("");
+        setIsLoading(false);
         return;
       }
 
@@ -98,8 +99,6 @@ export default function VerifyCodeScreen() {
       router.replace("registration");
       setIsLoading(false);
     } catch (error) {
-      console.error(error);
-
       setError(t("invalidCode", "The code entered is not valid"));
       setIsLoading(false);
       setValue("");
