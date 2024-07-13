@@ -9,7 +9,6 @@ import (
 
 const (
 	EnvProduction  = "production"
-	EnvAcceptance  = "acceptance"
 	EnvTesting     = "testing"
 	EnvDevelopment = "development"
 )
@@ -22,6 +21,7 @@ var Config struct {
 	DB_MAX_OPEN_CONNECTIONS int
 	DB_MAX_IDLE_CONNECTIONS int
 	DB_MAX_LIFETIME         time.Duration
+	NOVU_API_KEY            string
 }
 
 func ParseConfig(path string) {
@@ -37,8 +37,6 @@ func ParseConfig(path string) {
 		configFile = "config.dev.yml"
 	case EnvTesting:
 		configFile = "config.test.yml"
-	case EnvAcceptance:
-		configFile = "config.acc.yml"
 	case EnvProduction:
 		configFile = "config.prod.yml"
 	}
@@ -58,12 +56,17 @@ func ParseConfig(path string) {
 		log.Debug("Using config file: ", viper.ConfigFileUsed())
 	}
 
-	Config.DB_DSN = viper.GetString("db_dsn")
 	Config.DEBUG = viper.GetBool("debug")
+	Config.DB_DSN = viper.GetString("db_dsn")
 	Config.JWT_SECRET = viper.GetString("jwt_secret")
+	Config.NOVU_API_KEY = viper.GetString("novu_apikey")
 	Config.DB_MAX_LIFETIME = time.Hour
 
 	if Config.JWT_SECRET == "" {
 		log.Fatal("JWT_SECRET must be set")
+	}
+
+	if Config.NOVU_API_KEY == "" {
+		log.Fatal("NOVU_API_KEY must be set")
 	}
 }
