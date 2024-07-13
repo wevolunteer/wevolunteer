@@ -9,6 +9,11 @@ import (
 	"github.com/wevolunteer/wevolunteer/internal/models"
 )
 
+const (
+	NotificationVerificationCode = "verification-code"
+	NotificationWelcome          = "welcome"
+)
+
 func init() {
 	accountsEventsSubscribe()
 }

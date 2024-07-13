@@ -28,9 +28,7 @@ func accountsEventsSubscribe() {
 
 		fmt.Printf("User requested code: email %s code %s\n", user.Email, user.OTPCode)
 
-		eventId := "verification-code"
-
-		err := NotificationTrigger(user, eventId, map[string]interface{}{
+		err := NotificationTrigger(user, NotificationVerificationCode, map[string]interface{}{
 			"verification_code": user.OTPCode,
 		})
 
