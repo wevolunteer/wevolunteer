@@ -28,15 +28,15 @@ export default function ExperienceEnrollScreen() {
     throw new Error("id should be a string");
   }
 
-  const activityId = parseInt(id);
+  const experienceId = parseInt(id);
 
   const { data } = useQuery({
     queryKey: ["activities", id],
     queryFn: async () => {
-      const response = await client.GET("/activities/{id}", {
+      const response = await client.GET("/experiences/{id}", {
         params: {
           path: {
-            id: activityId,
+            id: experienceId,
           },
         },
       });

@@ -53,21 +53,22 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, onPress, onClose
           </Pressable>
         )}
         <Box flex={1} padding="m">
-          <Text variant="secondary">{activity.organization.name}</Text>
+          <Text variant="secondary">{activity.experience.organization.name}</Text>
           <Box flex={1} marginVertical="s">
             <Text variant="title" fontSize={16}>
-              {activity.title}
+              {activity.experience.title}
             </Text>
           </Box>
-          <Text variant="body">{activity.city}</Text>
+          <Text variant="body">{activity.experience.city}</Text>
           <Text variant="secondary">
             {activity.start_date ? format(new Date(activity.start_date), "d/MM") : ""}
-
-            {activity.end_date ? ` - ${format(new Date(activity.end_date), "d/MM")}` : ""}
           </Text>
         </Box>
         <Box flex={1}>
-          <Animated.Image source={{ uri: activity.image }} style={{ width: "100%", height: 179 }} />
+          <Animated.Image
+            source={{ uri: activity.experience.image }}
+            style={{ width: "100%", height: 179 }}
+          />
         </Box>
       </Box>
     </Pressable>

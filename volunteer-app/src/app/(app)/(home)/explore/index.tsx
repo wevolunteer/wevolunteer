@@ -1,10 +1,10 @@
-import { ActivityCard } from "@/components/ActivityCard";
+import { ExperienceCard } from "@/components/ExperienceCard";
 import Box from "@/components/ui/Box";
 import Icon from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
 import { useFilters } from "@/contexts/filters";
-import { useActivities } from "@/hooks/useExperiences";
-import { Activity } from "@/types/data";
+import { useExperiences } from "@/hooks/useExperiences";
+import { Experience } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 import { useEffect, useRef } from "react";
@@ -13,11 +13,11 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default function ExporeListScreen() {
   const { t } = useTranslation();
-  const listRef = useRef<FlashList<Activity>>(null);
+  const listRef = useRef<FlashList<Experience>>(null);
 
   const { filters } = useFilters();
 
-  const { activities, fetchNextPage, refetch, isLoading } = useActivities();
+  const { experiences, fetchNextPage, refetch, isLoading } = useExperiences();
 
   useEffect(() => {
     refetch();
@@ -32,13 +32,13 @@ export default function ExporeListScreen() {
         estimatedItemSize={195}
         refreshing={isLoading}
         onRefresh={() => refetch()}
-        data={activities || []}
+        data={experiences || []}
         keyExtractor={(item) => `a-${item.id}`}
         onEndReachedThreshold={0.8}
         onEndReached={() => fetchNextPage()}
         renderItem={({ item }) => (
-          <ActivityCard
-            activity={item}
+          <ExperienceCard
+            experience={item}
             onPress={() => {
               router.push(`experiences/${item.id}`);
             }}

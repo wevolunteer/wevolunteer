@@ -1,11 +1,11 @@
-import { ActivityCard } from "@/components/ActivityCard";
+import { ExperienceCard } from "@/components/ExperienceCard";
 import Box from "@/components/ui/Box";
 import Icon from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
 import { useFilters } from "@/contexts/filters";
 import { useSearches } from "@/contexts/searches";
-import { useActivities } from "@/hooks/useExperiences";
-import { Activity } from "@/types/data";
+import { useExperiences } from "@/hooks/useExperiences";
+import { Experience } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 import { FC, useRef, useState } from "react";
@@ -25,9 +25,9 @@ const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
   const { t } = useTranslation();
   const { filters, setFilters } = useFilters();
   const [q, setQ] = useState<string>("");
-  const listRef = useRef<FlashList<Activity>>(null);
+  const listRef = useRef<FlashList<Experience>>(null);
 
-  const { activities, fetchNextPage, refetch, isLoading } = useActivities();
+  const { experiences, fetchNextPage, refetch, isLoading } = useExperiences();
 
   const { saveExperienceSearch } = useSearches();
 
@@ -125,13 +125,13 @@ const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
               refreshing={isLoading}
               estimatedItemSize={195}
               onRefresh={() => refetch()}
-              data={activities || []}
+              data={experiences || []}
               keyExtractor={(item) => `a-${item.id}`}
               onEndReachedThreshold={0.8}
               onEndReached={() => fetchNextPage()}
               renderItem={({ item }) => (
-                <ActivityCard
-                  activity={item}
+                <ExperienceCard
+                  experience={item}
                   onPress={() => {
                     router.push(`experiences/${item.id}`);
                   }}

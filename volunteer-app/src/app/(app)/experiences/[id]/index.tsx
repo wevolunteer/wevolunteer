@@ -22,15 +22,15 @@ export default function ExperienceScreen() {
     throw new Error("id should be a string");
   }
 
-  const activityId = parseInt(id);
+  const experienceId = parseInt(id);
 
   const { data } = useQuery({
-    queryKey: ["activities", id],
+    queryKey: ["experiences", id],
     queryFn: async () => {
-      const response = await client.GET("/activities/{id}", {
+      const response = await client.GET("/experiences/{id}", {
         params: {
           path: {
-            id: activityId,
+            id: experienceId,
           },
         },
       });

@@ -7,73 +7,63 @@ import (
 	"github.com/wevolunteer/wevolunteer/internal/app"
 )
 
-var (
-	RouteTag []string = []string{"Experiences"}
-)
-
 func RegisterRoutes(api huma.API) {
-	huma.Register(
-		api,
-		huma.Operation{
-			OperationID: "experiences-list",
-			Summary:     "List enrollments",
-			Method:      http.MethodGet,
-			Path:        "/experiences",
-			Tags:        RouteTag,
-			Middlewares: huma.Middlewares{
-				app.AuthMiddleware(api),
-				app.RoleMiddleware(api, app.ExperienceRead),
-			},
+	huma.Register(api, huma.Operation{
+		OperationID: "experiences-list",
+		Summary:     "List experiences",
+		Method:      http.MethodGet,
+		Path:        "/experiences",
+		Tags:        []string{"Experiences"},
+		Middlewares: huma.Middlewares{
+			app.RoleMiddleware(api, app.ExperienceRead),
 		},
-		ExperienceListController,
-	)
+	}, ExperienceListController)
 
-	huma.Register(
-		api,
-		huma.Operation{
-			OperationID: "experiences-create",
-			Summary:     "Create enrollment",
-			Method:      http.MethodPost,
-			Path:        "/experiences",
-			Tags:        RouteTag,
-			Middlewares: huma.Middlewares{
-				app.AuthMiddleware(api),
-				app.RoleMiddleware(api, app.ExperienceWrite),
-			},
+	huma.Register(api, huma.Operation{
+		OperationID: "experiences-get",
+		Summary:     "Get experience",
+		Method:      http.MethodGet,
+		Path:        "/experiences/{id}",
+		Tags:        []string{"Experiences"},
+		Middlewares: huma.Middlewares{
+			app.RoleMiddleware(api, app.ExperienceRead),
 		},
-		ExperienceCreateController,
-	)
+	}, ExperienceGetController)
 
-	huma.Register(
-		api,
-		huma.Operation{
-			OperationID: "experiences-update",
-			Summary:     "Update enrollment",
-			Method:      http.MethodPatch,
-			Path:        "/experiences/{id}",
-			Tags:        RouteTag,
-			Middlewares: huma.Middlewares{
-				app.AuthMiddleware(api),
-				app.RoleMiddleware(api, app.ExperienceWrite),
-			},
+	huma.Register(api, huma.Operation{
+		OperationID: "experiences-create",
+		Summary:     "Create experience",
+		Method:      http.MethodPost,
+		Path:        "/experiences",
+		Tags:        []string{"Experiences"},
+		Middlewares: huma.Middlewares{
+			app.AuthMiddleware(api),
+			app.RoleMiddleware(api, app.ExperienceWrite),
 		},
-		ExperienceUpdateController,
-	)
+	}, ExperienceCreateController)
 
-	huma.Register(
-		api,
-		huma.Operation{
-			OperationID: "experiences-delete",
-
-			Summary: "Delete enrollment",
-			Method:  http.MethodDelete,
-			Path:    "/experiences/{id}",
-			Tags:    RouteTag,
-			Middlewares: huma.Middlewares{
-				app.AuthMiddleware(api),
-				app.RoleMiddleware(api, app.ExperienceWrite),
-			},
+	huma.Register(api, huma.Operation{
+		OperationID: "experiences-update",
+		Summary:     "Update experience",
+		Method:      http.MethodPut,
+		Path:        "/experiences/{id}",
+		Tags:        []string{"Experiences"},
+		Middlewares: huma.Middlewares{
+			app.AuthMiddleware(api),
+			app.RoleMiddleware(api, app.ExperienceWrite),
 		},
-		ExperienceDeleteController,
-	)
+	}, ExperienceUpdateController)
+
+	huma.Register(api, huma.Operation{
+		OperationID: "experiences-delete",
+		Summary:     "Delete experience",
+		Method:      http.MethodDelete,
+		Path:        "/experiences/{id}",
+		Tags:        []string{"Experiences"},
+		Middlewares: huma.Middlewares{
+			app.AuthMiddleware(api),
+			app.RoleMiddleware(api, app.ExperienceWrite),
+		},
+	}, ExperienceDeleteController)
+
 }

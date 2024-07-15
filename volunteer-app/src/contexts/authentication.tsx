@@ -35,6 +35,7 @@ export function useSession() {
 export function SessionProvider(props: React.PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState("session");
   const { client } = useNetwork();
+  const [hasTriedRefresh, setHasTriedRefresh] = React.useState(false);
 
   const tokenMiddleware: Middleware = {
     async onRequest(req, options) {
@@ -44,7 +45,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
       return req;
     },
     async onResponse(res, options) {
-      if (res.status === 401 && session?.token?.refreshToken) {
+      if (res.status === 401 && session?.token?.refreshToken && !hasTriedRefresh) {
         try {
           const refreshTokenResponse = await client.POST("/auth/refresh", {
             body: {
@@ -71,6 +72,9 @@ export function SessionProvider(props: React.PropsWithChildren) {
           // Gestisci l'errore di refresh token
           console.error("Failed to refresh token", error);
         }
+      } else if (res.status === 401 && hasTriedRefresh) {
+        setSession(null);
+        setHasTriedRefresh(false);
       }
       return res;
     },

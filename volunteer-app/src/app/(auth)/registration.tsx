@@ -35,7 +35,7 @@ const schema = Yup.object().shape({
 
 export default function RegistrationScreen() {
   const { client } = useNetwork();
-  const { fetchUser } = useSession();
+  const { fetchUser, signOut } = useSession();
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -109,7 +109,13 @@ export default function RegistrationScreen() {
   return (
     <SafeAreaView>
       <ScrollView>
-        <Topbar title={t("completeRegistration", "Complete registration")} goBack />
+        <Topbar
+          title={t("completeRegistration", "Complete registration")}
+          goBackFn={() => {
+            signOut();
+            router.replace("/");
+          }}
+        />
         <Box flexDirection="column" gap="l" paddingHorizontal="m" marginTop="l">
           <Controller
             control={control}

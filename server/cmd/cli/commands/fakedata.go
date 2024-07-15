@@ -108,8 +108,8 @@ func generateActivities(
 	count int,
 	organizations []*models.Organization,
 	categories []*models.Category,
-) ([]models.Activity, error) {
-	var activities []models.Activity
+) ([]models.Experience, error) {
+	var experiences []models.Experience
 
 	for i := 0; i < len(organizations); i++ {
 		for j := 0; j < count; j++ {
@@ -122,7 +122,7 @@ func generateActivities(
 			if err != nil {
 				return nil, err
 			}
-			activity := models.Activity{
+			activity := models.Experience{
 				Title:       gofakeit.Sentence(3),
 				Description: gofakeit.Sentence(10),
 
@@ -153,9 +153,9 @@ func generateActivities(
 				return nil, err
 			}
 
-			activities = append(activities, activity)
+			experiences = append(experiences, activity)
 		}
 	}
 
-	return activities, nil
+	return experiences, nil
 }

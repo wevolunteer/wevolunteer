@@ -1,11 +1,11 @@
-import { ActivityCard } from "@/components/ActivityCard";
+import { ExperienceCard } from "@/components/ExperienceCard";
 import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useNetwork } from "@/contexts/network";
-import { Activity } from "@/types/data";
+import { Experience } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
@@ -25,7 +25,7 @@ export default function OrganizationsListScreen() {
   }
 
   const organizationId = parseInt(id);
-  const listRef = useRef<FlashList<Activity>>(null);
+  const listRef = useRef<FlashList<Experience>>(null);
 
   const {
     data: activitiesData,
@@ -33,9 +33,9 @@ export default function OrganizationsListScreen() {
     refetch,
     isLoading,
   } = useInfiniteQuery({
-    queryKey: ["experiences"],
+    queryKey: ["experiences", "organization", organizationId],
     queryFn: async ({ pageParam = 1 }) => {
-      const response = await client.GET("/activities", {
+      const response = await client.GET("/experiences", {
         params: {
           query: {
             organization: organizationId,
@@ -133,8 +133,8 @@ export default function OrganizationsListScreen() {
           </>
         )}
         renderItem={({ item }) => (
-          <ActivityCard
-            activity={item}
+          <ExperienceCard
+            experience={item}
             onPress={() => {
               router.push(`experiences/${item.id}`);
             }}

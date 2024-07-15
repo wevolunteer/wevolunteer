@@ -1,11 +1,11 @@
-package activities_test
+package experiences_test
 
 import (
 	"os"
 	"testing"
 
 	"github.com/wevolunteer/wevolunteer/internal/app"
-	"github.com/wevolunteer/wevolunteer/internal/app/activities"
+	"github.com/wevolunteer/wevolunteer/internal/app/experiences"
 )
 
 type Place struct {
@@ -34,9 +34,9 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
-func TestActivityList(t *testing.T) {
+func TestExperienceList(t *testing.T) {
 	ctx := &app.Context{}
-	filters := &activities.ActivityFilters{
+	filters := &experiences.ExperienceFilters{
 		PaginationInput: app.PaginationInput{
 			Page:    1,
 			PerPage: 10,
@@ -48,9 +48,9 @@ func TestActivityList(t *testing.T) {
 		Categories: []uint{1, 2, 3},
 	}
 
-	data, err := activities.ActivityList(ctx, filters)
+	data, err := experiences.ExperienceList(ctx, filters)
 	if err != nil {
-		t.Errorf("ActivityList returned an error: %v", err)
+		t.Errorf("ExperienceList returned an error: %v", err)
 	}
 
 	// Add assertions here to validate the results
