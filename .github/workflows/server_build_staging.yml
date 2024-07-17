@@ -1,4 +1,4 @@
-name: API | Build image (master)
+name: API | Build image (staging)
 
 on:
   push:
