@@ -9,12 +9,12 @@ on:
       - "develop"
 
 jobs:
-  core:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: master
+          ref: develop
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
