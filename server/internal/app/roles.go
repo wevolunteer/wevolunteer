@@ -33,15 +33,17 @@ var rolePermissions = map[Role][]Permission{
 	},
 	RoleVolunteer: {
 		OrganizationRead,
-		ActivityRead,
 		ExperienceRead,
-		ExperienceWrite,
+		ActivityRead,
+		ActivityWrite,
 	},
 	RoleOrganization: {
 		OrganizationRead,
 		OrganizationWrite,
 		ExperienceRead,
 		ExperienceWrite,
+		ActivityRead,
+		ActivityWrite,
 	},
 	RoleSuperUser: {
 		OrganizationRead,

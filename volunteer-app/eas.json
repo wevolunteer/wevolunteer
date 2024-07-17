@@ -1,7 +1,17 @@
 {
   "build": {
-    "production": {},
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://wevolunteer.app/api"
+      }
+    },
+    "staging": {
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://wevolunteer.app/api"
+      }
+    },
     "preview": {
+      "extends": "production",
       "distribution": "internal",
       "android": {
         "buildType": "apk"
