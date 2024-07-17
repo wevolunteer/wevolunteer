@@ -30,9 +30,9 @@ const loggerMiddleware: Middleware = {
 export const NetworkProvider: React.FC<NetworkProviderProps> = ({ children }) => {
   const client = createClient<paths>({ baseUrl: getApiUrl() });
 
-  // if (__DEV__) {
-  //   client.use(loggerMiddleware);
-  // }
+  if (__DEV__) {
+    client.use(loggerMiddleware);
+  }
 
   return (
     <NetworkContext.Provider value={{ client }}>
