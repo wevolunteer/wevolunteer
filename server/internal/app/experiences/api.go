@@ -2,11 +2,37 @@ package experiences
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 )
+
+type ExperienceGetRequest struct {
+	ID uint `path:"id"`
+}
+
+type ExperienceGetResponse struct {
+	Body models.Experience
+}
+
+func ExperienceGetController(c context.Context, input *ExperienceGetRequest) (*ExperienceGetResponse, error) {
+	ctx := app.FromHTTPContext(c)
+	data, err := ExperienceGet(ctx, input.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if data == nil {
+		return nil, &app.ErrNotAuthorized{}
+	}
+
+	resp := &ExperienceGetResponse{}
+
+	resp.Body = *data
+
+	return resp, nil
+}
 
 type ExperienceListResponse struct {
 	Body ExperienceListData
@@ -22,8 +48,6 @@ func ExperienceListController(
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(data)
 
 	resp := &ExperienceListResponse{}
 

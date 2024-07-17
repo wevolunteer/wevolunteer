@@ -1,9 +1,9 @@
-import { ActivityFilters } from "@/types/data";
+import { ExperienceFilters } from "@/types/data";
 import { createContext, useContext, useState } from "react";
 
 const FiltersContext = createContext<{
-  filters: ActivityFilters;
-  setFilters: (filters: ActivityFilters) => void;
+  filters: ExperienceFilters;
+  setFilters: (filters: ExperienceFilters) => void;
 }>({
   filters: {},
   setFilters: () => null,
@@ -21,7 +21,7 @@ export function useFilters() {
 }
 
 export function FiltersProvider(props: React.PropsWithChildren) {
-  const [filters, setFilters] = useState<ActivityFilters>({});
+  const [filters, setFilters] = useState<ExperienceFilters>({});
 
   return (
     <FiltersContext.Provider value={{ filters, setFilters }}>

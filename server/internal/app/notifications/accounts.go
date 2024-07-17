@@ -2,6 +2,7 @@ package notifications
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/wevolunteer/wevolunteer/internal/app/events"
 	"github.com/wevolunteer/wevolunteer/internal/models"
@@ -26,6 +27,16 @@ func accountsEventsSubscribe() {
 		}
 
 		fmt.Printf("User requested code: email %s code %s\n", user.Email, user.OTPCode)
+
+		err := NotificationTrigger(user, NotificationVerificationCode, map[string]interface{}{
+			"verification_code": user.OTPCode,
+		})
+
+		if err != nil {
+			log.Fatal("novu error", err.Error())
+			return err
+		}
+
 		return nil
 	})
 

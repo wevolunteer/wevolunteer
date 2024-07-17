@@ -1,8 +1,6 @@
 package experiences
 
 import (
-	"time"
-
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 	"gorm.io/gorm"
@@ -10,31 +8,35 @@ import (
 
 func ExperienceQuery(ctx *app.Context) *gorm.DB {
 	q := app.DB.Model(&models.Experience{})
-
-	if ctx.Role == app.RolePublic {
-		q = q.Where("1 != 1")
-	}
-
-	if ctx.Role == app.RoleVolunteer {
-		q = q.Where("user_id = ?", ctx.User.ID)
-	}
-
-	if ctx.Role == app.RoleOrganization {
-		q = q.Joins("JOIN activities ON activities.id = enrollments.activity_id").
-			Where("activities.organization_id = ?", ctx.User.ID)
-	}
+	q = q.Preload("Category")
+	q = q.Preload("Organization")
 
 	return q
 }
 
-type ExperienceFilters struct {
-	app.PaginationInput
-	Query string `query:"q"`
+func ExperienceGet(c *app.Context, id uint) (*models.Experience, error) {
+	var experience models.Experience
+
+	if err := ExperienceQuery(c).Where("id = ?", id).First(&experience).Error; err != nil {
+		return nil, err
+	}
+
+	return &experience, nil
 }
 
 type ExperienceListData struct {
 	Results  []models.Experience `json:"results"`
 	PageInfo *app.PaginationInfo `json:"page_info"`
+}
+
+type ExperienceFilters struct {
+	app.PaginationInput
+	Query        string  `query:"q"`
+	Distance     float64 `query:"distance"`
+	DateStart    string  `query:"date_start"`
+	DateEnd      string  `query:"date_end"`
+	Categories   []uint  `query:"categories"`
+	Organization uint    `query:"organization"`
 }
 
 func ExperienceList(ctx *app.Context, filters *ExperienceFilters) (*ExperienceListData, error) {
@@ -43,9 +45,30 @@ func ExperienceList(ctx *app.Context, filters *ExperienceFilters) (*ExperienceLi
 	q := ExperienceQuery(ctx)
 
 	if filters != nil {
-		if filters.Query != "" {
-			q = q.Where("name LIKE ?", "%"+filters.Query+"%")
+		if filters.DateStart != "" {
+			q = q.Where("start_time >= ?", filters.DateStart)
 		}
+
+		if filters.DateEnd != "" {
+			q = q.Where("end_time <= ?", filters.DateEnd)
+		}
+
+		if filters.Distance != 0 && ctx.User != nil && ctx.User.Latitude != 0 && ctx.User.Longitude != 0 {
+			q = q.Where("ST_Distance_Sphere(point(longitude, latitude), point(?, ?)) <= ?", ctx.User.Longitude, ctx.User.Latitude, filters.Distance)
+		}
+
+		if filters.Query != "" {
+			q = q.Where("title LIKE ?", "%"+filters.Query+"%")
+		}
+
+		if len(filters.Categories) > 0 {
+			q = q.Where("category_id IN ?", filters.Categories)
+		}
+
+		if filters.Organization > 0 {
+			q = q.Where("organization_id = ?", filters.Organization)
+		}
+
 	}
 
 	pageInfo, err := app.PageInfo(q, filters.PaginationInput)
@@ -56,6 +79,8 @@ func ExperienceList(ctx *app.Context, filters *ExperienceFilters) (*ExperienceLi
 
 	data.PageInfo = pageInfo
 
+	q = q.Scopes(app.Paginate(filters.PaginationInput))
+
 	if err := q.Find(&data.Results).Error; err != nil {
 		return nil, err
 	}
@@ -64,38 +89,23 @@ func ExperienceList(ctx *app.Context, filters *ExperienceFilters) (*ExperienceLi
 }
 
 type ExperienceCreateData struct {
-	ActivityID uint      `json:"activity_id"`
-	StartDate  time.Time `json:"start_date"`
-	EndDate    time.Time `json:"end_date"`
-	StartTime  string    `json:"start_time"`
-	EndTime    string    `json:"end_time"`
-	Message    string    `json:"message"`
+	Title string `json:"title"`
 }
 
 func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Experience, error) {
-	enrollment := models.Experience{
-		UserID:     ctx.User.ID,
-		ActivityID: data.ActivityID,
-		StartDate:  data.StartDate,
-		EndDate:    data.EndDate,
-		StartTime:  data.StartTime,
-		EndTime:    data.EndTime,
-		Message:    data.Message,
+	experience := models.Experience{
+		Title: data.Title,
 	}
 
-	if err := app.DB.Create(&enrollment).Error; err != nil {
+	if err := app.DB.Create(&experience).Error; err != nil {
 		return nil, err
 	}
 
-	return &enrollment, nil
+	return &experience, nil
 }
 
 type ExperienceUpdateData struct {
-	StartDate time.Time `json:"start_date"`
-	EndDate   time.Time `json:"end_date"`
-	StartTime string    `json:"start_time"`
-	EndTime   string    `json:"end_time"`
-	Message   string    `json:"message"`
+	Title string `json:"title"`
 }
 
 func ExperienceUpdate(ctx *app.Context, id uint, data *ExperienceUpdateData) (*models.Experience, error) {
@@ -105,11 +115,7 @@ func ExperienceUpdate(ctx *app.Context, id uint, data *ExperienceUpdateData) (*m
 		return nil, err
 	}
 
-	experience.StartDate = data.StartDate
-	experience.EndDate = data.StartDate
-	experience.StartTime = data.StartTime
-	experience.EndTime = data.EndTime
-	experience.Message = data.Message
+	experience.Title = data.Title
 
 	if err := app.DB.Save(&experience).Error; err != nil {
 		return nil, err
@@ -119,13 +125,13 @@ func ExperienceUpdate(ctx *app.Context, id uint, data *ExperienceUpdateData) (*m
 }
 
 func ExperienceDelete(ctx *app.Context, id uint) error {
-	var enrollment models.Experience
+	var experience models.Experience
 
-	if err := ExperienceQuery(ctx).Where("id = ?", id).First(&enrollment).Error; err != nil {
+	if err := ExperienceQuery(ctx).Where("id = ?", id).First(&experience).Error; err != nil {
 		return err
 	}
 
-	if err := app.DB.Delete(&enrollment).Error; err != nil {
+	if err := app.DB.Delete(&experience).Error; err != nil {
 		return err
 	}
 

@@ -2,13 +2,11 @@ package app
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humaecho"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/wevolunteer/wevolunteer/admin"
 )
 
 type Application struct {
@@ -41,12 +39,10 @@ func Init(cfgFile string) (*Application, error) {
 	apiConfig := huma.DefaultConfig("WeVolunteer", "1.0.0")
 
 	apiConfig.Servers = []*huma.Server{
-		{URL: "http://localhost:3000/api"},
+		{URL: "http://localhost:3000"},
 	}
 
-	g := e.Group("/api")
-
-	api := humaecho.NewWithGroup(e, g, apiConfig)
+	api := humaecho.New(e, apiConfig)
 
 	app := &Application{
 		Echo: e,
@@ -54,17 +50,6 @@ func Init(cfgFile string) (*Application, error) {
 	}
 
 	return app, nil
-}
-
-func (a *Application) RegisterAdminRoutes() {
-	distDirFS := echo.MustSubFS(admin.AdminDistFS, "dist")
-	distIndexHtml := echo.MustSubFS(admin.AdminIndexHTML, "dist")
-
-	assetHandler := http.FileServer(http.FS(distDirFS))
-
-	a.Echo.FileFS("/", "index.html", distDirFS)
-	a.Echo.StaticFS("/", distIndexHtml)
-	a.Echo.GET("/admin/*", echo.WrapHandler(http.StripPrefix("/admin/", assetHandler)))
 }
 
 func (a *Application) Shutdown() {

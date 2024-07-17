@@ -29,7 +29,7 @@ const (
 var rolePermissions = map[Role][]Permission{
 	RolePublic: {
 		OrganizationRead,
-		ActivityRead,
+		ExperienceRead,
 	},
 	RoleVolunteer: {
 		OrganizationRead,
@@ -40,8 +40,8 @@ var rolePermissions = map[Role][]Permission{
 	RoleOrganization: {
 		OrganizationRead,
 		OrganizationWrite,
-		ActivityRead,
-		ActivityWrite,
+		ExperienceRead,
+		ExperienceWrite,
 	},
 	RoleSuperUser: {
 		OrganizationRead,

@@ -44,7 +44,6 @@ func main() {
 			panic(err) // TODO: handle this case
 		}
 
-		a.RegisterAdminRoutes()
 		accounts.RegisterRoutes(a.Api)
 		organizations.RegisterRoutes(a.Api)
 		activities.RegisterRoutes(a.Api)

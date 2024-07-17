@@ -53,20 +53,22 @@ export const ExperienceCard: FC<ExperienceCardProps> = ({ experience, onPress, o
           </Pressable>
         )}
         <Box flex={1} padding="m">
-          <Text variant="secondary">{experience.activity.organization.name}</Text>
+          <Text variant="secondary">{experience.organization.name}</Text>
           <Box flex={1} marginVertical="s">
             <Text variant="title" fontSize={16}>
-              {experience.activity.title}
+              {experience.title}
             </Text>
           </Box>
-          <Text variant="body">{experience.activity.city}</Text>
+          <Text variant="body">{experience.city}</Text>
           <Text variant="secondary">
-            {experience.date ? format(new Date(experience.date), "d/MM") : ""}
+            {experience.start_date ? format(new Date(experience.start_date), "d/MM") : ""}
+
+            {experience.end_date ? ` - ${format(new Date(experience.end_date), "d/MM")}` : ""}
           </Text>
         </Box>
         <Box flex={1}>
           <Animated.Image
-            source={{ uri: experience.activity.image }}
+            source={{ uri: experience.image }}
             style={{ width: "100%", height: 179 }}
           />
         </Box>

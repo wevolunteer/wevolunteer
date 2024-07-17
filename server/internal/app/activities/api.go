@@ -2,37 +2,11 @@ package activities
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 )
-
-type ActivityGetRequest struct {
-	ID uint `path:"id"`
-}
-
-type ActivityGetResponse struct {
-	Body models.Activity
-}
-
-func ActivityGetController(c context.Context, input *ActivityGetRequest) (*ActivityGetResponse, error) {
-	ctx := app.FromHTTPContext(c)
-	data, err := ActivityGet(ctx, input.ID)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if data == nil {
-		return nil, &app.ErrNotAuthorized{}
-	}
-
-	resp := &ActivityGetResponse{}
-
-	resp.Body = *data
-
-	return resp, nil
-}
 
 type ActivityListResponse struct {
 	Body ActivityListData
@@ -48,6 +22,8 @@ func ActivityListController(
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println(data)
 
 	resp := &ActivityListResponse{}
 

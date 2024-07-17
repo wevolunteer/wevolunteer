@@ -17,6 +17,7 @@ type Experience = components["schemas"]["Experience"];
 type Organization = components["schemas"]["Organization"];
 
 type ActivityFilters = NonNullable<paths["/activities"]["get"]["parameters"]["query"]>;
+type ExperienceFilters = NonNullable<paths["/experiences"]["get"]["parameters"]["query"]>;
 
 type RecentSearches = {
   experiences: string[];

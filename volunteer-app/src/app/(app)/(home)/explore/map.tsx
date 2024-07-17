@@ -1,14 +1,13 @@
-import { ActivityCard } from "@/components/ActivityCard";
+import { ExperienceCard } from "@/components/ExperienceCard";
 import Box from "@/components/ui/Box";
 import Icon from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
-import { useNetwork } from "@/contexts/network";
-import { Activity } from "@/types/data";
+import { useExperiences } from "@/hooks/useExperiences";
+import { Experience } from "@/types/data";
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import * as Location from "expo-location";
 import { router } from "expo-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import MapView, { Marker } from "react-native-maps";
@@ -18,7 +17,6 @@ const pinPink = require("@/assets/images/location-pin-pink.png");
 
 export default function ExporeMapScreen() {
   const { t } = useTranslation();
-  const { client } = useNetwork();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   useEffect(() => {
@@ -33,37 +31,19 @@ export default function ExporeMapScreen() {
     })();
   }, []);
 
-  const { data, fetchNextPage } = useInfiniteQuery({
-    queryKey: ["experiences"],
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await client.GET("/activities", {
-        params: {
-          query: {
-            page: pageParam,
-          },
-        },
-      });
-      return response.data;
-    },
-    getNextPageParam: (lastPage) => (lastPage?.page_info.page ? lastPage?.page_info.page + 1 : 1),
-    initialPageParam: 1,
-  });
+  const { experiences } = useExperiences();
 
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [selectedExperience, setSelectedExperience] = useState<Experience | null>(null);
 
-  const activities = useMemo(() => {
-    return data?.pages.flatMap((page) => page?.results || []) || [];
-  }, [data]);
-
-  function handleMarkerPress(experience: Activity) {
-    if (!selectedActivity) {
+  function handleMarkerPress(experience: Experience) {
+    if (!selectedExperience) {
       bottomSheetModalRef.current?.present();
     }
-    setSelectedActivity(experience);
+    setSelectedExperience(experience);
   }
 
   function handleCloseExperience() {
-    if (selectedActivity) {
+    if (selectedExperience) {
       bottomSheetModalRef.current?.dismiss();
     }
   }
@@ -85,10 +65,10 @@ export default function ExporeMapScreen() {
           height: "100%",
         }}
       >
-        {activities.map((experience) => (
+        {experiences.map((experience) => (
           <Marker
             key={experience.id}
-            image={selectedActivity?.id === experience.id ? pinBlack : pinPink}
+            image={selectedExperience?.id === experience.id ? pinBlack : pinPink}
             coordinate={{
               latitude: experience.latitude,
               longitude: experience.longitude,
@@ -107,7 +87,7 @@ export default function ExporeMapScreen() {
         justifyContent="center"
         alignItems="center"
       >
-        {!selectedActivity && (
+        {!selectedExperience && (
           <TouchableOpacity onPress={() => router.back()}>
             <Box
               backgroundColor="darkBackground"
@@ -131,7 +111,7 @@ export default function ExporeMapScreen() {
           ref={bottomSheetModalRef}
           index={0}
           enablePanDownToClose={true}
-          onDismiss={() => setSelectedActivity(null)}
+          onDismiss={() => setSelectedExperience(null)}
           enableDynamicSizing={true}
           handleComponent={null}
           backgroundStyle={{
@@ -140,11 +120,11 @@ export default function ExporeMapScreen() {
         >
           <BottomSheetView style={{}}>
             <Box width="100%" paddingBottom="l">
-              {selectedActivity && (
-                <ActivityCard
-                  activity={selectedActivity}
+              {selectedExperience && (
+                <ExperienceCard
+                  experience={selectedExperience}
                   onPress={() => {
-                    router.push(`experiences/${selectedActivity.id}`);
+                    router.push(`experiences/${selectedExperience.id}`);
                   }}
                   onClose={handleCloseExperience}
                 />

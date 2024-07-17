@@ -6,18 +6,16 @@
 
 export interface paths {
   "/activities": {
-    /** List activities */
+    /** List enrollments */
     get: operations["activities-list"];
-    /** Create activity */
+    /** Create enrollment */
     post: operations["activities-create"];
   };
   "/activities/{id}": {
-    /** Get activity */
-    get: operations["activities-get"];
-    /** Update activity */
-    put: operations["activities-update"];
-    /** Delete activity */
+    /** Delete enrollment */
     delete: operations["activities-delete"];
+    /** Update enrollment */
+    patch: operations["activities-update"];
   };
   "/auth/refresh": {
     /** Refresh token */
@@ -50,16 +48,18 @@ export interface paths {
     delete: operations["category-delete"];
   };
   "/experiences": {
-    /** List enrollments */
+    /** List experiences */
     get: operations["experiences-list"];
-    /** Create enrollment */
+    /** Create experience */
     post: operations["experiences-create"];
   };
   "/experiences/{id}": {
-    /** Delete enrollment */
+    /** Get experience */
+    get: operations["experiences-get"];
+    /** Update experience */
+    put: operations["experiences-update"];
+    /** Delete experience */
     delete: operations["experiences-delete"];
-    /** Update enrollment */
-    patch: operations["experiences-update"];
   };
   "/login": {
     /** Login */
@@ -115,49 +115,22 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      address: string;
-      category: components["schemas"]["Category"];
-      /** Format: int64 */
-      category_id: number;
-      city: string;
-      contact_email: string;
-      contact_name: string;
-      contact_phone: string;
-      country: string;
       /** Format: date-time */
       created_at: string;
-      description: string;
       /** Format: date-time */
       end_date: string;
       end_time: string;
-      friday: boolean;
+      experience: components["schemas"]["Experience"];
       /** Format: int64 */
       id: number;
-      image: string;
-      is_recurring: boolean;
-      /** Format: double */
-      latitude: number;
-      /** Format: double */
-      longitude: number;
-      monday: boolean;
-      organization: components["schemas"]["Organization"];
-      /** Format: int64 */
-      organization_id: number;
-      published: boolean;
-      saturday: boolean;
+      message: string;
       /** Format: date-time */
       start_date: string;
       start_time: string;
-      state: string;
-      sunday: boolean;
-      thursday: boolean;
-      title: string;
-      tuesday: boolean;
-      uid: string;
+      status: string;
       /** Format: date-time */
       updated_at: string;
-      wednesday: boolean;
-      zip_code: string;
+      user: components["schemas"]["User"];
     };
     ActivityCreateData: {
       /**
@@ -165,7 +138,15 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      title: string;
+      /** Format: date-time */
+      end_date: string;
+      end_time: string;
+      /** Format: int64 */
+      experience_id: number;
+      message: string;
+      /** Format: date-time */
+      start_date: string;
+      start_time: string;
     };
     ActivityListData: {
       /**
@@ -182,7 +163,13 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      title: string;
+      /** Format: date-time */
+      end_date: string;
+      end_time: string;
+      message: string;
+      /** Format: date-time */
+      start_date: string;
+      start_time: string;
     };
     Category: {
       /**
@@ -269,18 +256,49 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      activity: components["schemas"]["Activity"];
+      address: string;
+      category: components["schemas"]["Category"];
+      /** Format: int64 */
+      category_id: number;
+      city: string;
+      contact_email: string;
+      contact_name: string;
+      contact_phone: string;
+      country: string;
       /** Format: date-time */
       created_at: string;
+      description: string;
       /** Format: date-time */
-      date: string;
+      end_date: string;
+      end_time: string;
+      friday: boolean;
       /** Format: int64 */
       id: number;
-      message: string;
-      status: string;
+      image: string;
+      is_recurring: boolean;
+      /** Format: double */
+      latitude: number;
+      /** Format: double */
+      longitude: number;
+      monday: boolean;
+      organization: components["schemas"]["Organization"];
+      /** Format: int64 */
+      organization_id: number;
+      published: boolean;
+      saturday: boolean;
+      /** Format: date-time */
+      start_date: string;
+      start_time: string;
+      state: string;
+      sunday: boolean;
+      thursday: boolean;
+      title: string;
+      tuesday: boolean;
+      uid: string;
       /** Format: date-time */
       updated_at: string;
-      user: components["schemas"]["User"];
+      wednesday: boolean;
+      zip_code: string;
     };
     ExperienceCreateData: {
       /**
@@ -288,11 +306,7 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      /** Format: int64 */
-      activity_id: number;
-      /** Format: date-time */
-      date: string;
-      message: string;
+      title: string;
     };
     ExperienceListData: {
       /**
@@ -309,9 +323,7 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      /** Format: date-time */
-      date: string;
-      message: string;
+      title: string;
     };
     LoginData: {
       /**
@@ -555,18 +567,13 @@ export type external = Record<string, never>;
 
 export interface operations {
 
-  /** List activities */
+  /** List enrollments */
   "activities-list": {
     parameters: {
       query?: {
         page?: number;
         per_page?: number;
         q?: string;
-        distance?: number;
-        date_start?: string;
-        date_end?: string;
-        categories?: number[];
-        organization?: number;
       };
     };
     responses: {
@@ -584,7 +591,7 @@ export interface operations {
       };
     };
   };
-  /** Create activity */
+  /** Create enrollment */
   "activities-create": {
     requestBody: {
       content: {
@@ -606,19 +613,17 @@ export interface operations {
       };
     };
   };
-  /** Get activity */
-  "activities-get": {
+  /** Delete enrollment */
+  "activities-delete": {
     parameters: {
       path: {
         id: number;
       };
     };
     responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Activity"];
-        };
+      /** @description No Content */
+      204: {
+        content: never;
       };
       /** @description Error */
       default: {
@@ -628,7 +633,7 @@ export interface operations {
       };
     };
   };
-  /** Update activity */
+  /** Update enrollment */
   "activities-update": {
     parameters: {
       path: {
@@ -646,26 +651,6 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["Activity"];
         };
-      };
-      /** @description Error */
-      default: {
-        content: {
-          "application/problem+json": components["schemas"]["ErrorModel"];
-        };
-      };
-    };
-  };
-  /** Delete activity */
-  "activities-delete": {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description No Content */
-      204: {
-        content: never;
       };
       /** @description Error */
       default: {
@@ -869,13 +854,18 @@ export interface operations {
       };
     };
   };
-  /** List enrollments */
+  /** List experiences */
   "experiences-list": {
     parameters: {
       query?: {
         page?: number;
         per_page?: number;
         q?: string;
+        distance?: number;
+        date_start?: string;
+        date_end?: string;
+        categories?: number[];
+        organization?: number;
       };
     };
     responses: {
@@ -893,7 +883,7 @@ export interface operations {
       };
     };
   };
-  /** Create enrollment */
+  /** Create experience */
   "experiences-create": {
     requestBody: {
       content: {
@@ -915,17 +905,19 @@ export interface operations {
       };
     };
   };
-  /** Delete enrollment */
-  "experiences-delete": {
+  /** Get experience */
+  "experiences-get": {
     parameters: {
       path: {
         id: number;
       };
     };
     responses: {
-      /** @description No Content */
-      204: {
-        content: never;
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Experience"];
+        };
       };
       /** @description Error */
       default: {
@@ -935,7 +927,7 @@ export interface operations {
       };
     };
   };
-  /** Update enrollment */
+  /** Update experience */
   "experiences-update": {
     parameters: {
       path: {
@@ -953,6 +945,26 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["Experience"];
         };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** Delete experience */
+  "experiences-delete": {
+    parameters: {
+      path: {
+        id: number;
+      };
+    };
+    responses: {
+      /** @description No Content */
+      204: {
+        content: never;
       };
       /** @description Error */
       default: {

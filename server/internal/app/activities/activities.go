@@ -1,6 +1,8 @@
 package activities
 
 import (
+	"time"
+
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 	"gorm.io/gorm"
@@ -8,35 +10,31 @@ import (
 
 func ActivityQuery(ctx *app.Context) *gorm.DB {
 	q := app.DB.Model(&models.Activity{})
-	q = q.Preload("Category")
-	q = q.Preload("Organization")
+
+	if ctx.Role == app.RolePublic {
+		q = q.Where("1 != 1")
+	}
+
+	if ctx.Role == app.RoleVolunteer {
+		q = q.Where("user_id = ?", ctx.User.ID)
+	}
+
+	if ctx.Role == app.RoleOrganization {
+		q = q.Joins("JOIN activities ON activities.id = enrollments.activity_id").
+			Where("activities.organization_id = ?", ctx.User.ID)
+	}
 
 	return q
 }
 
-func ActivityGet(c *app.Context, id uint) (*models.Activity, error) {
-	var activity models.Activity
-
-	if err := ActivityQuery(c).Where("id = ?", id).First(&activity).Error; err != nil {
-		return nil, err
-	}
-
-	return &activity, nil
+type ActivityFilters struct {
+	app.PaginationInput
+	Query string `query:"q"`
 }
 
 type ActivityListData struct {
 	Results  []models.Activity   `json:"results"`
 	PageInfo *app.PaginationInfo `json:"page_info"`
-}
-
-type ActivityFilters struct {
-	app.PaginationInput
-	Query        string  `query:"q"`
-	Distance     float64 `query:"distance"`
-	DateStart    string  `query:"date_start"`
-	DateEnd      string  `query:"date_end"`
-	Categories   []uint  `query:"categories"`
-	Organization uint    `query:"organization"`
 }
 
 func ActivityList(ctx *app.Context, filters *ActivityFilters) (*ActivityListData, error) {
@@ -45,30 +43,9 @@ func ActivityList(ctx *app.Context, filters *ActivityFilters) (*ActivityListData
 	q := ActivityQuery(ctx)
 
 	if filters != nil {
-		if filters.DateStart != "" {
-			q = q.Where("start_time >= ?", filters.DateStart)
-		}
-
-		if filters.DateEnd != "" {
-			q = q.Where("end_time <= ?", filters.DateEnd)
-		}
-
-		if filters.Distance != 0 && ctx.User != nil && ctx.User.Latitude != 0 && ctx.User.Longitude != 0 {
-			q = q.Where("ST_Distance_Sphere(point(longitude, latitude), point(?, ?)) <= ?", ctx.User.Longitude, ctx.User.Latitude, filters.Distance)
-		}
-
 		if filters.Query != "" {
-			q = q.Where("title LIKE ?", "%"+filters.Query+"%")
+			q = q.Where("name LIKE ?", "%"+filters.Query+"%")
 		}
-
-		if len(filters.Categories) > 0 {
-			q = q.Where("category_id IN ?", filters.Categories)
-		}
-
-		if filters.Organization > 0 {
-			q = q.Where("organization_id = ?", filters.Organization)
-		}
-
 	}
 
 	pageInfo, err := app.PageInfo(q, filters.PaginationInput)
@@ -79,8 +56,6 @@ func ActivityList(ctx *app.Context, filters *ActivityFilters) (*ActivityListData
 
 	data.PageInfo = pageInfo
 
-	q = q.Scopes(app.Paginate(filters.PaginationInput))
-
 	if err := q.Find(&data.Results).Error; err != nil {
 		return nil, err
 	}
@@ -89,23 +64,38 @@ func ActivityList(ctx *app.Context, filters *ActivityFilters) (*ActivityListData
 }
 
 type ActivityCreateData struct {
-	Title string `json:"title"`
+	ExperienceID uint      `json:"experience_id"`
+	StartDate    time.Time `json:"start_date"`
+	EndDate      time.Time `json:"end_date"`
+	StartTime    string    `json:"start_time"`
+	EndTime      string    `json:"end_time"`
+	Message      string    `json:"message"`
 }
 
 func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activity, error) {
-	activity := models.Activity{
-		Title: data.Title,
+	enrollment := models.Activity{
+		UserID:       ctx.User.ID,
+		ExperienceID: data.ExperienceID,
+		StartDate:    data.StartDate,
+		EndDate:      data.EndDate,
+		StartTime:    data.StartTime,
+		EndTime:      data.EndTime,
+		Message:      data.Message,
 	}
 
-	if err := app.DB.Create(&activity).Error; err != nil {
+	if err := app.DB.Create(&enrollment).Error; err != nil {
 		return nil, err
 	}
 
-	return &activity, nil
+	return &enrollment, nil
 }
 
 type ActivityUpdateData struct {
-	Title string `json:"title"`
+	StartDate time.Time `json:"start_date"`
+	EndDate   time.Time `json:"end_date"`
+	StartTime string    `json:"start_time"`
+	EndTime   string    `json:"end_time"`
+	Message   string    `json:"message"`
 }
 
 func ActivityUpdate(ctx *app.Context, id uint, data *ActivityUpdateData) (*models.Activity, error) {
@@ -115,7 +105,11 @@ func ActivityUpdate(ctx *app.Context, id uint, data *ActivityUpdateData) (*model
 		return nil, err
 	}
 
-	activity.Title = data.Title
+	activity.StartDate = data.StartDate
+	activity.EndDate = data.StartDate
+	activity.StartTime = data.StartTime
+	activity.EndTime = data.EndTime
+	activity.Message = data.Message
 
 	if err := app.DB.Save(&activity).Error; err != nil {
 		return nil, err
@@ -125,13 +119,13 @@ func ActivityUpdate(ctx *app.Context, id uint, data *ActivityUpdateData) (*model
 }
 
 func ActivityDelete(ctx *app.Context, id uint) error {
-	var activity models.Activity
+	var enrollment models.Activity
 
-	if err := ActivityQuery(ctx).Where("id = ?", id).First(&activity).Error; err != nil {
+	if err := ActivityQuery(ctx).Where("id = ?", id).First(&enrollment).Error; err != nil {
 		return err
 	}
 
-	if err := app.DB.Delete(&activity).Error; err != nil {
+	if err := app.DB.Delete(&enrollment).Error; err != nil {
 		return err
 	}
 

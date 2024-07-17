@@ -2,5 +2,5 @@ db.sqlite3
 bin/
 tmp/    
 
+.env
 config.*.yml
-!config.dev.yml

@@ -100,10 +100,14 @@ func DatabaseClose(config *DatabaseConfig) error {
 func openDatabase(config *DatabaseConfig) (*gorm.DB, error) {
 	var db *gorm.DB
 
+	if config.dsn == "" {
+		return nil, fmt.Errorf("missing DSN")
+	}
+
 	dsn, err := parsePostgresDSN(config.dsn)
 
 	if err != nil {
-		return nil, fmt.Errorf("invalid dsn")
+		return nil, err
 	}
 
 	if config.test {
@@ -165,13 +169,13 @@ func destroyTestDatabase(dsn *PostgresDSN) error {
 }
 
 func parsePostgresDSN(dsn string) (*PostgresDSN, error) {
-	u, err := url.Parse(dsn)
-	if err != nil {
-		return nil, err
+	if !strings.HasPrefix(dsn, "postgres://") {
+		return nil, fmt.Errorf("invalid DSN scheme: only 'postgres://' is supported")
 	}
 
-	if u.Scheme != "postgres" {
-		return nil, fmt.Errorf("invalid DSN scheme: %s", u.Scheme)
+	u, err := url.Parse(dsn)
+	if err != nil {
+		return nil, fmt.Errorf("cannot parse DSN: %s", dsn)
 	}
 
 	user := u.User.Username()
@@ -184,13 +188,15 @@ func parsePostgresDSN(dsn string) (*PostgresDSN, error) {
 		port = hostParts[1]
 	}
 
-	return &PostgresDSN{
+	dbConfig := &PostgresDSN{
 		User:     user,
 		Password: password,
 		Host:     host,
 		Port:     port,
 		DBName:   strings.TrimPrefix(u.Path, "/"),
-	}, nil
+	}
+
+	return dbConfig, nil
 }
 
 type PaginationInput struct {
@@ -224,8 +230,6 @@ func PageInfo(db *gorm.DB, pagination PaginationInput) (*PaginationInfo, error) 
 		PerPage: pagination.PerPage,
 	}
 
-	fmt.Printf("pre pagination: %+v\n", pagination)
-
 	if pagination.Page < 1 {
 		pageInfo.Page = 1
 	}
@@ -237,7 +241,6 @@ func PageInfo(db *gorm.DB, pagination PaginationInput) (*PaginationInfo, error) 
 	if err := db.Count(&pageInfo.Total).Error; err != nil {
 		return nil, err
 	}
-	fmt.Printf("post pagination: %+v\n", pagination)
 
 	return pageInfo, nil
 }
