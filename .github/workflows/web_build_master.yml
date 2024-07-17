@@ -29,7 +29,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          context: ./server
+          context: ./web
           push: true
           tags: metadonors/wevolunteers-web:latest
           cache-from: type=gha
