@@ -1,12 +1,12 @@
-name: API | Build image (master)
+name: WEB | Build image (staging)
 
 on:
   push:
     paths:
-      - "server/**"
-      - ".github/workflows/*server*"
+      - "web/**"
+      - ".github/workflows/*web*"
     branches:
-      - "master"
+      - "develop"
 
 jobs:
   core:
@@ -31,10 +31,10 @@ jobs:
         with:
           context: ./server
           push: true
-          tags: metadonors/wevolunteers-api:latest
+          tags: metadonors/wevolunteers-web:staging
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       # - name: Update service
       #   run: |
-      #     curl -X POST ${{ secrets.SERVER_MASTER_WEBHOOK }}
+      #     curl -X POST ${{ secrets.SERVER_STAGING_WEBHOOK }}
