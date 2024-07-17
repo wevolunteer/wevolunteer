@@ -1,7 +1,6 @@
 package app
 
 import (
-	"path/filepath"
 	"time"
 
 	"github.com/spf13/viper"
@@ -31,24 +30,13 @@ func ParseConfig(path string) {
 		env = EnvDevelopment
 	}
 
-	var configFile string
-	switch env {
-	case EnvDevelopment:
-		configFile = "config.dev.yml"
-	case EnvTesting:
-		configFile = "config.test.yml"
-	case EnvProduction:
-		configFile = "config.prod.yml"
-	}
-
 	viper.SetDefault("db_dsn", "sqlite3://db.sqlite3")
 	viper.SetDefault("debug", false)
 	viper.SetDefault("db_max_open_connections", 100)
 	viper.SetDefault("db_max_idle_connections", 10)
 
-	configFilePath := filepath.Join(path, configFile)
-
-	viper.SetConfigFile(configFilePath)
+	viper.SetConfigFile(".env")
+	viper.AddConfigPath(".")
 
 	viper.AutomaticEnv()
 
