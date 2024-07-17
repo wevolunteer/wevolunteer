@@ -41,12 +41,10 @@ func Init(cfgFile string) (*Application, error) {
 	apiConfig := huma.DefaultConfig("WeVolunteer", "1.0.0")
 
 	apiConfig.Servers = []*huma.Server{
-		{URL: "http://localhost:3000/api"},
+		{URL: "http://localhost:3000"},
 	}
 
-	g := e.Group("/api")
-
-	api := humaecho.NewWithGroup(e, g, apiConfig)
+	api := humaecho.New(e, apiConfig)
 
 	app := &Application{
 		Echo: e,
