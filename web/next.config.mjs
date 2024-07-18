@@ -1,6 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
-}
 
-export default nextConfig
+  async rewrites() {
+    if (process.env.NODE_ENV === "development") {
+      return [
+        {
+          source: "/api/:path*",
+          destination: `http://localhost:3000/api/:path*`,
+        },
+      ];
+    }
+  },
+};
+
+export default nextConfig;
