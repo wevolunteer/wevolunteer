@@ -2,7 +2,6 @@ package categories
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
@@ -22,8 +21,6 @@ func CategoryListController(
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(data)
 
 	resp := &CategoryListResponse{}
 

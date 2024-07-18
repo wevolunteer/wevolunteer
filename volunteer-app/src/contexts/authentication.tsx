@@ -1,8 +1,10 @@
 import { Session, useStorageState } from "@/hooks/useStorageState";
 import { RequestCodeData, VerifyCodeData } from "@/types/data";
+import * as Device from "expo-device";
 import { Middleware } from "openapi-fetch";
 import React from "react";
 import { useNetwork } from "./network";
+import { useNotifications } from "./notifications";
 
 const AuthContext = React.createContext<{
   requestAuthCode: (data: RequestCodeData) => Promise<boolean>;
@@ -35,6 +37,7 @@ export function useSession() {
 export function SessionProvider(props: React.PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState("session");
   const { client } = useNetwork();
+  const { expoPushToken } = useNotifications();
   const [hasTriedRefresh, setHasTriedRefresh] = React.useState(false);
 
   const tokenMiddleware: Middleware = {
@@ -119,11 +122,11 @@ export function SessionProvider(props: React.PropsWithChildren) {
           });
 
           if (response.data?.access_token) {
-            const data = await client.GET("/auth/user", {
-              headers: {
-                Authorization: `Bearer ${response.data.access_token}`,
-              },
-            });
+            const headers = {
+              Authorization: `Bearer ${response.data.access_token}`,
+            };
+
+            const data = await client.GET("/auth/user", { headers });
 
             if (data?.data) {
               setSession({
@@ -132,6 +135,18 @@ export function SessionProvider(props: React.PropsWithChildren) {
                   accessToken: response.data.access_token,
                   refreshToken: response.data.refresh_token,
                 },
+              });
+
+              await client.POST("/user-devices", {
+                body: {
+                  brand: Device.brand || "Unknown",
+                  device_name: Device.deviceName || "Unknown",
+                  model: Device.modelName || "Unknown",
+                  device_type: Device.deviceType?.toString() || "Unknown",
+                  os_name: Device.osName || "Unknown",
+                  token: expoPushToken,
+                },
+                headers,
               });
 
               return true;

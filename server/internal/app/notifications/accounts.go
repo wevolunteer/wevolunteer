@@ -50,4 +50,18 @@ func accountsEventsSubscribe() {
 		fmt.Printf("User verified code: email %s", user.Email)
 		return nil
 	})
+
+	events.Subscribe(events.UserDeviceRegistered, func(event events.Event) error {
+		payload, ok := event.Payload.Data.(events.UserDeviceCreatePayload)
+
+		if !ok {
+			fmt.Println("User device registered: error")
+
+			return fmt.Errorf("invalid data type")
+		}
+
+		NotificationAddDevice(payload.User, payload.Device.Token)
+
+		return nil
+	})
 }

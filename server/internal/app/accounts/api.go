@@ -83,13 +83,13 @@ type UserInfoResponse struct {
 }
 
 func UserProfileGetController(c context.Context, input *struct{}) (*UserInfoResponse, error) {
-	user, ok := c.Value("user").(models.User)
+	user, ok := c.Value("user").(*models.User)
 
 	if !ok {
 		return nil, huma.Error401Unauthorized("user not found")
 	}
 
-	data, err := UserProfileGet(&user)
+	data, err := UserProfileGet(user)
 
 	if err != nil {
 		return nil, err
@@ -105,22 +105,20 @@ type UserProfileUpdateRequest struct {
 }
 
 func UserProfileUpdateController(c context.Context, input *UserProfileUpdateRequest) (*UserInfoResponse, error) {
-	var user models.User
-
-	user, ok := c.Value("user").(models.User)
+	user, ok := c.Value("user").(*models.User)
 
 	if !ok {
 		return nil, huma.Error401Unauthorized("user not found")
 	}
 
-	err := UserProfileUpdate(&user, input.Body)
+	err := UserProfileUpdate(user, input.Body)
 
 	if err != nil {
 		return nil, err
 	}
 
 	return &UserInfoResponse{
-		Body: user,
+		Body: *user,
 	}, nil
 
 }
@@ -225,7 +223,6 @@ type UserRequestCodeRequest struct {
 }
 
 func UserRequestCodeController(c context.Context, input *UserRequestCodeRequest) (*struct{}, error) {
-	fmt.Println("request code")
 	err := requestCode(input.Body)
 
 	if err != nil {
@@ -248,5 +245,46 @@ func UserVerifyCodeController(c context.Context, input *UserVerifyCodeRequest) (
 
 	return &AuhenticationResponse{
 		Body: *token,
+	}, nil
+}
+
+// User Devices
+
+type UserDeviceListResponse struct {
+	Body UserDeviceListData
+}
+
+func UserDeviceListController(c context.Context, input *UserDeviceFilters) (*UserDeviceListResponse, error) {
+	ctx := app.FromHTTPContext(c)
+	data, err := UserDeviceList(ctx, input)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &UserDeviceListResponse{
+		Body: *data,
+	}, nil
+}
+
+type UserDeviceCreateRequest struct {
+	Body UserDeviceCreateData
+}
+
+type UserDeviceCreateResponse struct {
+	Body models.UserDevice
+}
+
+func UserDeviceCreateController(c context.Context, input *UserDeviceCreateRequest) (*UserDeviceCreateResponse, error) {
+	ctx := app.FromHTTPContext(c)
+
+	device, err := UserDeviceCreate(ctx, &input.Body)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &UserDeviceCreateResponse{
+		Body: *device,
 	}, nil
 }

@@ -36,7 +36,6 @@ func UserProfileUpdate(user *models.User, data UserProfileUpdateData) error {
 	}
 
 	if data.FistName != nil {
-		fmt.Printf("Updating first name to: %s\n", *data.FistName)
 		user.FirstName = *data.FistName
 	}
 

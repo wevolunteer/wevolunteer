@@ -177,4 +177,34 @@ func RegisterRoutes(api huma.API) {
 		},
 		UserGetController,
 	)
+
+	huma.Register(
+		api,
+		huma.Operation{
+			OperationID: "user-devices-list",
+			Method:      http.MethodGet,
+			Summary:     "List users devices",
+			Path:        "/user-devices",
+			Tags:        []string{"Accounts"},
+			Middlewares: huma.Middlewares{
+				app.AuthMiddleware(api),
+			},
+		},
+		UserDeviceListController,
+	)
+
+	huma.Register(
+		api,
+		huma.Operation{
+			OperationID: "user-device-create",
+			Method:      http.MethodPost,
+			Summary:     "Create user devices",
+			Path:        "/user-devices",
+			Tags:        []string{"Accounts"},
+			Middlewares: huma.Middlewares{
+				app.AuthMiddleware(api),
+			},
+		},
+		UserDeviceCreateController,
+	)
 }

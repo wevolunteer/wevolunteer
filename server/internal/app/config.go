@@ -55,6 +55,6 @@ func ParseConfig(path string) {
 	}
 
 	if Config.NOVU_API_KEY == "" {
-		log.Fatal("NOVU_API_KEY must be set")
+		log.Debug("NOVU_API_KEY not set. Notifications are disabled")
 	}
 }
