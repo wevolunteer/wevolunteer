@@ -1,8 +1,6 @@
 package accounts
 
 import (
-	"fmt"
-
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 )

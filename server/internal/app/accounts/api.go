@@ -2,7 +2,6 @@ package accounts
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/wevolunteer/wevolunteer/internal/app"
