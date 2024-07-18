@@ -35,6 +35,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # - name: Update service
-      #   run: |
-      #     curl -X POST ${{ secrets.SERVER_STAGING_WEBHOOK }}
+      - name: Update service
+        run: |
+          curl -X POST ${{ secrets.WEB_MASTER_WEBHOOK }}
