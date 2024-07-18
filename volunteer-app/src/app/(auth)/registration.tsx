@@ -7,6 +7,7 @@ import Topbar from "@/components/ui/Topbar";
 import { useSession } from "@/contexts/authentication";
 import { useNetwork } from "@/contexts/network";
 import { ProfileData } from "@/types/data";
+import { validateCF } from "@/utils/validators";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -45,6 +46,7 @@ export default function RegistrationScreen() {
     watch,
     setValue,
     handleSubmit,
+    setError,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -60,6 +62,16 @@ export default function RegistrationScreen() {
   async function onSubmit(data: RegistrationData) {
     try {
       setIsLoading(true);
+
+      if(data.tax_code && !validateCF(data.tax_code)) {
+        setError("tax_code", {
+          type: "manual",
+          message: t("Invalid tax code"),
+        });
+        setIsLoading(false);
+        return;
+      }
+
       const response = await client.PATCH("/auth/user", {
         body: data,
       });
@@ -91,6 +103,7 @@ export default function RegistrationScreen() {
   }
 
   const dateOfBirth = watch("date_of_birth");
+  const taxCode = watch("tax_code");
 
   useEffect(() => {
     if (dateOfBirth && dateOfBirth.length === 2) {
@@ -105,6 +118,12 @@ export default function RegistrationScreen() {
       setValue("date_of_birth", dateOfBirth.slice(0, 10));
     }
   }, [dateOfBirth, setValue]);
+
+  useEffect(() => {
+    if(taxCode) {
+      setValue("tax_code", taxCode.toUpperCase());
+    }
+  }, [taxCode, setValue]);
 
   return (
     <SafeAreaView>
@@ -167,11 +186,11 @@ export default function RegistrationScreen() {
               )}
             />
             <Text variant="secondary" marginTop="s">
+            {errors.date_of_birth && <Text variant="error">{errors.date_of_birth.message}</Text>}
               <Trans i18nKey="registrationAgeDescription">
                 To register for FaXTe you must be at least 16 years old.
               </Trans>
             </Text>
-            {errors.date_of_birth && <Text variant="error">{errors.date_of_birth.message}</Text>}
           </Box>
 
           <Box marginVertical="s">
@@ -182,10 +201,10 @@ export default function RegistrationScreen() {
                 <InputText label={t("taxCode", "Tax code")} value={value} onChangeText={onChange} />
               )}
             />
+            {errors.tax_code && <Text variant="error">{errors.tax_code.message}</Text>}
             <Text variant="secondary" marginTop="s">
               <Trans i18nKey="registrationTaxCodeDescription">The tax code is required to...</Trans>
             </Text>
-            {errors.tax_code && <Text variant="error">{errors.tax_code.message}</Text>}
           </Box>
 
           <Controller
