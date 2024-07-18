@@ -73,7 +73,7 @@ type ActivityCreateData struct {
 }
 
 func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activity, error) {
-	enrollment := models.Activity{
+	activity := models.Activity{
 		UserID:       ctx.User.ID,
 		ExperienceID: data.ExperienceID,
 		StartDate:    data.StartDate,
@@ -83,11 +83,11 @@ func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activit
 		Message:      data.Message,
 	}
 
-	if err := app.DB.Create(&enrollment).Error; err != nil {
+	if err := app.DB.Create(&activity).Error; err != nil {
 		return nil, err
 	}
 
-	return &enrollment, nil
+	return &activity, nil
 }
 
 type ActivityUpdateData struct {
@@ -119,13 +119,13 @@ func ActivityUpdate(ctx *app.Context, id uint, data *ActivityUpdateData) (*model
 }
 
 func ActivityDelete(ctx *app.Context, id uint) error {
-	var enrollment models.Activity
+	var activity models.Activity
 
-	if err := ActivityQuery(ctx).Where("id = ?", id).First(&enrollment).Error; err != nil {
+	if err := ActivityQuery(ctx).Where("id = ?", id).First(&activity).Error; err != nil {
 		return err
 	}
 
-	if err := app.DB.Delete(&enrollment).Error; err != nil {
+	if err := app.DB.Delete(&activity).Error; err != nil {
 		return err
 	}
 

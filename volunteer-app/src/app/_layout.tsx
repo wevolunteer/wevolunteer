@@ -15,6 +15,8 @@ import Toast from "react-native-toast-message";
 import { NetworkProvider } from "@/contexts/network";
 import LocalesInit from "@/locales";
 import { getLocales } from "expo-localization";
+
+import { NotificationProvider } from "@/contexts/notifications";
 import i18next from "i18next";
 import { Platform, UIManager } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -54,21 +56,23 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider theme={theme}>
-        <NetworkProvider>
-          <SessionProvider>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: {
-                  flex: 1,
-                  backgroundColor: theme.colors.mainBackground,
-                },
-              }}
-            />
-            <Toast config={toastConfig(theme)} position="bottom" />
-            <StatusBar style="dark" />
-          </SessionProvider>
-        </NetworkProvider>
+        <NotificationProvider>
+          <NetworkProvider>
+            <SessionProvider>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  contentStyle: {
+                    flex: 1,
+                    backgroundColor: theme.colors.mainBackground,
+                  },
+                }}
+              />
+              <Toast config={toastConfig(theme)} position="bottom" />
+              <StatusBar style="dark" />
+            </SessionProvider>
+          </NetworkProvider>
+        </NotificationProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );

@@ -8,9 +8,15 @@ type RequestCodeData =
 type VerifyCodeData =
   paths["/auth/verify-code"]["post"]["requestBody"]["content"]["application/json"];
 
+type AccessToken = {
+  accessToken: string;
+  refreshToken: string;
+};
+
 type ProfileData = paths["/auth/user"]["patch"]["requestBody"]["content"]["application/json"];
 
 type User = components["schemas"]["User"];
+type UserDevice = components["schemas"]["UserDevice"];
 
 type Activity = components["schemas"]["Activity"];
 type Experience = components["schemas"]["Experience"];

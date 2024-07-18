@@ -2,7 +2,6 @@ package organizations
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
@@ -17,7 +16,6 @@ func OrganizationListController(c context.Context, input *OrganizationFilters) (
 	data, err := OrganizationsList(ctx, input)
 
 	if err != nil {
-		fmt.Println("Error in OrganizationListController")
 		return nil, err
 	}
 

@@ -55,7 +55,7 @@ export default function VerifyCodeScreen() {
       Toast.show({
         type: "success",
         props: {
-          icon: "mail-outline",
+          icon: "mail",
         },
         text1: t("codeSent", "Code sent"),
         text2: t("codeSentDescription", "We sent a new verification code to the email address"),

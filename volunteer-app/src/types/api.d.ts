@@ -6,15 +6,15 @@
 
 export interface paths {
   "/activities": {
-    /** List enrollments */
+    /** List activities */
     get: operations["activities-list"];
-    /** Create enrollment */
+    /** Create activity */
     post: operations["activities-create"];
   };
   "/activities/{id}": {
-    /** Delete enrollment */
+    /** Delete activity */
     delete: operations["activities-delete"];
-    /** Update enrollment */
+    /** Update activity */
     patch: operations["activities-update"];
   };
   "/auth/refresh": {
@@ -86,6 +86,12 @@ export interface paths {
   "/signup": {
     /** Signup */
     post: operations["signup"];
+  };
+  "/user-devices": {
+    /** List users devices */
+    get: operations["user-devices-list"];
+    /** Create user devices */
+    post: operations["user-device-create"];
   };
   "/users": {
     /** List users */
@@ -508,6 +514,50 @@ export interface components {
       password: string;
       phone: string;
     };
+    UserDevice: {
+      /**
+       * Format: uri
+       * @description A URL to the JSON Schema for this object.
+       */
+      $schema?: string;
+      brand: string;
+      /** Format: date-time */
+      created_at: string;
+      device_name: string;
+      device_type: string;
+      /** Format: int64 */
+      id: number;
+      model: string;
+      os_name: string;
+      token: string;
+      uid: string;
+      /** Format: date-time */
+      updated_at: string;
+      /** Format: int64 */
+      user_id: number;
+    };
+    UserDeviceCreateData: {
+      /**
+       * Format: uri
+       * @description A URL to the JSON Schema for this object.
+       */
+      $schema?: string;
+      brand: string;
+      device_name: string;
+      device_type: string;
+      model: string;
+      os_name: string;
+      token: string;
+    };
+    UserDeviceListData: {
+      /**
+       * Format: uri
+       * @description A URL to the JSON Schema for this object.
+       */
+      $schema?: string;
+      page_info: components["schemas"]["PaginationInfo"];
+      results: components["schemas"]["UserDevice"][];
+    };
     UserProfileUpdateData: {
       /**
        * Format: uri
@@ -567,7 +617,7 @@ export type external = Record<string, never>;
 
 export interface operations {
 
-  /** List enrollments */
+  /** List activities */
   "activities-list": {
     parameters: {
       query?: {
@@ -591,7 +641,7 @@ export interface operations {
       };
     };
   };
-  /** Create enrollment */
+  /** Create activity */
   "activities-create": {
     requestBody: {
       content: {
@@ -613,7 +663,7 @@ export interface operations {
       };
     };
   };
-  /** Delete enrollment */
+  /** Delete activity */
   "activities-delete": {
     parameters: {
       path: {
@@ -633,7 +683,7 @@ export interface operations {
       };
     };
   };
-  /** Update enrollment */
+  /** Update activity */
   "activities-update": {
     parameters: {
       path: {
@@ -1147,6 +1197,51 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["TokenData"];
+        };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** List users devices */
+  "user-devices-list": {
+    parameters: {
+      query?: {
+        page?: number;
+        per_page?: number;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["UserDeviceListData"];
+        };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** Create user devices */
+  "user-device-create": {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserDeviceCreateData"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["UserDevice"];
         };
       };
       /** @description Error */

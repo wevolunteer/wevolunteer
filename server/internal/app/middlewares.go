@@ -41,11 +41,12 @@ func AuthMiddleware(api huma.API) func(ctx huma.Context, next func(huma.Context)
 
 		if err := DB.Model(&models.User{}).Where("email = ?", claims.Subject).First(&user).Error; err != nil {
 			log.Debug("User not found")
+			log.Debug(err)
 			huma.WriteErr(api, ctx, http.StatusUnauthorized, "Unauthorized")
 			return
 		}
 
-		ctx = huma.WithValue(ctx, "user", user)
+		ctx = huma.WithValue(ctx, "user", &user)
 		ctx = huma.WithValue(ctx, "role", claims.Role)
 
 		next(ctx)
@@ -56,13 +57,13 @@ func RoleMiddleware(api huma.API, permission Permission) func(ctx huma.Context, 
 	return func(ctx huma.Context, next func(huma.Context)) {
 		var user_role Role = RolePublic
 
-		user, ok := ctx.Context().Value("user").(models.User)
+		user, ok := ctx.Context().Value("user").(*models.User)
 
 		if ok {
 			user_role = RoleVolunteer
 		}
 
-		if user.IsRootAdmin {
+		if ok && user.IsRootAdmin {
 			user_role = RoleSuperUser
 		}
 

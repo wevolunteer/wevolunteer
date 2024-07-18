@@ -23,8 +23,6 @@ func ActivityListController(
 		return nil, err
 	}
 
-	fmt.Println(data)
-
 	resp := &ActivityListResponse{}
 
 	resp.Body = *data

@@ -55,6 +55,7 @@ func DatabaseInit(config *DatabaseConfig) error {
 
 	DB.AutoMigrate(
 		&models.User{},
+		&models.UserDevice{},
 		&models.Organization{},
 		&models.Activity{},
 		&models.Experience{},

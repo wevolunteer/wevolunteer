@@ -3,24 +3,19 @@ package events
 import (
 	"sync"
 
-	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/utils/logger"
 )
 
 type EventType string
 
 const (
-	UserSignup        EventType = "user.signup"
-	UserLogin         EventType = "user.login"
-	UserCodeRequested EventType = "user.code.requested"
-	UserCodeVerified  EventType = "user.code.verified"
-	ActivityPublished EventType = "activity.published"
+	UserSignup           EventType = "user.signup"
+	UserLogin            EventType = "user.login"
+	UserCodeRequested    EventType = "user.code.requested"
+	UserCodeVerified     EventType = "user.code.verified"
+	ActivityPublished    EventType = "activity.published"
+	UserDeviceRegistered EventType = "user.device.registered"
 )
-
-type EventPayload struct {
-	Ctx  app.Context
-	Data interface{}
-}
 
 type Event struct {
 	Type    EventType

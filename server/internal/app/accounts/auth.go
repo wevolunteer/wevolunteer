@@ -77,8 +77,6 @@ func requestCode(data RequestCodeData) error {
 		return err
 	}
 
-	fmt.Println(user)
-
 	events.Publish(events.Event{
 		Type: events.UserCodeRequested,
 		Payload: events.EventPayload{
@@ -155,7 +153,6 @@ func register(data SignupData) (*TokenData, error) {
 	})
 
 	if err != nil {
-		fmt.Println("err 1")
 		return nil, err
 	}
 
