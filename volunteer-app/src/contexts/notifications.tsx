@@ -88,10 +88,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       .catch((error: any) => setExpoPushToken(`${error}`));
 
     notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+      // TODO
       setNotification(notification);
     });
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      // TODO
       console.log(response);
     });
 
