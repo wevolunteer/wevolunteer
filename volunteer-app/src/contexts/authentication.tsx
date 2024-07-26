@@ -38,7 +38,6 @@ export function SessionProvider(props: React.PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState("session");
   const { client } = useNetwork();
   const { expoPushToken } = useNotifications();
-  const [hasTriedRefresh, setHasTriedRefresh] = React.useState(false);
 
   const tokenMiddleware: Middleware = {
     async onRequest(req, options) {
@@ -48,7 +47,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
       return req;
     },
     async onResponse(res, options) {
-      if (res.status === 401 && session?.token?.refreshToken && !hasTriedRefresh) {
+      if (res.status === 401 && session?.token?.refreshToken && !res.url.includes("api/auth/")) {
         try {
           const refreshTokenResponse = await client.POST("/auth/refresh", {
             body: {
@@ -57,8 +56,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
           });
 
           if (refreshTokenResponse.error) {
-            setSession(null);
-            return res;
+            throw new Error(refreshTokenResponse.error.errors?.join(", "));
           }
 
           setSession({
@@ -68,17 +66,12 @@ export function SessionProvider(props: React.PropsWithChildren) {
               refreshToken: refreshTokenResponse.data.refresh_token,
             },
           });
-
-          return res;
         } catch (error) {
           setSession(null);
-          // Gestisci l'errore di refresh token
           console.error("Failed to refresh token", error);
         }
-      } else if (res.status === 401 && hasTriedRefresh) {
-        setSession(null);
-        setHasTriedRefresh(false);
       }
+
       return res;
     },
   };
