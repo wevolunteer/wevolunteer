@@ -1,11 +1,16 @@
 import { format } from "date-fns";
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Box from "../ui/Box";
 import InputText from "../ui/InputText";
 import Text from "../ui/Text";
 import ChoiceList from "./ChoiceList";
 import SearchbarFilter from "./Filter";
+import Button from "../ui/Button";
+import { TextInput } from "react-native-paper";
+import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
+import InputTextBottomSheet from "../ui/InputTextBottomSheet";
+import DateMaskInputBottomSheet from "./DateMaskInput";
 
 enum DateIntervalEnum {
   AnyDate = "anyDate",
@@ -86,14 +91,12 @@ const DateFilter: FC<DateFilterProps> = ({ title, value, onChange }) => {
             alignItems="center"
           >
             <Text variant="body">{t("form", "From")}:</Text>
-            <Box width={135}>
-              <InputText
+            <Box width={150}>
+              <DateMaskInputBottomSheet
                 value={value?.from || ""}
-                onChangeText={(from) => {
-                  onChange && onChange({ to: value?.to || null, from: from || null });
+                onChange={(from) => {
+                  onChange && onChange({ from: from || null, to: value?.to || null });
                 }}
-                size="s"
-                placeholder="DD/MM/YYYY"
               />
             </Box>
           </Box>
@@ -105,14 +108,12 @@ const DateFilter: FC<DateFilterProps> = ({ title, value, onChange }) => {
             alignItems="center"
           >
             <Text variant="body">{t("to", "To")}:</Text>
-            <Box width={135}>
-              <InputText
-                value={value?.from || ""}
-                onChangeText={(to) => {
+            <Box width={150}>
+            <DateMaskInputBottomSheet
+                value={value?.to || ""}
+                onChange={(to) => {
                   onChange && onChange({ from: value?.from || null, to: to || null });
                 }}
-                size="s"
-                placeholder="DD/MM/YYYY"
               />
             </Box>
           </Box>
