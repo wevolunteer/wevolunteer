@@ -2,6 +2,8 @@ import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
 import Checkbox from "@/components/ui/Checkbox";
 import InputDate from "@/components/ui/InputDate";
+import InputText from "@/components/ui/InputText";
+import InputTime from "@/components/ui/InputTime";
 import SafeAreaView from "@/components/ui/SafeAreaView";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
@@ -10,13 +12,18 @@ import { useQuery } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
+import { TextInput } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 
 interface EnrollmentData {
   from_date: string;
   to_date: string;
+  from_time: string;
+  to_time: string;
   accepted_requirements: boolean;
   accepted_privacy: boolean;
+  message: string;
 }
 
 export default function ExperienceEnrollScreen() {
@@ -51,7 +58,31 @@ export default function ExperienceEnrollScreen() {
   }
 
   async function onSubmit(data: EnrollmentData) {
-    console.log(data); // TODO: send data to API
+    try {
+      const res = await client.POST("/activities", {
+        body: {
+          start_date: data.from_date.split("/").reverse().join("-"),
+          start_time: data.from_time,
+          end_date: data.to_date.split("/").reverse().join("-"),
+          end_time: data.to_time,
+          experience_id: experienceId,
+          message: data.message || "",
+          // accepted_requirements: data.accepted_requirements,
+          // accepted_privacy: data.accepted_privacy,
+        },
+      });
+
+      if (res.error) {
+        throw new Error(res.error.detail);
+      }
+
+    } catch (error : any) {
+      Toast.show({
+        type: "error",
+        text1: t("error", "Error: " + error.message),
+      });
+      return;
+    }
 
     router.replace(`/experiences/${id}/confirm`);
   }
@@ -72,13 +103,46 @@ export default function ExperienceEnrollScreen() {
             <Box flex={1}>
               <Controller
                 control={control}
+                name="from_time"
+                render={({ field: { onChange, value } }) => (
+                  <InputTime
+                    label={t("fromTime", "From hour")}
+                    value={value}
+                    onChangeText={onChange}
+                    placeholder="HH:MM"
+                  />
+                )}
+              />
+            </Box>
+            <Box flex={1}>
+              <Controller
+                control={control}
                 name="from_date"
                 render={({ field: { onChange, value } }) => (
                   <InputDate
-                    label={t("from", "From")}
+                    label={t("fromDay", "Of the day")}
                     value={value}
                     onChangeText={onChange}
                     placeholder="GG/MM/AAAA"
+                  />
+                )}
+              />
+            </Box>
+          </Box>
+        </Box>
+
+        <Box marginHorizontal="m" gap="l" marginTop="m">
+          <Box flexDirection="row" justifyContent="space-between" marginVertical="m" gap="m">
+            <Box flex={1}>
+              <Controller
+                control={control}
+                name="to_time"
+                render={({ field: { onChange, value } }) => (
+                  <InputTime
+                    label={t("toTime", "To hour")}
+                    value={value}
+                    onChangeText={onChange}
+                    placeholder="HH:MM"
                   />
                 )}
               />
@@ -89,7 +153,7 @@ export default function ExperienceEnrollScreen() {
                 name="to_date"
                 render={({ field: { onChange, value } }) => (
                   <InputDate
-                    label={t("to", "To")}
+                    label={t("toDate", "Of the day")}
                     value={value}
                     onChangeText={onChange}
                     placeholder="GG/MM/AAAA"
@@ -98,6 +162,24 @@ export default function ExperienceEnrollScreen() {
               />
             </Box>
           </Box>
+
+          <Controller
+            control={control}
+            name="message"
+            render={({ field: { onChange, value } }) => (
+              <InputText
+                label={t("activityMessageLabel", "Why you would like to help")}
+                value={value}
+                onChangeText={onChange}
+                placeholder={t(
+                  "activityWriteMessagePlaceholder",
+                  "Your message to the organization (optional)",
+                )}
+                multiline
+                numberOfLines={4}
+              />
+            )}
+          />
 
           <Controller
             control={control}

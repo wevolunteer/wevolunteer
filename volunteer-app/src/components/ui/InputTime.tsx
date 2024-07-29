@@ -12,13 +12,13 @@ const SIZES = {
   l: 64,
 };
 
-interface InpuDateProps {
+interface InputTimeProps {
   label?: string;
   error?: string;
   size?: keyof typeof SIZES;
 }
 
-const InputDate: FC<TextInputProps & InpuDateProps> = ({ value, onChangeText, ...props }) => {
+const InputTime: FC<TextInputProps & InputTimeProps> = ({ value, onChangeText, ...props }) => {
   const [currentDate, setCurrentDate] = useState(new Date(value || new Date()));
   const [show, setShow] = useState(false);
   const theme = useTheme<Theme>();
@@ -31,7 +31,7 @@ const InputDate: FC<TextInputProps & InpuDateProps> = ({ value, onChangeText, ..
       {show && (
         <DateTimePicker
           testID="dateTimePicker"
-          mode="date"
+          mode="time"
           value={currentDate}
           is24Hour={false}
           style={{ backgroundColor: theme.colors.accentText }}
@@ -39,7 +39,7 @@ const InputDate: FC<TextInputProps & InpuDateProps> = ({ value, onChangeText, ..
             if (selectedDate) {
               setShow(false);
               setCurrentDate(selectedDate);
-              onChangeText && onChangeText(format(selectedDate, "dd/MM/yyyy"));
+              onChangeText && onChangeText(format(selectedDate, "HH:mm"));
             }
           }}
         />
@@ -48,4 +48,4 @@ const InputDate: FC<TextInputProps & InpuDateProps> = ({ value, onChangeText, ..
   );
 };
 
-export default InputDate;
+export default InputTime;
