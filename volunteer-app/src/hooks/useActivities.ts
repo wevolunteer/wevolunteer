@@ -3,14 +3,14 @@ import { useNetwork } from "@/contexts/network";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-export function useExperiences() {
+export function useActivities() {
   const { client } = useNetwork();
   const { filters } = useFilters();
 
   const { data, fetchNextPage, refetch, isLoading } = useInfiniteQuery({
-    queryKey: ["experiences"],
+    queryKey: ["activities"],
     queryFn: async ({ pageParam = 1 }) => {
-      const response = await client.GET("/experiences", {
+      const response = await client.GET("/activities", {
         params: {
           query: {
             ...filters,
@@ -24,12 +24,12 @@ export function useExperiences() {
     initialPageParam: 1,
   });
 
-  const experiences = useMemo(() => {
+  const activities = useMemo(() => {
     return data?.pages.flatMap((page) => page?.results || []) || [];
   }, [data]);
 
   return {
-    experiences,
+    activities,
     fetchNextPage,
     refetch,
     isLoading,

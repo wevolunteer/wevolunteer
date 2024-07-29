@@ -206,9 +206,10 @@ type PaginationInput struct {
 }
 
 type PaginationInfo struct {
-	Total   int64 `json:"total"`
-	Page    int   `json:"page"`
-	PerPage int   `json:"per_page"`
+	Total       int64 `json:"total"`
+	Page        int   `json:"page"`
+	HasNextPage bool  `json:"has_next_page"`
+	PerPage     int   `json:"per_page"`
 }
 
 func Paginate(pagination PaginationInput) func(db *gorm.DB) *gorm.DB {
@@ -242,6 +243,8 @@ func PageInfo(db *gorm.DB, pagination PaginationInput) (*PaginationInfo, error) 
 	if err := db.Count(&pageInfo.Total).Error; err != nil {
 		return nil, err
 	}
+
+	pageInfo.HasNextPage = pageInfo.Total > int64(pageInfo.Page*pageInfo.PerPage)
 
 	return pageInfo, nil
 }
