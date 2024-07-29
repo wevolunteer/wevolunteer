@@ -1,6 +1,7 @@
 package activities
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/wevolunteer/wevolunteer/internal/app"
@@ -64,23 +65,52 @@ func ActivityList(ctx *app.Context, filters *ActivityFilters) (*ActivityListData
 }
 
 type ActivityCreateData struct {
-	ExperienceID uint      `json:"experience_id"`
-	StartDate    time.Time `json:"start_date"`
-	EndDate      time.Time `json:"end_date"`
-	StartTime    string    `json:"start_time"`
-	EndTime      string    `json:"end_time"`
-	Message      string    `json:"message"`
+	ExperienceID uint   `json:"experience_id"`
+	StartDate    string `json:"start_date"`
+	EndDate      string `json:"end_date"`
+	StartTime    string `json:"start_time"`
+	EndTime      string `json:"end_time"`
+	Message      string `json:"message"`
 }
 
 func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activity, error) {
+	err := error(nil)
+
+	startDate := time.Time{}
+	if data.StartDate != "" {
+		startDate, err = time.Parse("2006-01-02", data.StartDate)
+		if err != nil {
+			return nil, fmt.Errorf("invalid start date")
+		}
+	}
+
+	endDate := time.Time{}
+	if data.EndDate != "" {
+		endDate, err = time.Parse("2006-01-02", data.EndDate)
+		if err != nil {
+			return nil, fmt.Errorf("invalid end date")
+		}
+	}
+
+	experience := models.Experience{}
+	if err := app.DB.Where("id = ?", data.ExperienceID).First(&experience).Error; err != nil {
+		return nil, fmt.Errorf("experience not found")
+	}
+
+	activityCheck := models.Activity{}
+	if err := app.DB.Where("experience_id = ? AND user_id = ?", data.ExperienceID, ctx.User.ID).First(&activityCheck).Error; err == nil {
+		return nil, fmt.Errorf("already enrolled")
+	}
+
 	activity := models.Activity{
-		UserID:       ctx.User.ID,
-		ExperienceID: data.ExperienceID,
-		StartDate:    data.StartDate,
-		EndDate:      data.EndDate,
-		StartTime:    data.StartTime,
-		EndTime:      data.EndTime,
-		Message:      data.Message,
+		UserID:         ctx.User.ID,
+		ExperienceID:   data.ExperienceID,
+		OrganizationID: experience.OrganizationID,
+		StartDate:      startDate,
+		EndDate:        endDate,
+		StartTime:      data.StartTime,
+		EndTime:        data.EndTime,
+		Message:        data.Message,
 	}
 
 	if err := app.DB.Create(&activity).Error; err != nil {

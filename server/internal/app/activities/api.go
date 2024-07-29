@@ -5,7 +5,10 @@ import (
 
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
+	"github.com/wevolunteer/wevolunteer/internal/utils/logger"
 )
+
+var log = logger.GetLogger()
 
 type ActivityListResponse struct {
 	Body ActivityListData
