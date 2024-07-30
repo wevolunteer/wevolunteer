@@ -164,7 +164,7 @@ func refreshToken(data RefreshTokenData) (*TokenData, error) {
 
 	claims := &app.JWTClaims{}
 	token, err := jwt.ParseWithClaims(data.RefreshToken, claims, func(token *jwt.Token) (interface{}, error) {
-		return app.Config.JWT_SECRET, nil
+		return []byte(app.Config.JWT_SECRET), nil
 	})
 
 	if err != nil || !token.Valid {

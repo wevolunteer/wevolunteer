@@ -46,8 +46,10 @@ export function SessionProvider(props: React.PropsWithChildren) {
       }
       return req;
     },
-    async onResponse(res, options) {
+    async onResponse(res, options, req) {
       if (res.status === 401 && session?.token?.refreshToken && !res.url.includes("api/auth/")) {
+        let newAccessToken;
+
         try {
           const refreshTokenResponse = await client.POST("/auth/refresh", {
             body: {
@@ -66,10 +68,23 @@ export function SessionProvider(props: React.PropsWithChildren) {
               refreshToken: refreshTokenResponse.data.refresh_token,
             },
           });
+
+          newAccessToken = refreshTokenResponse.data.access_token;
         } catch (error) {
           setSession(null);
           console.error("Failed to refresh token", error);
         }
+
+        const newRes = await fetch(req.url, {
+          method: req.method,
+          headers: {
+            ...Object.fromEntries(req.headers.entries()),
+            authorization: `Bearer ${newAccessToken}`,
+          },
+          body: req.body,
+        });
+
+        return newRes;
       }
 
       return res;
