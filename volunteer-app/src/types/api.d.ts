@@ -12,6 +12,8 @@ export interface paths {
     post: operations["activities-create"];
   };
   "/activities/{id}": {
+    /** Get activity */
+    get: operations["activities-get"];
     /** Delete activity */
     delete: operations["activities-delete"];
     /** Update activity */
@@ -144,13 +146,11 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      /** Format: date-time */
       end_date: string;
       end_time: string;
       /** Format: int64 */
       experience_id: number;
       message: string;
-      /** Format: date-time */
       start_date: string;
       start_time: string;
     };
@@ -406,6 +406,7 @@ export interface components {
       phone: string;
     };
     PaginationInfo: {
+      has_next_page: boolean;
       /** Format: int64 */
       page: number;
       /** Format: int64 */
@@ -646,6 +647,28 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["ActivityCreateData"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Activity"];
+        };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** Get activity */
+  "activities-get": {
+    parameters: {
+      path: {
+        id: number;
       };
     };
     responses: {

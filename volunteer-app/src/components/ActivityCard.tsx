@@ -6,6 +6,10 @@ import { FC } from "react";
 import { Pressable } from "react-native";
 import Animated from "react-native-reanimated";
 import Icon from "./ui/Icon";
+import { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
+import { processColorByStatus } from "@/utils/formatters";
+import { tActivityStatus } from "@/utils/enumTransl";
 
 export interface ActivityCardProps {
   activity: Activity;
@@ -14,8 +18,23 @@ export interface ActivityCardProps {
 }
 
 export const ActivityCard: FC<ActivityCardProps> = ({ activity, onPress, onClose }) => {
+  const { t } = useTranslation();
+
+
   return (
     <Pressable onPress={onPress}>
+      <Box
+        position="absolute"
+        zIndex={-100}
+        width="auto"
+        height="50%"
+        backgroundColor={processColorByStatus(activity.status)}
+        padding="s"
+        borderRadius="s"
+        marginHorizontal="m"
+      >
+        <Text color="whiteText">{tActivityStatus(activity.status)}</Text>
+      </Box>
       <Box
         elevation={7}
         position="relative"
@@ -26,6 +45,7 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, onPress, onClose
         backgroundColor="mainBackground"
         marginHorizontal="m"
         marginVertical="s"
+        marginTop="xl"
       >
         {onClose && (
           <Pressable

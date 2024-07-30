@@ -78,17 +78,20 @@ export default function RegistrationScreen() {
 
       await fetchUser();
       setIsLoading(false);
-
-      if (response.data?.accepted_tos) {
+      
+      if (!response.error) {
         router.replace("/explore");
         return;
+      } else {
+        
+        Toast.show({
+          type: "error",
+          text2: t(
+            "profileUpdateError",
+            "An error occurred while updating your profile. Please try again later.",
+          ),
+        });
       }
-
-      Toast.show({
-        type: "success",
-        text1: t("termsOfService", "Termini di servizio"),
-        text2: t("termsOfServiceDescription", "To continue, you must accept the terms of service"),
-      });
     } catch (error) {
       console.error("profile error:", error);
       setIsLoading(false);

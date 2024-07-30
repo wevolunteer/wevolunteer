@@ -75,6 +75,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
           console.error("Failed to refresh token", error);
         }
 
+        // Retry the original request with the new access token
         const newRes = await fetch(req.url, {
           method: req.method,
           headers: {

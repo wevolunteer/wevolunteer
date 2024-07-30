@@ -32,6 +32,33 @@ func ActivityListController(
 	return resp, nil
 }
 
+type ActivityGetRequest struct {
+	ID uint `path:"id"`
+}
+
+type ActivityGetResponse struct {
+	Body models.Activity
+}
+
+func ActivityGetController(c context.Context, input *ActivityGetRequest) (*ActivityGetResponse, error) {
+	ctx := app.FromHTTPContext(c)
+	data, err := ActivityGet(ctx, input.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if data == nil {
+		return nil, &app.ErrNotAuthorized{}
+	}
+
+	resp := &ActivityGetResponse{}
+
+	resp.Body = *data
+
+	return resp, nil
+}
+
 type ActivityCreateRequest struct {
 	Body ActivityCreateData
 }

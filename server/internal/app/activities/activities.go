@@ -21,6 +21,7 @@ func ActivityQuery(ctx *app.Context) *gorm.DB {
 	}
 
 	if ctx.Role == app.RoleOrganization {
+		//  todo remove enrollments
 		q = q.Joins("JOIN activities ON activities.id = enrollments.activity_id").
 			Where("activities.organization_id = ?", ctx.User.ID)
 	}
@@ -42,6 +43,7 @@ func ActivityList(ctx *app.Context, filters *ActivityFilters) (*ActivityListData
 	data := &ActivityListData{}
 
 	q := ActivityQuery(ctx)
+	q.Preload("Experience.Organization")
 
 	if filters != nil {
 		if filters.Query != "" {
@@ -73,8 +75,20 @@ type ActivityCreateData struct {
 	Message      string `json:"message"`
 }
 
+func ActivityGet(ctx *app.Context, id uint) (*models.Activity, error) {
+	var activity models.Activity
+
+	if err := ActivityQuery(ctx).Preload("Experience.Organization").Where("id = ?", id).First(&activity).Error; err != nil {
+		return nil, err
+	}
+
+	return &activity, nil
+}
+
 func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activity, error) {
 	err := error(nil)
+
+	// todo check roles
 
 	startDate := time.Time{}
 	if data.StartDate != "" {
@@ -96,6 +110,9 @@ func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activit
 	if err := app.DB.Where("id = ?", data.ExperienceID).First(&experience).Error; err != nil {
 		return nil, fmt.Errorf("experience not found")
 	}
+
+	// todo is timerage valid?
+	// todo is a timerange available for experience?
 
 	activityCheck := models.Activity{}
 	if err := app.DB.Where("experience_id = ? AND user_id = ?", data.ExperienceID, ctx.User.ID).First(&activityCheck).Error; err == nil {

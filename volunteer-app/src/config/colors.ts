@@ -4,6 +4,9 @@
  */
 
 export const palette = {
+  black: "#000000",
+  white: "#FFFFFF",
+
   pink50: "#ffc7ed",
   pink100: "#ffedfa",
   pink200: "#ff84d8",
@@ -37,6 +40,25 @@ export const palette = {
   red800: "#4d0000",
   red900: "#1a0000",
 
-  black: "#000000",
-  white: "#FFFFFF",
+  green50: "#ccffcc",
+  green100: "#99ff99",
+  green200: "#66ff66",
+  green300: "#33ff33",
+  green400: "#00ff00",
+  green500: "#00e600",
+  green600: "#00b300",
+  green700: "#008000",
+  green800: "#004d00",
+  green900: "#001a00",
+
+  orange50: "#ffebcc",
+  orange100: "#ffd699",
+  orange200: "#ffc266",
+  orange300: "#ff9933",
+  orange400: "#ff8000",
+  orange500: "#e67300",
+  orange600: "#b35900",
+  orange700: "#804000",
+  orange800: "#4d2600",
+  orange900: "#1a0d00",
 };

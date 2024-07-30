@@ -17,6 +17,10 @@ const theme = createTheme({
     lightBorder: palette.gray50,
     mainBorder: palette.gray50,
     disabledBackground: palette.gray100,
+
+    statusPending: palette.orange500,
+    statusAccepted: palette.green500,
+    statusRejected: palette.red500,
   },
   spacing: {
     s: 8,
