@@ -169,11 +169,9 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      /** Format: date-time */
       end_date: string;
       end_time: string;
       message: string;
-      /** Format: date-time */
       start_date: string;
       start_time: string;
     };
@@ -625,6 +623,11 @@ export interface operations {
         page?: number;
         per_page?: number;
         q?: string;
+        status?: string;
+        end_date_from?: string;
+        end_date_to?: string;
+        start_date_from?: string;
+        start_date_to?: string;
       };
     };
     responses: {

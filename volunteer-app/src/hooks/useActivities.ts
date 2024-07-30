@@ -1,18 +1,20 @@
 import { useFilters } from "@/contexts/filters";
 import { useNetwork } from "@/contexts/network";
+import { ActivityFilters } from "@/types/data";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-export function useActivities() {
+export function useActivities(initialFilters?: ActivityFilters) {
   const { client } = useNetwork();
-  const { filters } = useFilters();
-
+  const { filters } = useFilters<ActivityFilters>(initialFilters);
+  
   const { data, fetchNextPage, refetch, isLoading } = useInfiniteQuery({
-    queryKey: ["activities"],
+    queryKey: ["activities", filters, initialFilters],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await client.GET("/activities", {
         params: {
           query: {
+            ...initialFilters, // todo should be in filters but it's not working
             ...filters,
             page: pageParam,
           },

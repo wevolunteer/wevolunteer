@@ -1,11 +1,12 @@
 import { ActivityCard } from "@/components/ActivityCard";
+import DoneActivityList from "@/components/DoneActivitiesList";
 import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
 import SafeAreaView from "@/components/ui/SafeAreaView";
 import Text from "@/components/ui/Text";
 import { useFilters } from "@/contexts/filters";
 import { useActivities } from "@/hooks/useActivities";
-import { Activity } from "@/types/data";
+import { Activity, ActivityFilters } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 import { FC, useEffect, useRef } from "react";
@@ -15,9 +16,11 @@ export default function ExperiencesScreen() {
   const { t } = useTranslation();
   const listRef = useRef<FlashList<Activity>>(null);
 
-  const { filters } = useFilters();
+  const { filters } = useFilters<ActivityFilters>();
 
-  const { activities, fetchNextPage, refetch, isLoading } = useActivities();
+  const { activities, fetchNextPage, refetch, isLoading } = useActivities({
+    end_date_from: new Date().toISOString().split("T")[0],
+  });
 
   useEffect(() => {
     refetch();
@@ -80,11 +83,7 @@ export default function ExperiencesScreen() {
             </Box>
           )}
           ListFooterComponent={() => (
-            <Box flexDirection="row" justifyContent="center">
-              <Text variant="secondary" fontSize={13}>
-                {t("doneActivities", "Done activities")}
-              </Text>
-            </Box>
+            <DoneActivityList />
           )}
         />
       </Box>

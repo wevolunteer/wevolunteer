@@ -18,7 +18,7 @@ export default function ExperienceEnrollConfirmScreen() {
       </Box>
       <Box paddingTop="3xl" alignItems="center" marginHorizontal="m" flex={1}>
         <Image
-          source={require("@/assets/images/logo-square-md.png")}
+          source={require("@/assets/images/stars.png")}
           style={{
             width: 80,
             height: 97,
@@ -29,15 +29,13 @@ export default function ExperienceEnrollConfirmScreen() {
 
         <Box width="70%" marginBottom="l">
           <Text variant="header" lineHeight={38} textAlign="center">
-            {t("thankYouForYourHelp", "Thank you for you help!")}
+            {t("requestSent", "Edit request sent")}
           </Text>
         </Box>
 
         <Text variant="secondary" textAlign="center">
-          <Trans i18nKey="experienceConfirmationMessage">
-            You have successfully submitted your application. Now you just have to wait for the
-            organization to contact you to schedule the next steps. Remember that you can always
-            check the status of your applications from the FaXTe Experiences tab.
+          <Trans i18nKey="experienceEditMessage">
+            The organization has received your request and will contact you soon. Stay tuned!
           </Trans>
         </Text>
       </Box>

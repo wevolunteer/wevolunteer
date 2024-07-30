@@ -21,7 +21,7 @@ func ActivityQuery(ctx *app.Context) *gorm.DB {
 	}
 
 	if ctx.Role == app.RoleOrganization {
-		//  todo remove enrollments
+		//  todo review this
 		q = q.Joins("JOIN activities ON activities.id = enrollments.activity_id").
 			Where("activities.organization_id = ?", ctx.User.ID)
 	}
@@ -31,7 +31,12 @@ func ActivityQuery(ctx *app.Context) *gorm.DB {
 
 type ActivityFilters struct {
 	app.PaginationInput
-	Query string `query:"q"`
+	Query         string `query:"q"`
+	Status        string `query:"status"`
+	EndDateFrom   string `query:"end_date_from"`
+	EndDateTo     string `query:"end_date_to"`
+	StartDateFrom string `query:"start_date_from"`
+	StartDateTo   string `query:"start_date_to"`
 }
 
 type ActivityListData struct {
@@ -48,6 +53,42 @@ func ActivityList(ctx *app.Context, filters *ActivityFilters) (*ActivityListData
 	if filters != nil {
 		if filters.Query != "" {
 			q = q.Where("name LIKE ?", "%"+filters.Query+"%")
+		}
+
+		if filters.Status != "" {
+			q = q.Where("status = ?", filters.Status)
+		}
+
+		if filters.EndDateFrom != "" {
+			endDate, err := time.Parse("2006-01-02", filters.EndDateFrom)
+			if err != nil {
+				return nil, fmt.Errorf("invalid end date from")
+			}
+			q = q.Where("end_date >= ?", endDate)
+		}
+
+		if filters.EndDateTo != "" {
+			endDate, err := time.Parse("2006-01-02", filters.EndDateTo)
+			if err != nil {
+				return nil, fmt.Errorf("invalid end date to")
+			}
+			q = q.Where("end_date <= ?", endDate)
+		}
+
+		if filters.StartDateFrom != "" {
+			startDate, err := time.Parse("2006-01-02", filters.StartDateFrom)
+			if err != nil {
+				return nil, fmt.Errorf("invalid start date from")
+			}
+			q = q.Where("start_date >= ?", startDate)
+		}
+
+		if filters.StartDateTo != "" {
+			startDate, err := time.Parse("2006-01-02", filters.StartDateTo)
+			if err != nil {
+				return nil, fmt.Errorf("invalid start date to")
+			}
+			q = q.Where("start_date <= ?", startDate)
 		}
 	}
 
@@ -138,22 +179,44 @@ func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activit
 }
 
 type ActivityUpdateData struct {
-	StartDate time.Time `json:"start_date"`
-	EndDate   time.Time `json:"end_date"`
-	StartTime string    `json:"start_time"`
-	EndTime   string    `json:"end_time"`
-	Message   string    `json:"message"`
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+	Message   string `json:"message"`
 }
 
 func ActivityUpdate(ctx *app.Context, id uint, data *ActivityUpdateData) (*models.Activity, error) {
+	var err error
 	var activity models.Activity
+
+	// todo check roles
 
 	if err := ActivityQuery(ctx).Where("id = ?", id).First(&activity).Error; err != nil {
 		return nil, err
 	}
 
-	activity.StartDate = data.StartDate
-	activity.EndDate = data.StartDate
+	startDate := time.Time{}
+	if data.StartDate != "" {
+		startDate, err = time.Parse("2006-01-02", data.StartDate)
+		if err != nil {
+			return nil, fmt.Errorf("invalid start date")
+		}
+	}
+
+	endDate := time.Time{}
+	if data.EndDate != "" {
+		endDate, err = time.Parse("2006-01-02", data.EndDate)
+		if err != nil {
+			return nil, fmt.Errorf("invalid end date")
+		}
+	}
+
+	// todo is timerage valid?
+	// todo is a timerange available for experience?
+
+	activity.StartDate = startDate
+	activity.EndDate = endDate
 	activity.StartTime = data.StartTime
 	activity.EndTime = data.EndTime
 	activity.Message = data.Message

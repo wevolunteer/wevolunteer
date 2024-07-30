@@ -127,7 +127,7 @@ export default function ActivityEditScreen() {
       return;
     }
 
-    router.back();
+    router.push("/experiences/activities/" + activityId + "/confirm");
   }
 
   if (!data) {
@@ -226,55 +226,11 @@ export default function ActivityEditScreen() {
             />
           )}
         />
-        {/* 
-          <Controller
-            control={control}
-            name="accepted_requirements"
-            render={({ field: { onChange, value } }) => (
-              <Checkbox value={value || false} onChange={onChange}>
-                <Box flexDirection="row" gap="s" flexWrap="wrap">
-                  <Text variant="body">
-                    <Trans i18nKey="acceptedRequirements">
-                      I confirm that I meet the required criteria
-                    </Trans>
-                  </Text>
-                  <Box marginLeft="s">
-                    <Text variant="body" color="secondaryText">
-                      • Maggiore età
-                    </Text>
-                    <Text variant="body" color="secondaryText">
-                      • Auto
-                    </Text>
-                  </Box>
-                </Box>
-              </Checkbox>
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="accepted_privacy"
-            render={({ field: { onChange, value } }) => (
-              <Checkbox value={value || false} onChange={onChange}>
-                <Box flexDirection="row" gap="s" flexWrap="wrap">
-                  <Text variant="body">
-                    <Trans
-                      i18nKey="acceptedOrganizationPrivacy"
-                      values={{ organization: data.experience.organization.name }}
-                    >
-                      I consent to share my data with {{ organization: data.experience.organization.name }}
-                    </Trans>
-                  </Text>
-                </Box>
-              </Checkbox>
-            )}
-          /> */}
 
         <Button
           label={t("edit", "Modifica")}
           marginVertical="s"
           onPress={handleSubmit(onSubmit)}
-          // isDisabled={!email || !email.includes("@")}
           variant="primary"
         />
       </Box>

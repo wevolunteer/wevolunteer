@@ -8,7 +8,7 @@ import { useNetwork } from "@/contexts/network";
 import { tActivityStatus } from "@/utils/enumTransl";
 import { processColorByStatus } from "@/utils/formatters";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, isAfter, isBefore } from "date-fns";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -44,30 +44,46 @@ export default function ActivityScreen() {
     return null;
   }
 
+  const isDone = isAfter(new Date(), new Date(data.end_date));
+
   return (
     <SafeAreaView>
       <ScrollView>
         <Topbar
           goBack
           rightComponent={
-            <Pressable onPress={() => {
-              router.back();
-              }}>
+            <Pressable
+              onPress={() => {
+                router.back();
+              }}
+            >
               <Icon name="share" />
             </Pressable>
           }
         />
-        <Box
-          p="m"
-          justifyContent="center"
-          alignItems="center"
-          backgroundColor={processColorByStatus(data.status)}
-          width="100%"
-        >
-          <Text  color="whiteText">
-            {tActivityStatus(data.status)}
-          </Text>
-        </Box>
+        {!isDone && (
+          <Box
+            p="m"
+            justifyContent="center"
+            alignItems="center"
+            backgroundColor={processColorByStatus(data.status)}
+            width="100%"
+          >
+            <Text color="whiteText">{tActivityStatus(data.status)}</Text>
+          </Box>
+        )}
+
+        {isDone && (
+          <Box
+            p="m"
+            justifyContent="center"
+            alignItems="center"
+            backgroundColor="statusAccepted"
+            width="100%"
+          >
+            <Text color="whiteText">{t("doneAt", "Completed in date") + " " + format(new Date(), "d/MM")}</Text>
+          </Box>
+        )}
         <Image
           source={data.experience.image}
           style={{
@@ -172,6 +188,8 @@ export default function ActivityScreen() {
           </ScrollView>
         </Box>
       </ScrollView>
+
+      {!isDone && (
       <Box
         position="absolute"
         flexDirection="row"
@@ -207,6 +225,7 @@ export default function ActivityScreen() {
           }}
         />
       </Box>
+      )}
     </SafeAreaView>
   );
 }
