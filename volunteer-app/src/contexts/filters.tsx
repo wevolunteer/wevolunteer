@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const FiltersContext = createContext<{
   filters: Record<string, any>;
@@ -11,7 +11,8 @@ const FiltersContext = createContext<{
 export function useFilters<T extends Record<string, any>>(initialFilters?: T) {
   const value = useContext(FiltersContext);
 
-  useMemo(() => value.setFilters(initialFilters || {}), [initialFilters]);
+  // useMemo(() => value.setFilters(initialFilters || {}), [initialFilters]);
+  // useEffect(() => value.setFilters(initialFilters || {}), [initialFilters])
 
   if (process.env.NODE_ENV !== "production") {
     if (!value) {
@@ -19,8 +20,23 @@ export function useFilters<T extends Record<string, any>>(initialFilters?: T) {
     }
   }
 
-  return value;
+  return {
+    filters: value.filters as T,
+    setFilters: value.setFilters as (filters: T) => void,
+  };
 }
+
+export const withFilters = <T extends Record<string, any>>(Component: React.ComponentType<T>) => {
+  return (props: T) => {
+    const [filters, setFilters] = useState<Record<string, any>>({});
+
+    return (
+      <FiltersContext.Provider value={{ filters, setFilters }}>
+        <Component {...props} />
+      </FiltersContext.Provider>
+    );
+  };
+};
 
 export function FiltersProvider(props: React.PropsWithChildren) {
   const [filters, setFilters] = useState<Record<string, any>>({});

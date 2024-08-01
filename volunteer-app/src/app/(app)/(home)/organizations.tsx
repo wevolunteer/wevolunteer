@@ -3,6 +3,7 @@ import Icon from "@/components/ui/Icon";
 import SafeAreaView from "@/components/ui/SafeAreaView";
 import Text from "@/components/ui/Text";
 import { Theme } from "@/config/theme";
+import { useFilters, withFilters } from "@/contexts/filters";
 import { useNetwork } from "@/contexts/network";
 import { Organization } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
@@ -19,16 +20,16 @@ interface OrganizationFilters {
   q?: string;
 }
 
-export default function OrganizationListScreen() {
+function OrganizationListScreen() {
   const { t } = useTranslation();
   const { client } = useNetwork();
   const listRef = useRef<FlashList<Organization>>(null);
   const theme = useTheme<Theme>();
 
-  const filters: OrganizationFilters = {};
-
+  const { filters, setFilters } = useFilters<OrganizationFilters>();
+  
   const { data, fetchNextPage, refetch, isLoading } = useInfiniteQuery({
-    queryKey: ["organizations"],
+    queryKey: ["organizations", filters],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await client.GET("/organizations", {
         params: {
@@ -68,7 +69,10 @@ export default function OrganizationListScreen() {
           </Box>
 
           <Box flex={1}>
-            <TextInput placeholder={t("organizationSearch", "Search organizations")} />
+            <TextInput
+              placeholder={t("organizationSearch", "Search organizations")}
+              onChangeText={(t) => setFilters({ ...filters, q: t })}
+            />
           </Box>
         </Box>
         <Box
@@ -145,3 +149,5 @@ export default function OrganizationListScreen() {
     </SafeAreaView>
   );
 }
+
+export default withFilters(OrganizationListScreen);
