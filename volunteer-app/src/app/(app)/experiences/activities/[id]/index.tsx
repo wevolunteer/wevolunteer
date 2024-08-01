@@ -8,7 +8,7 @@ import { useNetwork } from "@/contexts/network";
 import { tActivityStatus } from "@/utils/enumTransl";
 import { processColorByStatus } from "@/utils/formatters";
 import { useQuery } from "@tanstack/react-query";
-import { format, isAfter, isBefore } from "date-fns";
+import { format, isAfter, isBefore, isToday } from "date-fns";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -44,7 +44,7 @@ export default function ActivityScreen() {
     return null;
   }
 
-  const isDone = isAfter(new Date(), new Date(data.end_date));
+  const isDone = !isToday(new Date(data.end_date)) && isAfter(new Date(), new Date(data.end_date));
 
   return (
     <SafeAreaView>
