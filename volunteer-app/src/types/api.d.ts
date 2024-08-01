@@ -81,6 +81,12 @@ export interface paths {
     /** Update organization */
     patch: operations["organizations-update"];
   };
+  "/organizations/{id}/favorite": {
+    /** Add organization to favorites */
+    post: operations["organizations-add-to-favorites"];
+    /** Remove organization from favorites */
+    delete: operations["organizations-remove-from-favorites"];
+  };
   "/places": {
     /** List places */
     get: operations["places-list"];
@@ -329,6 +335,43 @@ export interface components {
       $schema?: string;
       title: string;
     };
+    ExtendedOrganization: {
+      /**
+       * Format: uri
+       * @description A URL to the JSON Schema for this object.
+       */
+      $schema?: string;
+      DeletedAt: components["schemas"]["DeletedAt"];
+      address: string;
+      category: components["schemas"]["Category"];
+      /** Format: int64 */
+      category_id: number;
+      city: string;
+      country: string;
+      /** Format: date-time */
+      created_at: string;
+      email: string;
+      external_id: string;
+      /** Format: int64 */
+      id: number;
+      is_favorite: boolean;
+      /** Format: double */
+      latitude: number;
+      logo: string;
+      /** Format: double */
+      longitude: number;
+      name: string;
+      phone: string;
+      published: boolean;
+      state: string;
+      tax_code: string;
+      uid: string;
+      /** Format: date-time */
+      updated_at: string;
+      vat_code: string;
+      website: string;
+      zip_code: string;
+    };
     LoginData: {
       /**
        * Format: uri
@@ -390,7 +433,7 @@ export interface components {
        */
       $schema?: string;
       page_info: components["schemas"]["PaginationInfo"];
-      results: components["schemas"]["Organization"][];
+      results: components["schemas"]["ExtendedOrganization"][];
     };
     OrganizationUpdateData: {
       /**
@@ -1079,6 +1122,7 @@ export interface operations {
         page?: number;
         per_page?: number;
         q?: string;
+        favorite?: boolean;
       };
     };
     responses: {
@@ -1129,7 +1173,7 @@ export interface operations {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["Organization"];
+          "application/json": components["schemas"]["ExtendedOrganization"];
         };
       };
       /** @description Error */
@@ -1178,6 +1222,46 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["Organization"];
         };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** Add organization to favorites */
+  "organizations-add-to-favorites": {
+    parameters: {
+      path: {
+        id: number;
+      };
+    };
+    responses: {
+      /** @description No Content */
+      204: {
+        content: never;
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** Remove organization from favorites */
+  "organizations-remove-from-favorites": {
+    parameters: {
+      path: {
+        id: number;
+      };
+    };
+    responses: {
+      /** @description No Content */
+      204: {
+        content: never;
       };
       /** @description Error */
       default: {

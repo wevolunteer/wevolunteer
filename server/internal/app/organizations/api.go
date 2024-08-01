@@ -31,7 +31,7 @@ type OrganizationGetRequest struct {
 }
 
 type OrganizationGetResponse struct {
-	Body models.Organization
+	Body ExtendedOrganization
 }
 
 func OrganizationGetController(c context.Context, input *OrganizationGetRequest) (*OrganizationGetResponse, error) {
@@ -124,6 +124,44 @@ func OrganizationDeleteController(
 	}
 
 	resp := &OrganizationDeleteResponse{}
+
+	return resp, nil
+}
+
+type OrganizationFavoriteRequest struct {
+	ID uint `path:"id"`
+}
+
+type OrganizationFavoriteResponse struct{}
+
+func OrganizationAddToFavoritesController(
+	c context.Context,
+	input *OrganizationFavoriteRequest,
+) (*OrganizationFavoriteResponse, error) {
+	ctx := app.FromHTTPContext(c)
+	err := OrganizationAddToFavorites(ctx, input.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &OrganizationFavoriteResponse{}
+
+	return resp, nil
+}
+
+func OrganizationRemoveFromFavoritesController(
+	c context.Context,
+	input *OrganizationFavoriteRequest,
+) (*OrganizationFavoriteResponse, error) {
+	ctx := app.FromHTTPContext(c)
+	err := OrganizationRemoveFromFavorites(ctx, input.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &OrganizationFavoriteResponse{}
 
 	return resp, nil
 }

@@ -1,19 +1,20 @@
 import { useFilters } from "@/contexts/filters";
 import { useNetwork } from "@/contexts/network";
+import { ActivityFilters } from "@/types/data";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-export function useExperiences(initialFilters = {}) {
+export function useOrganizations(initialFilters?: ActivityFilters) {
   const { client } = useNetwork();
-  const { filters } = useFilters();
+  const { filters } = useFilters<ActivityFilters>(initialFilters);
 
   const { data, fetchNextPage, refetch, isLoading } = useInfiniteQuery({
-    queryKey: ["experiences", filters, initialFilters],
+    queryKey: ["organizations", filters, initialFilters],
     queryFn: async ({ pageParam = 1 }) => {
-      const response = await client.GET("/experiences", {
+      const response = await client.GET("/organizations", {
         params: {
           query: {
-            ...initialFilters,
+            ...initialFilters, // todo should be in filters but it's not working
             ...filters,
             page: pageParam,
           },
@@ -25,12 +26,12 @@ export function useExperiences(initialFilters = {}) {
     initialPageParam: 1,
   });
 
-  const experiences = useMemo(() => {
+  const organizations = useMemo(() => {
     return data?.pages.flatMap((page) => page?.results || []) || [];
   }, [data]);
 
   return {
-    experiences,
+    organizations,
     fetchNextPage,
     refetch,
     isLoading,

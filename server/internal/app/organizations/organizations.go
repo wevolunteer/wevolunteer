@@ -9,6 +9,11 @@ import (
 	"gorm.io/gorm"
 )
 
+type ExtendedOrganization struct {
+	models.Organization
+	IsFavorite bool `json:"is_favorite"`
+}
+
 func OrganizationQuery(c *app.Context) *gorm.DB {
 	q := app.DB.Model(&models.Organization{})
 	q = q.Preload("Category")
@@ -20,10 +25,13 @@ func OrganizationQuery(c *app.Context) *gorm.DB {
 	return q
 }
 
-func OrganizationGet(c *app.Context, id uint) (*models.Organization, error) {
-	var organization models.Organization
+func OrganizationGet(c *app.Context, id uint) (*ExtendedOrganization, error) {
+	var organization ExtendedOrganization
 
-	if err := OrganizationQuery(c).Where("id = ?", id).First(&organization).Error; err != nil {
+	if err := OrganizationQuery(c).
+		Select("organizations.*, COALESCE(favorite_organizations.user_id IS NOT NULL, false) AS is_favorite").
+		Joins("LEFT JOIN favorite_organizations ON favorite_organizations.organization_id = organizations.id AND favorite_organizations.user_id = ?", c.User.ID).
+		Where("organizations.id = ?", id).First(&organization).Error; err != nil {
 		return nil, err
 	}
 
@@ -32,12 +40,13 @@ func OrganizationGet(c *app.Context, id uint) (*models.Organization, error) {
 
 type OrganizationFilters struct {
 	app.PaginationInput
-	Query string `query:"q"`
+	Query    string `query:"q"`
+	Favorite bool   `query:"favorite"`
 }
 
 type OrganizationListData struct {
-	Results  []models.Organization `json:"results"`
-	PageInfo *app.PaginationInfo   `json:"page_info"`
+	Results  []ExtendedOrganization `json:"results"`
+	PageInfo *app.PaginationInfo    `json:"page_info"`
 }
 
 func OrganizationsList(c *app.Context, filters *OrganizationFilters) (*OrganizationListData, error) {
@@ -48,6 +57,10 @@ func OrganizationsList(c *app.Context, filters *OrganizationFilters) (*Organizat
 	if filters != nil {
 		if filters.Query != "" {
 			q = q.Where("name LIKE ?", "%"+filters.Query+"%")
+		}
+
+		if filters.Favorite {
+			q = q.Joins("JOIN favorite_organizations ON favorite_organizations.organization_id = organizations.id AND favorite_organizations.user_id = ?", c.User.ID)
 		}
 	}
 
@@ -61,8 +74,21 @@ func OrganizationsList(c *app.Context, filters *OrganizationFilters) (*Organizat
 
 	q = q.Scopes(app.Paginate(filters.PaginationInput))
 
-	if err := q.Find(&data.Results).Error; err != nil {
-		return nil, err
+	if filters.Favorite {
+		if err := q.Table("organizations").
+			Select("organizations.*, true AS is_favorite").
+			Where("organizations.published = ? AND organizations.deleted_at IS NULL AND favorite_organizations.user_id = ?", true, c.User.ID).
+			Find(&data.Results).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		if err := q.Table("organizations").
+			Select("organizations.*, COALESCE(favorite_organizations.user_id IS NOT NULL, false) AS is_favorite").
+			Joins("LEFT JOIN favorite_organizations ON favorite_organizations.organization_id = organizations.id AND favorite_organizations.user_id = ?", c.User.ID).
+			Where("organizations.published = ? AND organizations.deleted_at IS NULL", true).
+			Find(&data.Results).Error; err != nil {
+			return nil, err
+		}
 	}
 
 	return data, nil
@@ -133,6 +159,54 @@ func OrganizationDelete(c *app.Context, id uint) error {
 	}
 
 	if err := app.DB.Delete(&organization).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func OrganizationAddToFavorites(c *app.Context, id uint) error {
+	var organization models.Organization
+
+	if err := OrganizationQuery(c).Where("id = ?", id).First(&organization).Error; err != nil {
+		return err
+	}
+
+	favouriteOrganization := models.FavoriteOrganization{
+		UserID:         c.User.ID,
+		OrganizationID: organization.ID,
+	}
+
+	if err := app.DB.Table("favorite_organizations").Where("user_id = ? AND organization_id = ?", c.User.ID, organization.ID).First(&favouriteOrganization).Error; err == nil {
+		// Already exists
+		return nil
+	}
+
+	if err := app.DB.Create(&favouriteOrganization).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func OrganizationRemoveFromFavorites(c *app.Context, id uint) error {
+	var organization models.Organization
+
+	if err := OrganizationQuery(c).Where("id = ?", id).First(&organization).Error; err != nil {
+		return err
+	}
+
+	favouriteOrganization := models.FavoriteOrganization{
+		UserID:         c.User.ID,
+		OrganizationID: organization.ID,
+	}
+
+	if err := app.DB.Table("favorite_organizations").Where("user_id = ? AND organization_id = ?", c.User.ID, organization.ID).First(&favouriteOrganization).Error; err != nil {
+		// Does not exist, nothing to do
+		return nil
+	}
+
+	if err := app.DB.Delete(&favouriteOrganization).Error; err != nil {
 		return err
 	}
 

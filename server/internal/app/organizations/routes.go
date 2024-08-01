@@ -19,6 +19,7 @@ func RegisterRoutes(api huma.API) {
 		Path:        "/organizations/{id}",
 		Tags:        RouteTag,
 		Middlewares: huma.Middlewares{
+			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.OrganizationRead),
 		},
 	}, OrganizationGetController)
@@ -30,6 +31,7 @@ func RegisterRoutes(api huma.API) {
 		Path:        "/organizations",
 		Tags:        RouteTag,
 		Middlewares: huma.Middlewares{
+			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.OrganizationRead),
 		},
 	}, OrganizationListController)
@@ -70,4 +72,27 @@ func RegisterRoutes(api huma.API) {
 		},
 	}, OrganizationDeleteController)
 
+	huma.Register(api, huma.Operation{
+		OperationID: "organizations-add-to-favorites",
+		Summary:     "Add organization to favorites",
+		Method:      http.MethodPost,
+		Path:        "/organizations/{id}/favorite",
+		Tags:        RouteTag,
+		Middlewares: huma.Middlewares{
+			app.AuthMiddleware(api),
+			app.RoleMiddleware(api, app.OrganizationRead),
+		},
+	}, OrganizationAddToFavoritesController)
+
+	huma.Register(api, huma.Operation{
+		OperationID: "organizations-remove-from-favorites",
+		Summary:     "Remove organization from favorites",
+		Method:      http.MethodDelete,
+		Path:        "/organizations/{id}/favorite",
+		Tags:        RouteTag,
+		Middlewares: huma.Middlewares{
+			app.AuthMiddleware(api),
+			app.RoleMiddleware(api, app.OrganizationRead),
+		},
+	}, OrganizationRemoveFromFavoritesController)
 }

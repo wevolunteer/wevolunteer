@@ -53,6 +53,7 @@ export default function ExperiencesScreen() {
           )}
           ListEmptyComponent={() => (
             !isLoading && 
+            <Box px="m">
             <Box
               borderColor="mainBorder"
               borderWidth={1}
@@ -80,6 +81,7 @@ export default function ExperiencesScreen() {
                 label={t("searchExperiences", "Explore experiences")}
                 onPress={() => router.push("/explore")}
               />
+            </Box>
             </Box>
           )}
           ListFooterComponent={() => (

@@ -53,15 +53,20 @@ func DatabaseInit(config *DatabaseConfig) error {
 		return fmt.Errorf("failed to open database: %w", err)
 	}
 
-	DB.AutoMigrate(
+	err = DB.AutoMigrate(
 		&models.User{},
 		&models.UserDevice{},
 		&models.Organization{},
+		&models.FavoriteOrganization{},
 		&models.Activity{},
 		&models.Experience{},
 		&models.Category{},
 		&models.Place{},
 	)
+
+	if err != nil {
+		panic(fmt.Errorf("failed to migrate database: %w", err))
+	}
 
 	// Set up the database connection pool
 	sqlDB, err := DB.DB()

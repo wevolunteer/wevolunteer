@@ -1,10 +1,12 @@
 import { ExperienceCard } from "@/components/ExperienceCard";
 import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
+import FavoriteButton from "@/components/ui/FavoriteButton";
 import Icon from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useNetwork } from "@/contexts/network";
+import { useExperiences } from "@/hooks/useExperiences";
 import { Experience } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
@@ -13,6 +15,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Linking } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
 const logo = require("@/assets/images/logo.png");
 
@@ -27,30 +30,12 @@ export default function OrganizationsListScreen() {
   const organizationId = parseInt(id);
   const listRef = useRef<FlashList<Experience>>(null);
 
-  const {
-    data: activitiesData,
-    fetchNextPage,
-    refetch,
-    isLoading,
-  } = useInfiniteQuery({
-    queryKey: ["experiences", "organization", organizationId],
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await client.GET("/experiences", {
-        params: {
-          query: {
-            organization: organizationId,
-            page: pageParam,
-          },
-        },
-      });
-      return response.data;
-    },
-    getNextPageParam: (lastPage) => (lastPage?.page_info.page ? lastPage?.page_info.page + 1 : 1),
-    initialPageParam: 1,
+  const { experiences, fetchNextPage, refetch, isLoading } = useExperiences({
+    organization: organizationId,
   });
 
   const { data: organization } = useQuery({
-    queryKey: ["activities", id],
+    queryKey: ["organization", id],
     queryFn: async () => {
       const response = await client.GET("/organizations/{id}", {
         params: {
@@ -63,24 +48,30 @@ export default function OrganizationsListScreen() {
     },
   });
 
-  const activities = useMemo(() => {
-    return activitiesData?.pages.flatMap((page) => page?.results || []) || [];
-  }, [activitiesData]);
-
-  if (!organization || !activities) {
+  if (!organization || !experiences) {
     return null;
   }
 
   return (
     <Box flex={1}>
-      <Topbar empty goBack rightComponent={<Icon name="heart" size={24} />} />
+      <Topbar
+        empty
+        goBack
+        rightComponent={
+          <FavoriteButton
+            id={organization.id}
+            isFavorite={organization.is_favorite}
+            refetch={refetch}
+          />
+        }
+      />
 
       <FlashList
         ref={listRef}
         estimatedItemSize={195}
         refreshing={isLoading}
         onRefresh={() => refetch()}
-        data={activities || []}
+        data={experiences || []}
         keyExtractor={(item) => `a-${item.id}`}
         onEndReachedThreshold={0.8}
         onEndReached={() => fetchNextPage()}
@@ -103,29 +94,31 @@ export default function OrganizationsListScreen() {
                 </Text>
               </Box>
 
-              <Box flexDirection="row" gap="m" justifyContent="space-around" px="m">
-                <Button
-                  variant="secondary"
-                  leftIcon="mail"
-                  size="s"
-                  label={t("email", "Email")}
-                  onPress={() => Linking.openURL(`mailto:${organization.email}`)}
-                />
-                <Button
-                  variant="secondary"
-                  leftIcon="phone"
-                  size="s"
-                  label={t("call", "Call")}
-                  onPress={() => Linking.openURL(`tel:${organization.phone}`)}
-                />
-                <Button
-                  variant="secondary"
-                  leftIcon="globe"
-                  size="s"
-                  label={t("website", "Website")}
-                  onPress={() => Linking.openURL(`${organization.website}`)}
-                />
-              </Box>
+              <ScrollView horizontal>
+                <Box flexDirection="row" gap="m" justifyContent="space-around" px="m">
+                  <Button
+                    variant="secondary"
+                    leftIcon="mail"
+                    size="s"
+                    label={t("email", "Email")}
+                    onPress={() => Linking.openURL(`mailto:${organization.email}`)}
+                  />
+                  <Button
+                    variant="secondary"
+                    leftIcon="phone"
+                    size="s"
+                    label={t("call", "Call")}
+                    onPress={() => Linking.openURL(`tel:${organization.phone}`)}
+                  />
+                  <Button
+                    variant="secondary"
+                    leftIcon="globe"
+                    size="s"
+                    label={t("website", "Website")}
+                    onPress={() => Linking.openURL(`${organization.website}`)}
+                  />
+                </Box>
+              </ScrollView>
             </Box>
             <Box my="l" px="m">
               <Text variant="title">{t("experiences", "Experiences")}</Text>

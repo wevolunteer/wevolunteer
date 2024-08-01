@@ -1,53 +1,31 @@
 import Box from "@/components/ui/Box";
+import FavoriteButton from "@/components/ui/FavoriteButton";
 import Icon from "@/components/ui/Icon";
 import SafeAreaView from "@/components/ui/SafeAreaView";
 import Text from "@/components/ui/Text";
-import { Theme } from "@/config/theme";
 import { useFilters, withFilters } from "@/contexts/filters";
-import { useNetwork } from "@/contexts/network";
+import { useOrganizations } from "@/hooks/useOrganizations";
 import { Organization } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
-import { useTheme } from "@shopify/restyle";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useMemo, useRef } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 
 interface OrganizationFilters {
   q?: string;
+  favorite?: boolean;
 }
 
 function OrganizationListScreen() {
   const { t } = useTranslation();
-  const { client } = useNetwork();
   const listRef = useRef<FlashList<Organization>>(null);
-  const theme = useTheme<Theme>();
+  const [favoriteOnly, setFavoriteOnly] = useState(false);
 
   const { filters, setFilters } = useFilters<OrganizationFilters>();
-  
-  const { data, fetchNextPage, refetch, isLoading } = useInfiniteQuery({
-    queryKey: ["organizations", filters],
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await client.GET("/organizations", {
-        params: {
-          query: {
-            ...filters,
-            page: pageParam,
-          },
-        },
-      });
-      return response.data;
-    },
-    getNextPageParam: (lastPage) => (lastPage?.page_info.page ? lastPage?.page_info.page + 1 : 1),
-    initialPageParam: 1,
-  });
-
-  const organizations = useMemo(() => {
-    return data?.pages.flatMap((page) => page?.results || []) || [];
-  }, [data]);
+  const { organizations, isLoading, refetch, fetchNextPage } = useOrganizations(filters);
 
   return (
     <SafeAreaView>
@@ -83,32 +61,49 @@ function OrganizationListScreen() {
           justifyContent="center"
           py="m"
         >
-          <Box
-            py="s"
-            px="l"
-            backgroundColor="accentText"
-            borderRadius="s"
-            minWidth={110}
-            alignItems="center"
+          <Pressable
+            onPress={() => {
+              setFavoriteOnly(false);
+              setFilters({ ...filters, favorite: false });
+            }}
           >
-            <Text color="whiteText" variant="body" fontSize={13}>
-              Tutte
-            </Text>
-          </Box>
+            <Box
+              py="s"
+              px="l"
+              backgroundColor={favoriteOnly ? "whiteText" : "accentText"}
+              borderRadius="s"
+              borderWidth={1}
+              borderColor="lightBorder"
+              minWidth={110}
+              alignItems="center"
+            >
+              <Text color={favoriteOnly ? "accentText" : "whiteText"} variant="body" fontSize={13}>
+                Tutte
+              </Text>
+            </Box>
+          </Pressable>
 
-          <Box
-            py="s"
-            px="l"
-            borderWidth={1}
-            borderColor="lightBorder"
-            borderRadius="s"
-            minWidth={110}
-            alignItems="center"
+          <Pressable
+            onPress={() => {
+              setFavoriteOnly(!favoriteOnly);
+              setFilters({ ...filters, favorite: true });
+            }}
           >
-            <Text variant="body" fontSize={13}>
-              Preferite
-            </Text>
-          </Box>
+            <Box
+              py="s"
+              px="l"
+              borderWidth={1}
+              backgroundColor={favoriteOnly ? "accentText" : "whiteText"}
+              borderColor="lightBorder"
+              borderRadius="s"
+              minWidth={110}
+              alignItems="center"
+            >
+              <Text variant="body" color={favoriteOnly ? "whiteText" : "accentText"} fontSize={13}>
+                Preferite
+              </Text>
+            </Box>
+          </Pressable>
         </Box>
         <FlashList
           ref={listRef}
@@ -140,7 +135,10 @@ function OrganizationListScreen() {
                   <Text variant="body">{item.name}</Text>
                   <Text variant="secondary">{item.city}</Text>
                 </Box>
-                <Icon name="heart" size={48} color={theme.colors.accentText} />
+
+                <Box>
+                  <FavoriteButton id={item.id} isFavorite={item.is_favorite} refetch={refetch} />
+                </Box>
               </Box>
             </Pressable>
           )}
@@ -149,5 +147,6 @@ function OrganizationListScreen() {
     </SafeAreaView>
   );
 }
+
 
 export default withFilters(OrganizationListScreen);
