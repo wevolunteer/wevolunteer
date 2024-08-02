@@ -9,7 +9,7 @@ interface Props extends Omit<InputTextBottomSheetProps, "value" | "onChange"> {
 }
 
 const DateMaskInputBottomSheet: FC<Props> = ({ value, onChange, ...props }) => {
-  const [internalValue, setInternalValue] = useState<string>(value || "");
+  const [internalValue, setInternalValue] = useState<string>(value?.split("-").reverse().join("/") || "");
 
   useEffect(() => {
     if (internalValue.length === 10) {
