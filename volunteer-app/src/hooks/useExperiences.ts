@@ -6,7 +6,7 @@ import { useMemo } from "react";
 
 export function useExperiences(initialFilters: ExperienceFilters = {}) {
   const { client } = useNetwork();
-  const { filters } = useFilters<ExperienceFilters>();
+  const { filters } = useFilters<ExperienceFilters>(); // do not works
 
   const { data, fetchNextPage, refetch, isLoading } = useInfiniteQuery({
     queryKey: ["experiences", filters, initialFilters],

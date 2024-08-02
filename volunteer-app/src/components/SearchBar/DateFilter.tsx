@@ -29,9 +29,10 @@ interface DateFilterProps {
   title: string;
   value?: DateInterval | null;
   onChange?: (value: DateInterval | null) => void;
+  onConfirm: () => void;
 }
 
-const DateFilter: FC<DateFilterProps> = ({ title, value, onChange }) => {
+const DateFilter: FC<DateFilterProps> = ({ title, value, onChange, onConfirm }) => {
   const { t } = useTranslation();
   const [showCustomDates, setShowCustomDates] = useState(false);
 
@@ -75,10 +76,14 @@ const DateFilter: FC<DateFilterProps> = ({ title, value, onChange }) => {
       title={showCustomDates ? t("chooseDates", "Choose dates") : title}
       label={!!value?.from || !!value?.to ? dateIntervalToString(value) : title}
       selected={!!value?.from || !!value?.to}
-      onConfirm={console.log}
+      onConfirm={() => { 
+        setShowCustomDates(false)
+        onConfirm()
+      }}
       onBack={showCustomDates ? () => setShowCustomDates(false) : undefined}
       onReset={() => {
-        onChange && onChange(null);
+        onChange?.(null);
+        setShowCustomDates(false)
       }}
     >
       {showCustomDates ? (
@@ -109,7 +114,7 @@ const DateFilter: FC<DateFilterProps> = ({ title, value, onChange }) => {
           >
             <Text variant="body">{t("to", "To")}:</Text>
             <Box width={150}>
-            <DateMaskInputBottomSheet
+              <DateMaskInputBottomSheet
                 value={value?.to || ""}
                 onChange={(to) => {
                   onChange && onChange({ from: value?.from || null, to: to || null });

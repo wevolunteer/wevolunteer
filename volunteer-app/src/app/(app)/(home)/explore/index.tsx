@@ -1,23 +1,31 @@
 import { ExperienceCard } from "@/components/ExperienceCard";
+import SearchBar from "@/components/SearchBar";
 import Box from "@/components/ui/Box";
 import Icon from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
-import { useFilters } from "@/contexts/filters";
+import { FiltersContext, useFilters, withFilters } from "@/contexts/filters";
 import { useExperiences } from "@/hooks/useExperiences";
-import { Experience } from "@/types/data";
+import { Experience, ExperienceFilters } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-export default function ExporeListScreen() {
+function ExploreListScreen() {
   const { t } = useTranslation();
   const listRef = useRef<FlashList<Experience>>(null);
 
-  const { filters } = useFilters();
+  const { filters } = useFilters<ExperienceFilters>();
 
-  const { experiences, fetchNextPage, refetch, isLoading } = useExperiences();
+
+  const { experiences, fetchNextPage, refetch, isLoading } = useExperiences({
+    date_start: filters.date_start || new Date().toISOString().split("T")[0],
+    date_end: filters.date_end || undefined,
+    categories: filters.categories,
+    distance: filters.distance,
+    q: filters.q,
+  });
 
   useEffect(() => {
     refetch();
@@ -36,6 +44,19 @@ export default function ExporeListScreen() {
         keyExtractor={(item) => `a-${item.id}`}
         onEndReachedThreshold={0.8}
         onEndReached={() => fetchNextPage()}
+        ListEmptyComponent={
+          <Box flex={1} justifyContent="center" alignItems="center" mt="2xl">
+            <Text variant="body" color="darkBackground">
+              {t("noResults", "No results")}
+            </Text>
+          </Box>
+        }
+        ListHeaderComponent={
+          <Box paddingHorizontal="m" marginBottom="m" backgroundColor="mainBackground">
+            <SearchBar />
+          </Box>
+        }
+        contentContainerStyle={{ paddingBottom: 20 }}
         renderItem={({ item }) => (
           <ExperienceCard
             experience={item}
@@ -74,3 +95,5 @@ export default function ExporeListScreen() {
     </Box>
   );
 }
+
+export default withFilters(ExploreListScreen);

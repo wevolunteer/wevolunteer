@@ -1,6 +1,6 @@
 import { FiltersProvider, useFilters } from "@/contexts/filters";
 import { SearchesProvider } from "@/contexts/searches";
-import { ActivityFilters } from "@/types/data";
+import { ActivityFilters, ExperienceFilters } from "@/types/data";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { FC, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -14,14 +14,9 @@ import DateFilter from "./DateFilter";
 import PlaceFilter from "./PlaceFilter";
 import SearchModal from "./SearchModal";
 
-interface SearchBarProps {
-  value: ActivityFilters;
-  onChange: (value: ActivityFilters) => void;
-}
-
-const SearchBar: FC<SearchBarProps> = ({ value, onChange }) => {
+const SearchBar: FC = () => {
   const { t } = useTranslation();
-  const { filters, setFilters } = useFilters();
+  const { filters, setFilters } = useFilters<ExperienceFilters>();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   const handlePresentModalPress = useCallback(() => {
@@ -38,21 +33,36 @@ const SearchBar: FC<SearchBarProps> = ({ value, onChange }) => {
           marginBottom="m"
           backgroundColor="mainBackground"
           alignItems="center"
+          justifyContent="space-between"
           flexDirection="row"
           paddingHorizontal="m"
           shadowColor="shadow"
           elevation={6}
         >
           <Icon name="search" />
-          <Box marginLeft="m">
-            <Text variant="body" fontWeight="bold" lineHeight={20}>
-              {t("search", "Search")}
-            </Text>
-            <Text variant="secondary">
-              {t("experiences", "Experiences")} • {t("organizations", "Organizations")} •{" "}
-              {t("places", "Places")}
-            </Text>
+          <Box marginLeft="m" flex={1}>
+            {filters.q ? (
+              <Text variant="body" fontWeight="bold" lineHeight={20}>
+                {filters.q}
+              </Text>
+            ) : (
+              <>
+                <Text variant="body" fontWeight="bold" lineHeight={20}>
+                  {t("search", "Search")}
+                </Text>
+                <Text variant="secondary">
+                  {t("experiences", "Experiences")} • {t("organizations", "Organizations")} •{" "}
+                  {t("places", "Places")}
+                </Text>
+              </>
+            )}
           </Box>
+
+          {filters.q && (
+            <Pressable onPress={() => setFilters({ ...filters, q: undefined })}>
+              <Icon name="close" />
+            </Pressable>
+          )}
         </Box>
       </Pressable>
 
@@ -71,6 +81,10 @@ const SearchBar: FC<SearchBarProps> = ({ value, onChange }) => {
                 date_start: value?.from || undefined,
                 date_end: value?.to || undefined,
               });
+            }}
+            onConfirm={() => {
+              Keyboard.dismiss();
+              bottomSheetModalRef.current?.dismiss();
             }}
           />
           <CategoryFilter
@@ -105,6 +119,8 @@ const SearchBar: FC<SearchBarProps> = ({ value, onChange }) => {
                   Keyboard.dismiss();
                   bottomSheetModalRef.current?.dismiss();
                 }}
+                filters={filters}
+                setFilters={setFilters}
               />
             </FiltersProvider>
           </SearchesProvider>

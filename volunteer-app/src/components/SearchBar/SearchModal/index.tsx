@@ -5,12 +5,12 @@ import Text from "@/components/ui/Text";
 import { useFilters } from "@/contexts/filters";
 import { useSearches } from "@/contexts/searches";
 import { useExperiences } from "@/hooks/useExperiences";
-import { Experience } from "@/types/data";
+import { Experience, ExperienceFilters } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, TextInput } from "react-native";
+import { BackHandler, Pressable, ScrollView, TextInput } from "react-native";
 import SafeAreaView from "../../ui/SafeAreaView";
 import CategoryFilter from "../CategoryFilter";
 import DateFilter from "../DateFilter";
@@ -19,13 +19,29 @@ import RecentSearches from "./RecentSearches";
 
 interface SearchModalProps {
   onClose: () => void;
+  filters: ExperienceFilters;
+  setFilters: (filters: ExperienceFilters) => void;
 }
 
-const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
+const SearchModal: FC<SearchModalProps> = ({ onClose, filters, setFilters }) => {
   const { t } = useTranslation();
-  const { filters, setFilters } = useFilters();
+
   const [q, setQ] = useState<string>("");
   const listRef = useRef<FlashList<Experience>>(null);
+
+  useEffect(() => {
+    BackHandler.addEventListener("hardwareBackPress", () => {
+      onClose();
+      return true;
+    });
+
+    return () => {
+      BackHandler.removeEventListener("hardwareBackPress", () => {
+        onClose();
+        return true;
+      });
+    };
+  }, []);
 
   const { experiences, fetchNextPage, refetch, isLoading } = useExperiences();
 
@@ -39,6 +55,8 @@ const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
     } else {
       setFilters({ ...filters, q: undefined });
     }
+
+    onClose();
   }
 
   function onSearchInputBlur() {
@@ -101,6 +119,7 @@ const SearchModal: FC<SearchModalProps> = ({ onClose }) => {
                   date_end: value?.to || undefined,
                 });
               }}
+              onConfirm={onClose}
             />
             <CategoryFilter
               title={t("causes", "Causes")}

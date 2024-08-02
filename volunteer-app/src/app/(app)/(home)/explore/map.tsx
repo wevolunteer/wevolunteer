@@ -1,4 +1,5 @@
 import { ExperienceCard } from "@/components/ExperienceCard";
+import SearchBar from "@/components/SearchBar";
 import Box from "@/components/ui/Box";
 import Icon from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
@@ -50,6 +51,9 @@ export default function ExporeMapScreen() {
 
   return (
     <Box flex={1}>
+                <Box paddingHorizontal="m" marginBottom="m" backgroundColor="mainBackground">
+            <SearchBar />
+          </Box>
       <MapView
         initialRegion={{
           latitude: 41.87194,
