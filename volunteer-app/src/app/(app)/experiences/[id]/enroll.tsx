@@ -8,7 +8,7 @@ import SafeAreaView from "@/components/ui/SafeAreaView";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useNetwork } from "@/contexts/network";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
@@ -30,6 +30,7 @@ export default function ExperienceEnrollScreen() {
   const { id } = useLocalSearchParams();
   const { t } = useTranslation();
   const { client } = useNetwork();
+  const queryClient = useQueryClient();
 
   if (!id || Array.isArray(id)) {
     throw new Error("id should be a string");
@@ -38,7 +39,7 @@ export default function ExperienceEnrollScreen() {
   const experienceId = parseInt(id);
 
   const { data } = useQuery({
-    queryKey: ["activities", id],
+    queryKey: ["experience", id],
     queryFn: async () => {
       const response = await client.GET("/experiences/{id}", {
         params: {
@@ -51,7 +52,11 @@ export default function ExperienceEnrollScreen() {
     },
   });
 
-  const { control, handleSubmit } = useForm<EnrollmentData>();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<EnrollmentData>();
 
   if (!data) {
     return null;
@@ -76,7 +81,9 @@ export default function ExperienceEnrollScreen() {
         throw new Error(res.error.detail);
       }
 
-    } catch (error : any) {
+      queryClient.refetchQueries({ queryKey: ["activities"] });
+
+    } catch (error: any) {
       Toast.show({
         type: "error",
         text1: t("error", "Error: " + error.message),
@@ -104,10 +111,12 @@ export default function ExperienceEnrollScreen() {
               <Controller
                 control={control}
                 name="from_time"
+                rules={{ required: t("requiredField", "This field is required") }}
                 render={({ field: { onChange, value } }) => (
                   <InputTime
                     label={t("fromTime", "From hour")}
                     value={value}
+                    error={errors.from_time?.message}
                     onChangeText={onChange}
                     placeholder="HH:MM"
                   />
@@ -118,10 +127,12 @@ export default function ExperienceEnrollScreen() {
               <Controller
                 control={control}
                 name="from_date"
+                rules={{ required: t("requiredField", "This field is required") }}
                 render={({ field: { onChange, value } }) => (
                   <InputDate
                     label={t("fromDay", "Of the day")}
                     value={value}
+                    error={errors.from_date?.message}
                     onChangeText={onChange}
                     placeholder="GG/MM/AAAA"
                   />
@@ -137,10 +148,12 @@ export default function ExperienceEnrollScreen() {
               <Controller
                 control={control}
                 name="to_time"
+                rules={{ required: t("requiredField", "This field is required") }}
                 render={({ field: { onChange, value } }) => (
                   <InputTime
                     label={t("toTime", "To hour")}
                     value={value}
+                    error={errors.to_time?.message}
                     onChangeText={onChange}
                     placeholder="HH:MM"
                   />
@@ -151,10 +164,12 @@ export default function ExperienceEnrollScreen() {
               <Controller
                 control={control}
                 name="to_date"
+                rules={{ required: t("requiredField", "This field is required") }}
                 render={({ field: { onChange, value } }) => (
                   <InputDate
                     label={t("toDate", "Of the day")}
                     value={value}
+                    error={errors.to_date?.message}
                     onChangeText={onChange}
                     placeholder="GG/MM/AAAA"
                   />
