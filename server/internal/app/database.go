@@ -57,7 +57,6 @@ func DatabaseInit(config *DatabaseConfig) error {
 		&models.User{},
 		&models.UserDevice{},
 		&models.Organization{},
-		&models.FavoriteOrganization{},
 		&models.Activity{},
 		&models.Experience{},
 		&models.Category{},

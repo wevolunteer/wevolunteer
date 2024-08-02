@@ -172,17 +172,12 @@ func OrganizationAddToFavorites(c *app.Context, id uint) error {
 		return err
 	}
 
-	favouriteOrganization := models.FavoriteOrganization{
-		UserID:         c.User.ID,
-		OrganizationID: organization.ID,
+	var user models.User
+	if err := app.DB.Model(&user).Where("id = ?", c.User.ID).First(&user).Error; err != nil {
+		return err
 	}
 
-	if err := app.DB.Table("favorite_organizations").Where("user_id = ? AND organization_id = ?", c.User.ID, organization.ID).First(&favouriteOrganization).Error; err == nil {
-		// Already exists
-		return nil
-	}
-
-	if err := app.DB.Create(&favouriteOrganization).Error; err != nil {
+	if err := app.DB.Model(&organization).Association("FavoriteUsers").Append(&user); err != nil {
 		return err
 	}
 
@@ -196,17 +191,12 @@ func OrganizationRemoveFromFavorites(c *app.Context, id uint) error {
 		return err
 	}
 
-	favouriteOrganization := models.FavoriteOrganization{
-		UserID:         c.User.ID,
-		OrganizationID: organization.ID,
+	var user models.User
+	if err := app.DB.Model(&user).Where("id = ?", c.User.ID).First(&user).Error; err != nil {
+		return err
 	}
 
-	if err := app.DB.Table("favorite_organizations").Where("user_id = ? AND organization_id = ?", c.User.ID, organization.ID).First(&favouriteOrganization).Error; err != nil {
-		// Does not exist, nothing to do
-		return nil
-	}
-
-	if err := app.DB.Delete(&favouriteOrganization).Error; err != nil {
+	if err := app.DB.Model(&organization).Association("FavoriteUsers").Delete(&user); err != nil {
 		return err
 	}
 

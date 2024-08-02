@@ -37,4 +37,6 @@ type User struct {
 	IsEmailVerified       bool           `json:"is_email_verified" gorm:"default:false"`
 	HasAcceptedTOS        bool           `json:"accepted_tos" gorm:"default:false"`
 	HasAcceptedNewsletter bool           `json:"accepted_newsletter" gorm:"default:false"`
+
+	FavoriteOrganizations []*Organization `gorm:"many2many:favorite_organizations;" json:"-"`
 }

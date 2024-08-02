@@ -2,6 +2,7 @@ package organizations
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
@@ -142,6 +143,7 @@ func OrganizationAddToFavoritesController(
 	err := OrganizationAddToFavorites(ctx, input.ID)
 
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 

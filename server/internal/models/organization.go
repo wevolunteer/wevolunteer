@@ -30,4 +30,6 @@ type Organization struct {
 	VATCode    string         `json:"vat_code"`
 	Published  bool           `json:"published"`
 	ExternalId string         `json:"external_id"`
+
+	FavoriteUsers []*User `gorm:"many2many:favorite_organizations;" json:"-"`
 }
