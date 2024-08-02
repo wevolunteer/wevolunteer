@@ -8,7 +8,7 @@ import SafeAreaView from "@/components/ui/SafeAreaView";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useNetwork } from "@/contexts/network";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -31,6 +31,7 @@ export default function ActivityEditScreen() {
   const { id } = useLocalSearchParams();
   const { t } = useTranslation();
   const { client } = useNetwork();
+  const queryClient = useQueryClient();
 
   if (!id || Array.isArray(id)) {
     throw new Error("id should be a string");
@@ -58,7 +59,6 @@ export default function ActivityEditScreen() {
     if (!data) {
       return;
     }
-    console.log(data);
     setValue("from_time", data.start_time);
     // 2024-07-29T02:00:00+02:00 to 29/07/2024
     setValue("from_date", data.start_date.split("T")[0].split("-").reverse().join("/"));
@@ -73,9 +73,9 @@ export default function ActivityEditScreen() {
     try {
       const res = await client.DELETE("/activities/{id}", {
         params: {
-            path: {
-                id: activityId,
-            }
+          path: {
+            id: activityId,
+          },
         },
       });
       if (res.error) {
@@ -89,10 +89,12 @@ export default function ActivityEditScreen() {
       return;
     }
 
+    await queryClient.refetchQueries({ queryKey: ["activities"] });
+
     Toast.show({
-        type: "success",
-        text1: t("activityDeleted", "Activity deleted"),
-      });
+      type: "success",
+      text1: t("activityDeleted", "Activity deleted"),
+    });
 
     router.push("/experiences");
   };
@@ -129,7 +131,6 @@ export default function ActivityEditScreen() {
 
     router.push("/experiences/activities/" + activityId + "/confirm");
   }
-
   if (!data) {
     return null;
   }

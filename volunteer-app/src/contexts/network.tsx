@@ -28,7 +28,7 @@ const loggerMiddleware: Middleware = {
 };
 
 export const NetworkProvider: React.FC<NetworkProviderProps> = ({ children }) => {
-  const client = createClient<paths>({ baseUrl: getApiUrl() });
+  const client = createClient<paths>({ baseUrl: getApiUrl(), cache: "no-cache" });
 
   if (__DEV__) {
     client.use(loggerMiddleware);
