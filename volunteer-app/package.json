@@ -42,7 +42,7 @@
     "expo-web-browser": "~13.0.3",
     "i18next": "^23.11.5",
     "intl-pluralrules": "^2.0.1",
-    "openapi-fetch": "^0.9.7",
+    "openapi-fetch": "^0.10.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.51.5",

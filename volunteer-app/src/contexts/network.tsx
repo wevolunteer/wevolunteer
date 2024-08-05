@@ -17,13 +17,13 @@ interface NetworkProviderProps {
 }
 
 const loggerMiddleware: Middleware = {
-  async onRequest(req, options) {
-    console.log("request", req, null, 2);
-    return req;
+  async onRequest({ request }) {
+    console.log("request", request, null, 2);
+    return request;
   },
-  async onResponse(res) {
-    console.log("response", res, null, 2);
-    return res;
+  async onResponse({ response }) {
+    console.log("response", response, null, 2);
+    return response;
   },
 };
 

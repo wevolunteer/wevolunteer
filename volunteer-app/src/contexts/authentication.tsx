@@ -40,14 +40,18 @@ export function SessionProvider(props: React.PropsWithChildren) {
   const { expoPushToken } = useNotifications();
 
   const tokenMiddleware: Middleware = {
-    async onRequest(req, options) {
+    async onRequest({ request, options }) {
       if (session?.token?.accessToken) {
-        req.headers.set("Authorization", `Bearer ${session.token.accessToken}`);
+        request.headers.set("Authorization", `Bearer ${session.token.accessToken}`);
       }
-      return req;
+      return request;
     },
-    async onResponse(res, options, req) {
-      if (res.status === 401 && session?.token?.refreshToken && !res.url.includes("api/auth/")) {
+    async onResponse({ request, response, options }) {
+      if (
+        response.status === 401 &&
+        session?.token?.refreshToken &&
+        !response.url.includes("api/auth/")
+      ) {
         let newAccessToken;
 
         try {
@@ -76,19 +80,19 @@ export function SessionProvider(props: React.PropsWithChildren) {
         }
 
         // Retry the original request with the new access token
-        const newRes = await fetch(req.url, {
-          method: req.method,
+        const newRes = await fetch(request.url, {
+          method: request.method,
           headers: {
-            ...Object.fromEntries(req.headers.entries()),
+            ...Object.fromEntries(request.headers.entries()),
             authorization: `Bearer ${newAccessToken}`,
           },
-          body: req.body,
+          body: request.body,
         });
 
         return newRes;
       }
 
-      return res;
+      return response;
     },
   };
 
