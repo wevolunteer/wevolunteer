@@ -537,6 +537,9 @@ export interface components {
       latitude: number;
       /** Format: double */
       longitude: number;
+      notifications_activity_reminders: boolean;
+      notifications_followed_organizations: boolean;
+      notifications_nearby_activities: boolean;
       phone: string;
       tax_code: string;
       uid: string;
@@ -621,6 +624,9 @@ export interface components {
       latitude?: number;
       /** Format: double */
       longitude?: number;
+      notifications_activity_reminders: boolean | null;
+      notifications_followed_organizations: boolean | null;
+      notifications_nearby_activities: boolean | null;
       phone?: string;
       tax_code?: string;
     };

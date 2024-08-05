@@ -2,7 +2,7 @@ import { Session, useStorageState } from "@/hooks/useStorageState";
 import { RequestCodeData, VerifyCodeData } from "@/types/data";
 import * as Device from "expo-device";
 import { Middleware } from "openapi-fetch";
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { useNetwork } from "./network";
 import { useNotifications } from "./notifications";
 
@@ -41,20 +41,24 @@ export function SessionProvider(props: React.PropsWithChildren) {
 
   const tokenMiddleware: Middleware = {
     async onRequest({ request, options }) {
+      console.log("applying token middleware", session?.token?.accessToken);
       if (session?.token?.accessToken) {
         request.headers.set("Authorization", `Bearer ${session.token.accessToken}`);
       }
       return request;
     },
     async onResponse({ request, response, options }) {
+      console.log(request);
       if (
         response.status === 401 &&
         session?.token?.refreshToken &&
-        !response.url.includes("api/auth/")
+        !(request.url.includes("api/auth/") && request.method === "POST")
       ) {
         let newAccessToken;
+        console.log("token expired");
 
         try {
+          console.log("refreshing token");
           const refreshTokenResponse = await client.POST("/auth/refresh", {
             body: {
               refresh_token: session.token.refreshToken,
@@ -74,6 +78,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
           });
 
           newAccessToken = refreshTokenResponse.data.access_token;
+          console.log("token refreshed");
         } catch (error) {
           setSession(null);
           console.error("Failed to refresh token", error);
@@ -98,84 +103,85 @@ export function SessionProvider(props: React.PropsWithChildren) {
 
   client.use(tokenMiddleware);
 
-  return (
-    <AuthContext.Provider
-      value={{
-        fetchUser: async () => {
-          if (session?.token?.accessToken) {
-            const data = await client.GET("/auth/user", {
-              headers: {
-                Authorization: `Bearer ${session.token.accessToken}`,
+  const fetchUser = useCallback(async () => {
+    if (session?.token?.accessToken) {
+      const data = await client.GET("/auth/user", {
+        headers: {
+          Authorization: `Bearer ${session.token.accessToken}`,
+        },
+      });
+
+      if (data?.data) {
+        setSession({
+          user: data.data,
+          token: session.token,
+        });
+      }
+    }
+  }, [session, client, setSession]);
+
+  const initialState = useMemo(
+    () => ({
+      fetchUser,
+      requestAuthCode: async (data: RequestCodeData) => {
+        const response = await client.POST("/auth/request-code", {
+          body: data,
+        });
+
+        if (response.error) {
+          console.error("request code error:", response.error);
+          return false;
+        }
+
+        return true;
+      },
+      verifyAuthCode: async (data: VerifyCodeData) => {
+        const response = await client.POST("/auth/verify-code", {
+          body: data,
+        });
+
+        if (response.data?.access_token) {
+          const headers = {
+            Authorization: `Bearer ${response.data.access_token}`,
+          };
+
+          const data = await client.GET("/auth/user", { headers });
+
+          if (data?.data) {
+            setSession({
+              user: data.data,
+              token: {
+                accessToken: response.data.access_token,
+                refreshToken: response.data.refresh_token,
               },
             });
 
-            if (data?.data) {
-              setSession({
-                user: data.data,
-                token: session.token,
-              });
-            }
+            await client.POST("/user-devices", {
+              body: {
+                brand: Device.brand || "Unknown",
+                device_name: Device.deviceName || "Unknown",
+                model: Device.modelName || "Unknown",
+                device_type: Device.deviceType?.toString() || "Unknown",
+                os_name: Device.osName || "Unknown",
+                token: expoPushToken,
+              },
+              headers,
+            });
+
+            return true;
           }
-        },
-        requestAuthCode: async (data) => {
-          const response = await client.POST("/auth/request-code", {
-            body: data,
-          });
+        }
 
-          if (response.error) {
-            console.error("request code error:", response.error);
-            return false;
-          }
-
-          return true;
-        },
-        verifyAuthCode: async (data) => {
-          const response = await client.POST("/auth/verify-code", {
-            body: data,
-          });
-
-          if (response.data?.access_token) {
-            const headers = {
-              Authorization: `Bearer ${response.data.access_token}`,
-            };
-
-            const data = await client.GET("/auth/user", { headers });
-
-            if (data?.data) {
-              setSession({
-                user: data.data,
-                token: {
-                  accessToken: response.data.access_token,
-                  refreshToken: response.data.refresh_token,
-                },
-              });
-
-              await client.POST("/user-devices", {
-                body: {
-                  brand: Device.brand || "Unknown",
-                  device_name: Device.deviceName || "Unknown",
-                  model: Device.modelName || "Unknown",
-                  device_type: Device.deviceType?.toString() || "Unknown",
-                  os_name: Device.osName || "Unknown",
-                  token: expoPushToken,
-                },
-                headers,
-              });
-
-              return true;
-            }
-          }
-
-          return false;
-        },
-        signOut: () => {
-          setSession(null);
-        },
-        session,
-        isLoading,
-      }}
-    >
-      {props.children}
-    </AuthContext.Provider>
+        return false;
+      },
+      signOut: () => {
+        setSession(null);
+      },
+      session,
+      isLoading,
+    }),
+    [session, isLoading, fetchUser, setSession, client, expoPushToken],
   );
+
+  return <AuthContext.Provider value={initialState}>{props.children}</AuthContext.Provider>;
 }

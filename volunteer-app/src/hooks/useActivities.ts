@@ -7,7 +7,7 @@ import { useMemo } from "react";
 export function useActivities(initialFilters?: ActivityFilters) {
   const { client } = useNetwork();
   const { filters } = useFilters<ActivityFilters>(initialFilters);
-  
+
   const { data, fetchNextPage, refetch, isLoading } = useInfiniteQuery({
     queryKey: ["activities", filters, initialFilters],
     queryFn: async ({ pageParam = 1 }) => {
@@ -22,7 +22,8 @@ export function useActivities(initialFilters?: ActivityFilters) {
       });
       return response.data;
     },
-    getNextPageParam: (lastPage) => (lastPage?.page_info.has_next_page ? lastPage?.page_info.page + 1 : null),
+    getNextPageParam: (lastPage) =>
+      lastPage?.page_info.has_next_page ? lastPage?.page_info.page + 1 : null,
     initialPageParam: 1,
   });
 

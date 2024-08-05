@@ -22,7 +22,8 @@ export function useOrganizations(initialFilters?: ActivityFilters) {
       });
       return response.data;
     },
-    getNextPageParam: (lastPage) => (lastPage?.page_info.has_next_page ? lastPage?.page_info.page + 1 : null),
+    getNextPageParam: (lastPage) =>
+      lastPage?.page_info.has_next_page ? lastPage?.page_info.page + 1 : null,
     initialPageParam: 1,
   });
 
