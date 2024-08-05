@@ -55,11 +55,15 @@ export const ExperienceCard: FC<ExperienceCardProps> = ({ experience, onPress, o
         <Box flex={1} padding="m">
           <Text variant="secondary">{experience.organization.name}</Text>
           <Box flex={1} marginVertical="s">
-            <Text variant="title" fontSize={16}>
-              {experience.title.length > 20 ? `${experience.title.slice(0, 20)}...` : experience.title}
+            <Text variant="title" fontSize={16} fontWeight={500}>
+              {experience.title.length > 20
+                ? `${experience.title.slice(0, 20)}...`
+                : experience.title}
             </Text>
           </Box>
-          <Text variant="inputLabel">{experience.city}</Text>
+          <Text variant="body" fontSize={13}>
+            {experience.city}
+          </Text>
           <Text variant="secondary">
             {experience.start_date ? format(new Date(experience.start_date), "d/MM") : ""}
 

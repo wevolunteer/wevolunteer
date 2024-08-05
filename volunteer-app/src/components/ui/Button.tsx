@@ -137,8 +137,11 @@ const Button = ({
             {label}
           </Text>
         )}
-
-        <Box>{rightIcon && <Icon name={rightIcon} color={iconColor} />}</Box>
+        {rightIcon ? (
+          <Box>{<Icon name={rightIcon} color={iconColor} />}</Box>
+        ) : (
+          <Box style={{ width: 28 }}></Box>
+        )}
       </Box>
     </TouchableOpacity>
   );

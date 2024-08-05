@@ -42,19 +42,18 @@ export default function ProfileScreen() {
           <ProfileStats years={2} experiences={14} />
 
           <Box>
-            <ProfileItem label={t("profile.iLiveIn", "I live in")} value={user.phone || "-"} />
-            <ProfileItem label={t("profile.myJob", "My Job")} value={user.phone || "-"} />
+            <ProfileItem label={t("profile.iLiveIn", "I live in")} value={user.city || "-"} />
+            <ProfileItem label={t("profile.myJob", "My Job")} value={user.job || "-"} />
             <ProfileItem label={t("profile.myCauses", "My Causes")} value={user.phone || "-"} />
             <ProfileItem
               label={t("profile.myLanguages", "My Languages")}
-              value={user.phone || "-"}
+              value={user.languages || "-"}
             />
           </Box>
 
           <Text variant="title">{t("profile.aboutMe", "About me")}</Text>
           <Text variant="body">
-            {user.bio ||
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse eget orci fermentum, maximus augue id, rutrum eros. Proin rutrum, lorem in iaculis varius, justo erat feugiat nulla, nec volutpat lorem nunc non leo. Vivamus in dapibus purus. Proin sollicitudin rhoncus egestas. Vestibulum id lorem sagittis, iaculis ante ac, suscipit dolor. Fusce vulputate nibh sit amet tristique scelerisque. Ut pharetra, diam ac porta porta, lectus eros aliquam lacus, at iaculis velit est in lacus."}
+            {user.bio || t("profile.aboutMeTellSomething", "Tell something about you")}
           </Text>
         </Box>
       </ScrollView>

@@ -5,6 +5,8 @@ import InputText from "@/components/ui/InputText";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useSession } from "@/contexts/authentication";
+import useProfile from "@/hooks/useProfile";
+import { ProfileData } from "@/types/data";
 import { router } from "expo-router";
 import { FC, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -13,35 +15,23 @@ import { When } from "react-if";
 import { LayoutAnimation, Pressable } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-interface ProfileData {
-  avatar: string | null;
-  first_name: string;
-  last_name: string;
-  tax_code: string;
-  date_of_birth: string;
-  city: string;
-  job: string;
-  preferred_causes: string;
-  languages: string;
-  bio: string;
-}
-
 export default function ProfileEditScreen() {
   const { t } = useTranslation();
-  const { session } = useSession();
+  const { session, fetchUser } = useSession();
+  const { updateProfile } = useProfile();
 
   const { control, handleSubmit, watch } = useForm<ProfileData>({
     defaultValues: {
-      avatar: session?.user.avatar,
-      first_name: session?.user.first_name,
-      last_name: session?.user.last_name,
-      tax_code: session?.user.tax_code,
-      date_of_birth: session?.user.date_of_birth,
-      city: session?.user.city,
-      job: session?.user.job,
-      preferred_causes: session?.user.preferred_causes,
-      languages: session?.user.languages,
-      bio: session?.user.bio,
+      avatar: session?.user?.avatar,
+      first_name: session?.user?.first_name,
+      last_name: session?.user?.last_name,
+      tax_code: session?.user?.tax_code,
+      date_of_birth: session?.user?.date_of_birth,
+      city: session?.user?.city,
+      job: session?.user?.job,
+      // preferred_causes: session?.user?.preferred_causes,
+      languages: session?.user?.languages,
+      bio: session?.user?.bio,
     },
   });
 
@@ -52,6 +42,21 @@ export default function ProfileEditScreen() {
 
   async function onSubmit(values: ProfileData) {
     console.log(values);
+
+    if (!session?.user) {
+      return;
+    }
+
+    values.notifications_activity_reminders = session?.user?.notifications_activity_reminders;
+    values.notifications_followed_organizations =
+      session?.user?.notifications_followed_organizations;
+    values.notifications_nearby_activities = session?.user?.notifications_nearby_activities;
+
+    updateProfile.mutate(values, {
+      onSuccess: () => {
+        fetchUser();
+      },
+    });
   }
 
   const values = watch();
@@ -115,7 +120,7 @@ export default function ProfileEditScreen() {
           </ProfileDataForm>
           <ProfileDataForm
             label={t("dob", "Date of birth")}
-            value={values.date_of_birth}
+            value={values.date_of_birth || "-"}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
@@ -135,7 +140,7 @@ export default function ProfileEditScreen() {
           </ProfileDataForm>
           <ProfileDataForm
             label={t("city", "City")}
-            value={values.city}
+            value={values.city || "-"}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
@@ -152,7 +157,7 @@ export default function ProfileEditScreen() {
           </ProfileDataForm>
           <ProfileDataForm
             label={t("job", "Job")}
-            value={values.job}
+            value={values.job || "-"}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
@@ -167,7 +172,7 @@ export default function ProfileEditScreen() {
               )}
             />
           </ProfileDataForm>
-          <ProfileDataForm
+          {/* <ProfileDataForm
             label={t("preferredCauses", "Preferred causes")}
             value={values.preferred_causes}
           >
@@ -182,10 +187,10 @@ export default function ProfileEditScreen() {
                 />
               )}
             />
-          </ProfileDataForm>
+          </ProfileDataForm> */}
           <ProfileDataForm
             label={t("languages", "Languages")}
-            value={values.languages}
+            value={values.languages || "-"}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
@@ -202,7 +207,7 @@ export default function ProfileEditScreen() {
           </ProfileDataForm>
           <ProfileDataForm
             label={t("aboutMe", "About me")}
-            value={values.bio}
+            value={values.bio || "-"}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
