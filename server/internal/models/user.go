@@ -38,5 +38,9 @@ type User struct {
 	HasAcceptedTOS        bool           `json:"accepted_tos" gorm:"default:false"`
 	HasAcceptedNewsletter bool           `json:"accepted_newsletter" gorm:"default:false"`
 
+	NotificationsNearbyActivities      bool `json:"notifications_nearby_activities" gorm:"default:true"`
+	NotificationsFollowedOrganizations bool `json:"notifications_followed_organizations" gorm:"default:true"`
+	NotificationActivityReminders      bool `json:"notifications_activity_reminders" gorm:"default:true"`
+
 	FavoriteOrganizations []*Organization `gorm:"many2many:favorite_organizations;" json:"-"`
 }
