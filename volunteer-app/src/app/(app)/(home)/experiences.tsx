@@ -9,7 +9,7 @@ import { useActivities } from "@/hooks/useActivities";
 import { Activity, ActivityFilters } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
-import { FC, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function ExperiencesScreen() {
@@ -30,7 +30,7 @@ export default function ExperiencesScreen() {
 
   return (
     <SafeAreaView>
-      <Box px="m" mt="2xl">
+      <Box px="m" mt="2xl" mb="l">
         <Text variant="header">{t("volunteerActivities", "Volunteer activities")}</Text>
       </Box>
 
@@ -51,42 +51,41 @@ export default function ExperiencesScreen() {
               }}
             />
           )}
-          ListEmptyComponent={() => (
-            !isLoading && 
-            <Box px="m">
-            <Box
-              borderColor="mainBorder"
-              borderWidth={1}
-              borderRadius="m"
-              marginVertical="m"
-              mt="l"
-              py="l"
-              px="m"
-              gap="l"
-              width="100%"
-            >
-              <Text variant="header" color="accentText" textAlign="center">
-                {t("Hey", "Hey!")}
-              </Text>
+          ListEmptyComponent={() =>
+            !isLoading && (
+              <Box px="m">
+                <Box
+                  borderColor="mainBorder"
+                  borderWidth={1}
+                  borderRadius="m"
+                  marginVertical="m"
+                  mt="l"
+                  py="l"
+                  px="m"
+                  gap="l"
+                  width="100%"
+                >
+                  <Text variant="header" color="accentText" textAlign="center">
+                    {t("Hey", "Hey!")}
+                  </Text>
 
-              <Text variant="body" textAlign="center">
-                {t(
-                  "noExperiences",
-                  "It looks like you don't have any scheduled volunteer experiences.",
-                )}
-              </Text>
+                  <Text variant="body" textAlign="center">
+                    {t(
+                      "noExperiences",
+                      "It looks like you don't have any scheduled volunteer experiences.",
+                    )}
+                  </Text>
 
-              <Button
-                variant="primary"
-                label={t("searchExperiences", "Explore experiences")}
-                onPress={() => router.push("/explore")}
-              />
-            </Box>
-            </Box>
-          )}
-          ListFooterComponent={() => (
-            <DoneActivityList />
-          )}
+                  <Button
+                    variant="primary"
+                    label={t("searchExperiences", "Explore experiences")}
+                    onPress={() => router.push("/explore")}
+                  />
+                </Box>
+              </Box>
+            )
+          }
+          ListFooterComponent={() => <DoneActivityList />}
         />
       </Box>
     </SafeAreaView>

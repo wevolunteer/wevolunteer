@@ -127,7 +127,9 @@ const Button = ({
         {renderLeftIcon ? (
           <Box>{renderLeftIcon()}</Box>
         ) : (
-          <Box>{leftIcon && <Icon name={leftIcon} color={iconColor} />}</Box>
+          <Box style={{ minWidth: rightIcon ? 28 : 0 }}>
+            {leftIcon && <Icon name={leftIcon} color={iconColor} />}
+          </Box>
         )}
 
         {isLoading ? (
@@ -140,7 +142,7 @@ const Button = ({
         {rightIcon ? (
           <Box>{<Icon name={rightIcon} color={iconColor} />}</Box>
         ) : (
-          <Box style={{ width: 28 }}></Box>
+          <Box style={{ minWidth: leftIcon ? 28 : 0 }}></Box>
         )}
       </Box>
     </TouchableOpacity>
