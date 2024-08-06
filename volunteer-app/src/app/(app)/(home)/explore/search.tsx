@@ -2,7 +2,7 @@ import { ExperienceCard } from "@/components/ExperienceCard";
 import CategoryFilter from "@/components/SearchBar/CategoryFilter";
 import DateFilter from "@/components/SearchBar/DateFilter";
 import PlaceFilter from "@/components/SearchBar/PlaceFilter";
-import RecentSearches from "@/components/SearchBar/SearchModal/RecentSearches";
+import RecentSearches from "@/components/SearchBar/RecentSearches";
 import Box from "@/components/ui/Box";
 import Icon from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
@@ -12,7 +12,7 @@ import { useExperiences } from "@/hooks/useExperiences";
 import { Experience, ExperienceFilters } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, TextInput } from "react-native";
 
@@ -41,7 +41,12 @@ export default function SearchPage() {
     handleSearch(q);
   }
 
-  console.log(` needle '${q}'`);
+  // clear q filter when unmount
+  useEffect(() => {
+    return () => {
+      setFilters({ ...filters, q: undefined });
+    };
+  }, []);
 
   return (
     <Box flex={1}>
@@ -116,11 +121,15 @@ export default function SearchPage() {
       </Box>
 
       <Box flex={1}>
-        {!q || q === "" ? (
-          <Box px="m">
-            <RecentSearches onSelect={handleSearch} />
-          </Box>
-        ) : experiences.length == 0 ? (
+        {(!q || q === "") && (
+          <ScrollView>
+            <Box px="m">
+              <RecentSearches onSelect={handleSearch} />
+            </Box>
+          </ScrollView>
+        )}
+
+        {!isLoading && experiences.length === 0 && (
           <Box px="m">
             <Text py="xl" variant="header">
               {t("results", "Results")}
@@ -132,7 +141,9 @@ export default function SearchPage() {
               )}
             </Text>
           </Box>
-        ) : (
+        )}
+
+        {!isLoading && experiences.length > 0 && q && q !== "" && (
           <FlashList
             ref={listRef}
             refreshing={isLoading}
