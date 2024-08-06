@@ -18,7 +18,7 @@ export function useFilters<T extends Record<string, any>>(initialFilters?: T) {
       throw new Error("useFilters must be wrapped in a <FiltersProvider />");
     }
   }
-  
+
   return {
     filters: value.filters as T,
     setFilters: value.setFilters as (filters: T) => void,

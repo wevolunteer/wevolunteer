@@ -3,12 +3,12 @@ import SearchBar from "@/components/SearchBar";
 import Box from "@/components/ui/Box";
 import Icon from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
-import { FiltersContext, useFilters, withFilters } from "@/contexts/filters";
+import { useFilters } from "@/contexts/filters";
 import { useExperiences } from "@/hooks/useExperiences";
 import { Experience, ExperienceFilters } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
-import { useContext, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
@@ -17,7 +17,6 @@ function ExploreListScreen() {
   const listRef = useRef<FlashList<Experience>>(null);
 
   const { filters } = useFilters<ExperienceFilters>();
-
 
   const { experiences, fetchNextPage, refetch, isLoading } = useExperiences({
     date_start: filters.date_start || new Date().toISOString().split("T")[0],
@@ -96,4 +95,4 @@ function ExploreListScreen() {
   );
 }
 
-export default withFilters(ExploreListScreen);
+export default ExploreListScreen;

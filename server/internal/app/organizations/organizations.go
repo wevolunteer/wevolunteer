@@ -54,13 +54,17 @@ func OrganizationsList(c *app.Context, filters *OrganizationFilters) (*Organizat
 
 	q := OrganizationQuery(c)
 
+	q = q.
+		Select("organizations.*, COALESCE(favorite_organizations.user_id IS NOT NULL, false) AS is_favorite").
+		Joins("LEFT JOIN favorite_organizations ON favorite_organizations.organization_id = organizations.id AND favorite_organizations.user_id = ?", c.User.ID)
+
 	if filters != nil {
 		if filters.Query != "" {
-			q = q.Where("name LIKE ?", "%"+filters.Query+"%")
+			q = q.Where("name ILIKE ?", "%"+filters.Query+"%")
 		}
 
 		if filters.Favorite {
-			q = q.Joins("JOIN favorite_organizations ON favorite_organizations.organization_id = organizations.id AND favorite_organizations.user_id = ?", c.User.ID)
+			q = q.Where("favorite_organizations.user_id IS NOT NULL")
 		}
 	}
 
@@ -74,22 +78,26 @@ func OrganizationsList(c *app.Context, filters *OrganizationFilters) (*Organizat
 
 	q = q.Scopes(app.Paginate(filters.PaginationInput))
 
-	if filters.Favorite {
-		if err := q.Table("organizations").
-			Select("organizations.*, true AS is_favorite").
-			Where("organizations.published = ? AND organizations.deleted_at IS NULL AND favorite_organizations.user_id = ?", true, c.User.ID).
-			Find(&data.Results).Error; err != nil {
-			return nil, err
-		}
-	} else {
-		if err := q.Table("organizations").
-			Select("organizations.*, COALESCE(favorite_organizations.user_id IS NOT NULL, false) AS is_favorite").
-			Joins("LEFT JOIN favorite_organizations ON favorite_organizations.organization_id = organizations.id AND favorite_organizations.user_id = ?", c.User.ID).
-			Where("organizations.published = ? AND organizations.deleted_at IS NULL", true).
-			Find(&data.Results).Error; err != nil {
-			return nil, err
-		}
+	if err := q.Find(&data.Results).Error; err != nil {
+		return nil, err
 	}
+
+	// if filters.Favorite {
+	// 	if err := q.Table("organizations").
+	// 		Select("organizations.*, true AS is_favorite").
+	// 		Where("organizations.published = ? AND organizations.deleted_at IS NULL AND favorite_organizations.user_id = ?", true, c.User.ID).
+	// 		Find(&data.Results).Error; err != nil {
+	// 		return nil, err
+	// 	}
+	// } else {
+	// 	if err := q.Table("organizations").
+	// 		Select("organizations.*, COALESCE(favorite_organizations.user_id IS NOT NULL, false) AS is_favorite").
+	// 		Joins("LEFT JOIN favorite_organizations ON favorite_organizations.organization_id = organizations.id AND favorite_organizations.user_id = ?", c.User.ID).
+	// 		Where("organizations.published = ? AND organizations.deleted_at IS NULL", true).
+	// 		Find(&data.Results).Error; err != nil {
+	// 		return nil, err
+	// 	}
+	// }
 
 	return data, nil
 }

@@ -41,24 +41,20 @@ export function SessionProvider(props: React.PropsWithChildren) {
 
   const tokenMiddleware: Middleware = {
     async onRequest({ request, options }) {
-      console.log("applying token middleware", session?.token?.accessToken);
       if (session?.token?.accessToken) {
         request.headers.set("Authorization", `Bearer ${session.token.accessToken}`);
       }
       return request;
     },
     async onResponse({ request, response, options }) {
-      console.log(request);
       if (
         response.status === 401 &&
         session?.token?.refreshToken &&
         !(request.url.includes("api/auth/") && request.method === "POST")
       ) {
         let newAccessToken;
-        console.log("token expired");
 
         try {
-          console.log("refreshing token");
           const refreshTokenResponse = await client.POST("/auth/refresh", {
             body: {
               refresh_token: session.token.refreshToken,
@@ -78,7 +74,6 @@ export function SessionProvider(props: React.PropsWithChildren) {
           });
 
           newAccessToken = refreshTokenResponse.data.access_token;
-          console.log("token refreshed");
         } catch (error) {
           setSession(null);
           console.error("Failed to refresh token", error);

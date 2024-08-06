@@ -1,16 +1,11 @@
 import { format } from "date-fns";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Box from "../ui/Box";
-import InputText from "../ui/InputText";
 import Text from "../ui/Text";
 import ChoiceList from "./ChoiceList";
-import SearchbarFilter from "./Filter";
-import Button from "../ui/Button";
-import { TextInput } from "react-native-paper";
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
-import InputTextBottomSheet from "../ui/InputTextBottomSheet";
 import DateMaskInputBottomSheet from "./DateMaskInput";
+import SearchbarFilter from "./Filter";
 
 enum DateIntervalEnum {
   AnyDate = "anyDate",
@@ -76,14 +71,14 @@ const DateFilter: FC<DateFilterProps> = ({ title, value, onChange, onConfirm }) 
       title={showCustomDates ? t("chooseDates", "Choose dates") : title}
       label={!!value?.from || !!value?.to ? dateIntervalToString(value) : title}
       selected={!!value?.from || !!value?.to}
-      onConfirm={() => { 
-        setShowCustomDates(false)
-        onConfirm()
+      onConfirm={() => {
+        setShowCustomDates(false);
+        onConfirm();
       }}
       onBack={showCustomDates ? () => setShowCustomDates(false) : undefined}
       onReset={() => {
         onChange?.(null);
-        setShowCustomDates(false)
+        setShowCustomDates(false);
       }}
     >
       {showCustomDates ? (

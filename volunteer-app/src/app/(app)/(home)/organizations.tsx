@@ -148,5 +148,4 @@ function OrganizationListScreen() {
   );
 }
 
-
 export default withFilters(OrganizationListScreen);

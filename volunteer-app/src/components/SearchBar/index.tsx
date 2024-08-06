@@ -1,8 +1,7 @@
-import { FiltersProvider, useFilters } from "@/contexts/filters";
-import { SearchesProvider } from "@/contexts/searches";
-import { ActivityFilters, ExperienceFilters } from "@/types/data";
-import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
-import { FC, useCallback, useRef } from "react";
+import { useFilters } from "@/contexts/filters";
+import { ExperienceFilters } from "@/types/data";
+import { router } from "expo-router";
+import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Keyboard, Pressable } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -12,20 +11,14 @@ import Text from "../ui/Text";
 import CategoryFilter from "./CategoryFilter";
 import DateFilter from "./DateFilter";
 import PlaceFilter from "./PlaceFilter";
-import SearchModal from "./SearchModal";
 
 const SearchBar: FC = () => {
   const { t } = useTranslation();
   const { filters, setFilters } = useFilters<ExperienceFilters>();
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
 
   return (
     <Box>
-      <Pressable onPress={handlePresentModalPress}>
+      <Pressable onPress={() => router.push("/explore/search")}>
         <Box
           borderRadius="full"
           height={64}
@@ -41,21 +34,13 @@ const SearchBar: FC = () => {
         >
           <Icon name="search" />
           <Box marginLeft="m" flex={1}>
-            {filters.q ? (
-              <Text variant="body" fontWeight="bold" lineHeight={20}>
-                {filters.q}
-              </Text>
-            ) : (
-              <>
-                <Text variant="body" fontWeight="bold" lineHeight={20}>
-                  {t("search", "Search")}
-                </Text>
-                <Text variant="secondary">
-                  {t("experiences", "Experiences")} • {t("organizations", "Organizations")} •{" "}
-                  {t("places", "Places")}
-                </Text>
-              </>
-            )}
+            <Text variant="body" fontWeight="bold" lineHeight={20}>
+              {t("search", "Search")}
+            </Text>
+            <Text variant="secondary">
+              {t("volunteersActvities", "Volunteer activities")} •{" "}
+              {t("organizations", "Organizations")}
+            </Text>
           </Box>
 
           {filters.q && (
@@ -84,7 +69,6 @@ const SearchBar: FC = () => {
             }}
             onConfirm={() => {
               Keyboard.dismiss();
-              bottomSheetModalRef.current?.dismiss();
             }}
           />
           <CategoryFilter
@@ -99,33 +83,6 @@ const SearchBar: FC = () => {
           />
         </Box>
       </ScrollView>
-      <BottomSheetModal
-        ref={bottomSheetModalRef}
-        index={0}
-        snapPoints={["100%"]}
-        onDismiss={Keyboard.dismiss}
-        handleComponent={null}
-      >
-        <BottomSheetView
-          style={{
-            flex: 1,
-            alignItems: "center",
-          }}
-        >
-          <SearchesProvider>
-            <FiltersProvider>
-              <SearchModal
-                onClose={() => {
-                  Keyboard.dismiss();
-                  bottomSheetModalRef.current?.dismiss();
-                }}
-                filters={filters}
-                setFilters={setFilters}
-              />
-            </FiltersProvider>
-          </SearchesProvider>
-        </BottomSheetView>
-      </BottomSheetModal>
     </Box>
   );
 };
