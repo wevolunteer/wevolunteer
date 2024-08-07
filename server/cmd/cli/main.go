@@ -15,6 +15,7 @@ import (
 	"github.com/wevolunteer/wevolunteer/internal/app/activities"
 	"github.com/wevolunteer/wevolunteer/internal/app/categories"
 	"github.com/wevolunteer/wevolunteer/internal/app/experiences"
+	"github.com/wevolunteer/wevolunteer/internal/app/media"
 	"github.com/wevolunteer/wevolunteer/internal/app/notifications"
 	"github.com/wevolunteer/wevolunteer/internal/app/organizations"
 	"github.com/wevolunteer/wevolunteer/internal/app/places"
@@ -51,6 +52,7 @@ func main() {
 		experiences.RegisterRoutes(a.Api)
 		categories.RegisterRoutes(a.Api)
 		places.RegisterRoutes(a.Api)
+		media.RegisterRoutes(a.Api)
 
 		notifications.Init()
 
@@ -104,6 +106,21 @@ func main() {
 			}
 
 			commands.GeoDataCommand()
+			fmt.Println("")
+		}),
+	})
+
+	cmd.AddCommand(&cobra.Command{
+		Use:   "createsuperuser",
+		Short: "Create super user",
+		Run: humacli.WithOptions(func(cmd *cobra.Command, args []string, opts *CLIOptions) {
+
+			_, err := app.Init(opts.ConfigFile)
+			if err != nil {
+				panic(err)
+			}
+
+			commands.CreateSuperUserCommand()
 			fmt.Println("")
 		}),
 	})

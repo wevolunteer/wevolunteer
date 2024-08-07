@@ -35,30 +35,6 @@ func RegisterRoutes(api huma.API) {
 	huma.Register(
 		api,
 		huma.Operation{
-			OperationID: "login",
-			Method:      http.MethodPost,
-			Summary:     "Login",
-			Path:        "/login",
-			Tags:        []string{"Accounts"},
-		},
-		LoginController,
-	)
-
-	huma.Register(
-		api,
-		huma.Operation{
-			OperationID: "signup",
-			Method:      http.MethodPost,
-			Summary:     "Signup",
-			Path:        "/signup",
-			Tags:        []string{"Accounts"},
-		},
-		SignupController,
-	)
-
-	huma.Register(
-		api,
-		huma.Operation{
 			OperationID: "refresh-token",
 			Method:      http.MethodPost,
 			Summary:     "Refresh token",
@@ -81,6 +57,18 @@ func RegisterRoutes(api huma.API) {
 			Tags: []string{"Accounts"},
 		},
 		UserProfileGetController,
+	)
+
+	huma.Register(
+		api,
+		huma.Operation{
+			OperationID: "login",
+			Method:      http.MethodPost,
+			Summary:     "Login",
+			Path:        "/admin/login",
+			Tags:        []string{"Accounts"},
+		},
+		AdminLoginController,
 	)
 
 	huma.Register(

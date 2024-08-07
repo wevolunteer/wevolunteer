@@ -125,7 +125,8 @@ func verifyCode(data VerifyCodeData) (*TokenData, error) {
 	return token, nil
 }
 
-func login(data LoginData) (*TokenData, error) {
+func superUserLogin(data LoginData) (*TokenData, error) {
+	// TODO: auth user only if admin
 	var user models.User
 	if err := app.DB.Where("email = ?", data.Email).First(&user).Error; err != nil {
 		return nil, &app.ErrBadInput{Message: "user not found"}
@@ -135,28 +136,7 @@ func login(data LoginData) (*TokenData, error) {
 		return nil, &app.ErrBadInput{Message: "invalid email or password"}
 	}
 
-	return generateToken(&user, app.RoleVolunteer)
-}
-
-func register(data SignupData) (*TokenData, error) {
-	var existingUser models.User
-	if err := app.DB.Where("email = ?", data.Email).First(&existingUser).Error; err == nil {
-		return nil, errors.New("user already exists")
-	}
-
-	user, err := UserCreate(&UserCreateData{
-		FirstName:   data.FirstName,
-		LastName:    data.LastName,
-		Email:       data.Email,
-		Password:    data.Password,
-		IsSuperUser: false,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return generateToken(user, app.RoleVolunteer)
+	return generateToken(&user, app.RoleSuperUser)
 }
 
 func refreshToken(data RefreshTokenData) (*TokenData, error) {

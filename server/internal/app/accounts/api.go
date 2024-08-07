@@ -31,8 +31,8 @@ type AuhenticationResponse struct {
 	Body TokenData
 }
 
-func LoginController(c context.Context, input *LoginInput) (*AuhenticationResponse, error) {
-	token, err := login(input.Body)
+func AdminLoginController(c context.Context, input *LoginInput) (*AuhenticationResponse, error) {
+	token, err := superUserLogin(input.Body)
 
 	if err != nil {
 		return nil, huma.Error401Unauthorized("invalid email or password")
@@ -42,22 +42,6 @@ func LoginController(c context.Context, input *LoginInput) (*AuhenticationRespon
 		Body: *token,
 	}
 
-	return resp, nil
-}
-
-type SignupInput struct {
-	Body SignupData
-}
-
-func SignupController(c context.Context, input *SignupInput) (*AuhenticationResponse, error) {
-	token, err := register(input.Body)
-
-	if err != nil {
-		return nil, huma.Error400BadRequest(err.Error())
-	}
-
-	resp := &AuhenticationResponse{}
-	resp.Body = *token
 	return resp, nil
 }
 
@@ -123,7 +107,7 @@ func UserProfileUpdateController(c context.Context, input *UserProfileUpdateRequ
 }
 
 type UserListResponse struct {
-	Body []models.User
+	Body *UserListData
 }
 
 func UserListController(c context.Context, input *UserFilters) (*UserListResponse, error) {
@@ -135,7 +119,7 @@ func UserListController(c context.Context, input *UserFilters) (*UserListRespons
 	}
 
 	return &UserListResponse{
-		Body: users.Results,
+		Body: users,
 	}, nil
 }
 

@@ -21,6 +21,12 @@ var Config struct {
 	DB_MAX_IDLE_CONNECTIONS int
 	DB_MAX_LIFETIME         time.Duration
 	NOVU_API_KEY            string
+
+	AWS_PUBLIC_KEY string
+	AWS_SECRET_KEY string
+	AWS_ENDPOINT   string
+	AWS_REGION     string
+	AWS_BUCKET     string
 }
 
 func ParseConfig(path string) {
@@ -34,6 +40,8 @@ func ParseConfig(path string) {
 	viper.SetDefault("debug", false)
 	viper.SetDefault("db_max_open_connections", 100)
 	viper.SetDefault("db_max_idle_connections", 10)
+
+	viper.SetDefault("aws_region", "us-east-1")
 
 	viper.SetConfigFile(".env")
 	viper.AddConfigPath(".")
@@ -49,6 +57,12 @@ func ParseConfig(path string) {
 	Config.JWT_SECRET = viper.GetString("jwt_secret")
 	Config.NOVU_API_KEY = viper.GetString("novu_apikey")
 	Config.DB_MAX_LIFETIME = time.Hour
+
+	Config.AWS_PUBLIC_KEY = viper.GetString("aws_public_key")
+	Config.AWS_SECRET_KEY = viper.GetString("aws_secret_key")
+	Config.AWS_ENDPOINT = viper.GetString("aws_endpoint")
+	Config.AWS_REGION = viper.GetString("aws_region")
+	Config.AWS_BUCKET = viper.GetString("aws_bucket")
 
 	if Config.JWT_SECRET == "" {
 		log.Fatal("JWT_SECRET must be set")
