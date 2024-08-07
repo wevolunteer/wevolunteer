@@ -36,6 +36,8 @@ import {
   UserShow,
 } from "./pages/users";
 import { dataProvider } from "./rest-data-provider";
+import { ExperienceCreate, ExperienceEdit, ExperienceList, ExperienceShow } from "./pages/experiences";
+import { ActivityCreate, ActivityEdit, ActivityList, ActivityShow } from "./pages/activities";
 
 function App() {
   const apiEndpoint = getApiEndpoint();
@@ -68,6 +70,26 @@ function App() {
                   create: "/organizations/create",
                   edit: "/organizations/edit/:id",
                   show: "/organizations/show/:id",
+                  meta: {
+                    canDelete: true,
+                  },
+                },
+                {
+                  name: "experiences",
+                  list: "/experiences",
+                  create: "/experiences/create",
+                  edit: "/experiences/edit/:id",
+                  show: "/experiences/show/:id",
+                  meta: {
+                    canDelete: true,
+                  },
+                },
+                {
+                  name: "activities",
+                  list: "/activities",
+                  create: "/activities/create",
+                  edit: "/activities/edit/:id",
+                  show: "/activities/show/:id",
                   meta: {
                     canDelete: true,
                   },
@@ -106,12 +128,29 @@ function App() {
                     <Route path="edit/:id" element={<OrganizationEdit />} />
                     <Route path="show/:id" element={<OrganizationShow />} />
                   </Route>
+
                   <Route path="/users">
                     <Route index element={<UserList />} />
                     <Route path="create" element={<UserCreate />} />
                     <Route path="edit/:id" element={<UserEdit />} />
                     <Route path="show/:id" element={<UserShow />} />
                   </Route>
+
+                  <Route path="/experiences">
+                    <Route index element={<ExperienceList />} />
+                    <Route path="create" element={<ExperienceCreate />} />
+                    <Route path="edit/:id" element={<ExperienceEdit />} />
+                    <Route path="show/:id" element={<ExperienceShow />} />
+                  </Route>
+
+
+                  <Route path="/activities">
+                    <Route index element={<ActivityList />} />
+                    <Route path="create" element={<ActivityCreate />} />
+                    <Route path="edit/:id" element={<ActivityEdit />} />
+                    <Route path="show/:id" element={<ActivityShow />} />
+                  </Route>
+
                   <Route path="*" element={<ErrorComponent />} />
                 </Route>
                 <Route
