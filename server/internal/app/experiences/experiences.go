@@ -1,6 +1,8 @@
 package experiences
 
 import (
+	"time"
+
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 	"gorm.io/gorm"
@@ -94,11 +96,64 @@ func ExperienceList(ctx *app.Context, filters *ExperienceFilters) (*ExperienceLi
 
 type ExperienceCreateData struct {
 	Title string `json:"title"`
+
+	OrganizationID uint `json:"organization_id,omitempty"`
+
+	Description  string  `json:"description"`
+	Image        string  `json:"image,omitempty"`
+	CategoryID   uint    `json:"category_id,omitempty"`
+	Latitude     float64 `json:"latitude,omitempty"`
+	Longitude    float64 `json:"longitude,omitempty"`
+	Address      string  `json:"address,omitempty"`
+	City         string  `json:"city,omitempty"`
+	State        string  `json:"state,omitempty"`
+	ZipCode      string  `json:"zip_code,omitempty"`
+	Country      string  `json:"country,omitempty"`
+	ContactName  string  `json:"contact_name,omitempty"`
+	ContactEmail string  `json:"contact_email,omitempty"`
+	ContactPhone string  `json:"contact_phone,omitempty"`
+
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+
+	Published bool `json:"published,omitempty"`
 }
 
 func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Experience, error) {
+	startDate, err := time.Parse(data.StartDate, "2006-01-02")
+	if err != nil {
+		return nil, err
+	}
+
+	endDate, err := time.Parse(data.EndDate, "2006-01-02")
+	if err != nil {
+		return nil, err
+	}
+
 	experience := models.Experience{
-		Title: data.Title,
+		Title:          data.Title,
+		OrganizationID: data.OrganizationID,
+		Description:    data.Description,
+		Image:          data.Image,
+		CategoryID:     data.CategoryID,
+		Latitude:       data.Latitude,
+		Longitude:      data.Longitude,
+		Address:        data.Address,
+		City:           data.City,
+		State:          data.State,
+		ZipCode:        data.ZipCode,
+		Country:        data.Country,
+		ContactName:    data.ContactName,
+		ContactEmail:   data.ContactEmail,
+		ContactPhone:   data.ContactPhone,
+		StartDate:      startDate,
+		EndDate:        endDate,
+		StartTime:      data.StartTime,
+		EndTime:        data.EndTime,
+		Published:      data.Published,
 	}
 
 	if err := app.DB.Create(&experience).Error; err != nil {
@@ -110,6 +165,30 @@ func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Exp
 
 type ExperienceUpdateData struct {
 	Title string `json:"title"`
+
+	OrganizationID uint `json:"organization_id,omitempty"`
+
+	Description  string  `json:"description"`
+	Image        string  `json:"image,omitempty"`
+	CategoryID   uint    `json:"category_id,omitempty"`
+	Latitude     float64 `json:"latitude,omitempty"`
+	Longitude    float64 `json:"longitude,omitempty"`
+	Address      string  `json:"address,omitempty"`
+	City         string  `json:"city,omitempty"`
+	State        string  `json:"state,omitempty"`
+	ZipCode      string  `json:"zip_code,omitempty"`
+	Country      string  `json:"country,omitempty"`
+	ContactName  string  `json:"contact_name,omitempty"`
+	ContactEmail string  `json:"contact_email,omitempty"`
+	ContactPhone string  `json:"contact_phone,omitempty"`
+
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+
+	Published bool `json:"published,omitempty"`
 }
 
 func ExperienceUpdate(ctx *app.Context, id uint, data *ExperienceUpdateData) (*models.Experience, error) {
