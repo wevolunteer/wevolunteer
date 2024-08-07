@@ -113,6 +113,12 @@ func main() {
 	cmd.AddCommand(&cobra.Command{
 		Use:   "createsuperuser",
 		Short: "Create super user",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return fmt.Errorf("requires exactly 2 arguments")
+			}
+			return nil
+		},
 		Run: humacli.WithOptions(func(cmd *cobra.Command, args []string, opts *CLIOptions) {
 
 			_, err := app.Init(opts.ConfigFile)
@@ -120,7 +126,10 @@ func main() {
 				panic(err)
 			}
 
-			commands.CreateSuperUserCommand()
+			commands.CreateSuperUserCommand(commands.CreateSuperUserInput{
+				Email:    args[0],
+				Password: args[1],
+			})
 			fmt.Println("")
 		}),
 	})

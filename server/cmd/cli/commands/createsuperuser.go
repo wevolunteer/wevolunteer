@@ -7,19 +7,44 @@ import (
 )
 
 type CreateSuperUserInput struct {
-	Email string
+	Email    string
+	Password string
 }
 
-func CreateSuperUserCommand() error {
+func CreateSuperUserCommand(input CreateSuperUserInput) error {
 	fmt.Println("Create super user")
 
+	if input.Email == "" {
+		return fmt.Errorf("email is required")
+	}
+
+	if input.Password == "" {
+		return fmt.Errorf("password is required")
+	}
+
+	user, err := accounts.UserGetByEmail(input.Email)
+
+	if err != nil {
+		return err
+	}
+
+	if user != nil {
+		accounts.UserUpdate(user.ID, &accounts.UserUpdateData{
+			Email:       input.Email,
+			Password:    input.Password,
+			IsSuperUser: true,
+		})
+
+		return nil
+	}
+
 	data := accounts.UserCreateData{
-		Email:       "admin@admin.it",
-		Password:    "admin",
+		Email:       input.Email,
+		Password:    input.Password,
 		IsSuperUser: true,
 	}
 
-	_, err := accounts.UserCreate(&data)
+	_, err = accounts.UserCreate(&data)
 
 	if err != nil {
 		return err

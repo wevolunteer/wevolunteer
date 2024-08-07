@@ -12,6 +12,16 @@ func UserQuery() *gorm.DB {
 	return app.DB.Model(&models.User{})
 }
 
+func UserGetByEmail(email string) (*models.User, error) {
+	var user models.User
+
+	if err := app.DB.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func UserGet(id uint) (*models.User, error) {
 	var user models.User
 
@@ -103,6 +113,7 @@ type UserUpdateData struct {
 	LastName    string `json:"last_name"`
 	Phone       string `json:"phone"`
 	Email       string `json:"email"`
+	Password    string `json:"password"`
 	IsSuperUser bool   `json:"is_superuser"`
 }
 
@@ -111,6 +122,15 @@ func UserUpdate(id uint, data *UserUpdateData) (*models.User, error) {
 
 	if err := app.DB.Where("id = ?", id).First(&user).Error; err != nil {
 		return nil, err
+	}
+
+	if data.Password != "" {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return nil, err
+		}
+
+		user.Password = string(hashedPassword)
 	}
 
 	user.FirstName = data.FistName
