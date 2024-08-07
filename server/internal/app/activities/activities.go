@@ -49,6 +49,7 @@ func ActivityList(ctx *app.Context, filters *ActivityFilters) (*ActivityListData
 
 	q := ActivityQuery(ctx)
 	q.Preload("Experience.Organization")
+	q.Preload("User")
 
 	if filters != nil {
 		if filters.Query != "" {
