@@ -37,6 +37,13 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Consenti a $(PRODUCT_NAME) di accedere alla tua posizione mentre usi l'applicazione."
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Consenti a $(PRODUCT_NAME) di accedere alle tue foto.",
+          "cameraPermission": "Consenti a $(PRODUCT_NAME) di accedere alla tua fotocamera."
+        }
       ]
     ],
     "experiments": {

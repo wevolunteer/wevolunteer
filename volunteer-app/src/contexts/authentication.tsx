@@ -42,11 +42,13 @@ export function SessionProvider(props: React.PropsWithChildren) {
   const tokenMiddleware: Middleware = {
     async onRequest({ request, options }) {
       if (session?.token?.accessToken) {
+        console.log("Setting access token", session.token.accessToken);
         request.headers.set("Authorization", `Bearer ${session.token.accessToken}`);
       }
       return request;
     },
     async onResponse({ request, response, options }) {
+      console.log("Response", response.status, request.url);
       if (
         response.status === 401 &&
         session?.token?.refreshToken &&

@@ -61,14 +61,22 @@ export default function ProfileEditScreen() {
 
   const values = watch();
 
-  console.log(values.first_name);
-
   return (
     <ScrollView style={{ flex: 1 }}>
       <Topbar empty goBack title={t("editProfile", "Edit Profile")} />
       <Box px="m" mt="l">
         <Box alignItems="center" gap="l">
-          <ProfileAvatar url={session.user.avatar || undefined} editable />
+          <Controller
+            control={control}
+            name="avatar"
+            render={({ field }) => (
+              <ProfileAvatar
+                url={session?.user?.avatar || undefined}
+                editable
+                onChange={field.onChange}
+              />
+            )}
+          />
         </Box>
 
         <Box borderTopColor="lightBorder" borderTopWidth={1} my="l">

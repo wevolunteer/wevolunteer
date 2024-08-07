@@ -67,6 +67,10 @@ export interface paths {
     /** Login */
     post: operations["login"];
   };
+  "/media": {
+    /** Upload new Media */
+    post: operations["media-upload"];
+  };
   "/organizations": {
     /** List organizations */
     get: operations["organizations-list"];
@@ -380,6 +384,14 @@ export interface components {
       $schema?: string;
       email: string;
       password: string;
+    };
+    MediaUploadResponseBody: {
+      /**
+       * Format: uri
+       * @description A URL to the JSON Schema for this object.
+       */
+      $schema?: string;
+      Url: string;
     };
     Organization: {
       /**
@@ -1111,6 +1123,36 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["TokenData"];
+        };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** Upload new Media */
+  "media-upload": {
+    requestBody: {
+      content: {
+        "multipart/form-data": {
+          /**
+           * Format: binary
+           * @description filename of the file being uploaded
+           */
+          filename?: string;
+          /** @description general purpose name for multipart form value */
+          name?: string;
+        };
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["MediaUploadResponseBody"];
         };
       };
       /** @description Error */
