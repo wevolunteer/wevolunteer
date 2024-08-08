@@ -17,7 +17,7 @@ export const dataProvider = (
   getList: async ({ resource, pagination, filters, sorters, meta }) => {
     const url = `${apiUrl}/${resource}`;
 
-    const { current = 1 } = pagination ?? {};
+    const { current = 1, pageSize = 10 } = pagination ?? {};
 
     const { headers: headersFromMeta, method } = meta ?? {};
     const requestMethod = (method as MethodTypes) ?? "get";
@@ -26,9 +26,11 @@ export const dataProvider = (
 
     const query: {
       page?: number;
+      per_page?: number;
     } = {};
 
     query.page = current - 1;
+    query.per_page = pageSize;
 
     const combinedQuery = { ...query, ...queryFilters };
     const urlWithQuery = Object.keys(combinedQuery).length
@@ -49,7 +51,7 @@ export const dataProvider = (
 
     return {
       data: data.results,
-      total: data.page_info.total / data.page_info.per_page || 0,
+      total: data.page_info.total || 0,
     };
   },
 
