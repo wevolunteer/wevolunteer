@@ -13,8 +13,6 @@ export const ActivityList = () => {
     syncWithLocation: true,
   });
 
-  console.log(tableQueryResult);
-
   return (
     <List>
       <Table {...tableProps} rowKey="id">
