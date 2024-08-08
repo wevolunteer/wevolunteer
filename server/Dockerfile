@@ -21,6 +21,7 @@ RUN adduser --disabled-password --gecos "" wevolunteer
 WORKDIR /srv
 
 COPY --from=builder /app/wevolunteer .
+COPY data/ /srv/data/
 
 RUN chown -R wevolunteer:wevolunteer /srv
 
