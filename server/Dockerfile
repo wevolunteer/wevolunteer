@@ -12,7 +12,7 @@ COPY . .
 RUN go build -o wevolunteer cmd/cli/main.go
 
 
-FROM alpine:latest
+FROM debian:slim
 
 RUN apk --no-cache add ca-certificates libc6-compat
 
