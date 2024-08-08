@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "WeVolunteer",
+    "name": "Attivati",
     "slug": "wevolunteer",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -22,7 +22,12 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.metadonors.wevolunteer",
-      "versionCode": 4
+      "versionCode": 10,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBHAIlIrdW_sepiJyVuBE8KDaosCNwvQK0"
+        }
+      }
     },
     "web": {
       "bundler": "metro",
