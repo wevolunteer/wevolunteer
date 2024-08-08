@@ -21,7 +21,8 @@
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.metadonors.wevolunteer"
+      "package": "com.metadonors.wevolunteer",
+      "versionCode": 4
     },
     "web": {
       "bundler": "metro",
