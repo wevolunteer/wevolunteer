@@ -8,6 +8,7 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 
 import { Platform } from "react-native";
+import { useNetwork } from "./network";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -65,6 +66,7 @@ async function registerForPushNotificationsAsync() {
 
 interface NotificationContextType {
   expoPushToken: string;
+  setExpoPushToken?: (token: string) => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -75,25 +77,38 @@ interface NotificationProviderProps {
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   const [expoPushToken, setExpoPushToken] = useState("");
-  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
-    undefined,
-  );
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
+  const { client } = useNetwork();
 
   useEffect(() => {
-    registerForPushNotificationsAsync()
-      .then((token) => setExpoPushToken(token ?? ""))
-      .catch((error: any) => setExpoPushToken(`${error}`));
+    async function registerDevice() {
+      try {
+        const token = await registerForPushNotificationsAsync();
+        setExpoPushToken(token ?? "");
+        await client.POST("/user-devices", {
+          body: {
+            brand: Device.brand || "Unknown",
+            device_name: Device.deviceName || "Unknown",
+            model: Device.modelName || "Unknown",
+            device_type: Device.deviceType?.toString() || "Unknown",
+            os_name: Device.osName || "Unknown",
+            token: expoPushToken,
+          },
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    registerDevice();
 
     notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
-      // TODO
-      setNotification(notification);
+      // TODO handle notification
     });
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-      // TODO
-      console.log(response);
+      // TODO handle response
     });
 
     return () => {
@@ -104,12 +119,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     };
   }, []);
 
-  useEffect(() => {
-    console.log("new notification", notification);
-  }, [notification]);
-
   return (
-    <NotificationContext.Provider value={{ expoPushToken }}>
+    <NotificationContext.Provider value={{ expoPushToken, setExpoPushToken }}>
       {children}
     </NotificationContext.Provider>
   );

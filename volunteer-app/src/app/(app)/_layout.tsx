@@ -23,6 +23,7 @@ export default function AppLayout() {
   }
 
   return (
+    // <NotificationProvider>
     <Stack
       screenOptions={{
         headerShown: false,
@@ -32,5 +33,6 @@ export default function AppLayout() {
         },
       }}
     />
+    // </NotificationProvider>
   );
 }

@@ -1,10 +1,8 @@
 import { Session, useStorageState } from "@/hooks/useStorageState";
 import { RequestCodeData, VerifyCodeData } from "@/types/data";
-import * as Device from "expo-device";
 import { Middleware } from "openapi-fetch";
 import React, { useCallback, useMemo } from "react";
 import { useNetwork } from "./network";
-import { useNotifications } from "./notifications";
 
 const AuthContext = React.createContext<{
   requestAuthCode: (data: RequestCodeData) => Promise<boolean>;
@@ -39,7 +37,6 @@ export function useSession() {
 export function SessionProvider(props: React.PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState("session");
   const { client } = useNetwork();
-  const { expoPushToken } = useNotifications();
 
   const tokenMiddleware: Middleware = {
     async onRequest({ request, options }) {
@@ -192,17 +189,17 @@ export function SessionProvider(props: React.PropsWithChildren) {
               },
             });
 
-            await client.POST("/user-devices", {
-              body: {
-                brand: Device.brand || "Unknown",
-                device_name: Device.deviceName || "Unknown",
-                model: Device.modelName || "Unknown",
-                device_type: Device.deviceType?.toString() || "Unknown",
-                os_name: Device.osName || "Unknown",
-                token: expoPushToken,
-              },
-              headers,
-            });
+            // await client.POST("/user-devices", {
+            //   body: {
+            //     brand: Device.brand || "Unknown",
+            //     device_name: Device.deviceName || "Unknown",
+            //     model: Device.modelName || "Unknown",
+            //     device_type: Device.deviceType?.toString() || "Unknown",
+            //     os_name: Device.osName || "Unknown",
+            //     token: expoPushToken,
+            //   },
+            //   headers,
+            // });
 
             return true;
           }
@@ -217,7 +214,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
       getAccessToken,
       isLoading,
     }),
-    [session, isLoading, fetchUser, setSession, client, expoPushToken, getAccessToken],
+    [session, isLoading, fetchUser, setSession, client, getAccessToken],
   );
 
   return <AuthContext.Provider value={initialState}>{props.children}</AuthContext.Provider>;
