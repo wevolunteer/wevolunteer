@@ -3,16 +3,20 @@ import SearchBar from "@/components/SearchBar";
 import Box from "@/components/ui/Box";
 import Icon from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
+import { Theme } from "@/config/theme";
 import { useFilters } from "@/contexts/filters";
 import { useExperiences } from "@/hooks/useExperiences";
 import { Experience, ExperienceFilters } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
-import { router } from "expo-router";
+import { useTheme } from "@shopify/restyle";
+import { Href, router } from "expo-router";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { ActivityIndicator } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 function ExploreListScreen() {
+  const theme = useTheme<Theme>();
   const { t } = useTranslation();
   const listRef = useRef<FlashList<Experience>>(null);
 
@@ -22,7 +26,6 @@ function ExploreListScreen() {
     date_start: filters.date_start || new Date().toISOString().split("T")[0],
     date_end: filters.date_end || undefined,
     categories: filters.categories,
-    distance: filters.distance,
     q: filters.q,
   });
 
@@ -45,9 +48,13 @@ function ExploreListScreen() {
         onEndReached={() => fetchNextPage()}
         ListEmptyComponent={
           <Box flex={1} justifyContent="center" alignItems="center" mt="2xl">
-            <Text variant="body" color="darkBackground">
-              {t("noResults", "No results")}
-            </Text>
+            {!isLoading ? (
+              <Text variant="body" color="darkBackground">
+                {t("noResults", "No results")}
+              </Text>
+            ) : (
+              <ActivityIndicator color={theme.colors.accentText} />
+            )}
           </Box>
         }
         ListHeaderComponent={
@@ -60,7 +67,7 @@ function ExploreListScreen() {
           <ExperienceCard
             experience={item}
             onPress={() => {
-              router.push(`experiences/${item.id}`);
+              router.push(`experiences/${item.id}` as Href);
             }}
           />
         )}

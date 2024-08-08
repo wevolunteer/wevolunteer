@@ -38,6 +38,7 @@ export default function ExperiencesScreen() {
         <FlashList
           estimatedItemSize={195}
           refreshing={isLoading}
+          ref={listRef}
           onRefresh={() => refetch()}
           data={activities}
           keyExtractor={(item) => `a-${item.id}`}
@@ -47,7 +48,10 @@ export default function ExperiencesScreen() {
             <ActivityCard
               activity={item}
               onPress={() => {
-                router.push(`experiences/activities/${item.id}`);
+                router.push({
+                  pathname: `/experiences/[id]`,
+                  params: { id: item.id },
+                });
               }}
             />
           )}

@@ -5,13 +5,14 @@ import PlaceFilter from "@/components/SearchBar/PlaceFilter";
 import RecentSearches from "@/components/SearchBar/RecentSearches";
 import Box from "@/components/ui/Box";
 import Icon from "@/components/ui/Icon";
+import SafeAreaView from "@/components/ui/SafeAreaView";
 import Text from "@/components/ui/Text";
 import { useFilters } from "@/contexts/filters";
 import { useSearches } from "@/contexts/searches";
 import { useExperiences } from "@/hooks/useExperiences";
 import { Experience, ExperienceFilters } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
-import { router } from "expo-router";
+import { Href, router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, TextInput } from "react-native";
@@ -49,129 +50,131 @@ export default function SearchPage() {
   }, []);
 
   return (
-    <Box flex={1}>
-      <Box
-        height={48}
-        borderBottomWidth={1}
-        flexDirection="row"
-        borderBottomColor="mainBorder"
-        width="100%"
-        mb="m"
-        paddingHorizontal="m"
-        position="relative"
-        alignItems="center"
-        gap="m"
-      >
-        <Box minWidth={20}>
-          <Pressable onPress={() => router.back()}>
-            <Icon name="chevron-left" size={24} />
-          </Pressable>
-        </Box>
-        <Box flex={1} style={{ paddingTop: 3 }}>
-          <TextInput
-            placeholder={t(
-              "searchExperiencesOrOrganizations",
-              "Search experiences or organizations",
-            )}
-            value={q}
-            returnKeyType="search"
-            autoFocus
-            onBlur={onSearchInputBlur}
-            onChangeText={setQ}
-          />
-        </Box>
-
-        {q && q.length > 0 && (
-          <Pressable onPress={() => handleSearch("")}>
-            <Icon name="close" size={24} />
-          </Pressable>
-        )}
-      </Box>
-      <Box px="m">
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <Box flexDirection="row" gap="s" alignItems="center">
-            <PlaceFilter />
-            <DateFilter
-              title={t("date", "Date")}
-              value={{
-                from: filters?.date_start || null,
-                to: filters?.date_end || null,
-              }}
-              onChange={(value) => {
-                setFilters({
-                  ...filters,
-                  date_start: value?.from || undefined,
-                  date_end: value?.to || undefined,
-                });
-              }}
-              onConfirm={console.log}
-            />
-            <CategoryFilter
-              title={t("causes", "Causes")}
-              values={filters?.categories || []}
-              onChange={(values) => {
-                setFilters({
-                  ...filters,
-                  categories: values,
-                });
-              }}
-            />
-          </Box>
-        </ScrollView>
-      </Box>
-
+    <SafeAreaView>
       <Box flex={1}>
-        {(!q || q === "") && (
-          <ScrollView>
-            <Box px="m">
-              <RecentSearches onSelect={handleSearch} />
-            </Box>
-          </ScrollView>
-        )}
-
-        {!isLoading && experiences.length === 0 && (
-          <Box px="m">
-            <Text py="xl" variant="header">
-              {t("results", "Results")}
-            </Text>
-            <Text variant="body">
-              {t(
-                "noResultsMsg",
-                "We are sorry, we didn't found any volunteer match with these criterias.",
-              )}
-            </Text>
+        <Box
+          height={48}
+          borderBottomWidth={1}
+          flexDirection="row"
+          borderBottomColor="mainBorder"
+          width="100%"
+          mb="m"
+          paddingHorizontal="m"
+          position="relative"
+          alignItems="center"
+          gap="m"
+        >
+          <Box minWidth={20}>
+            <Pressable onPress={() => router.back()}>
+              <Icon name="chevron-left" size={24} />
+            </Pressable>
           </Box>
-        )}
+          <Box flex={1} style={{ paddingTop: 3 }}>
+            <TextInput
+              placeholder={t(
+                "searchExperiencesOrOrganizations",
+                "Search experiences or organizations",
+              )}
+              value={q}
+              returnKeyType="search"
+              autoFocus
+              onBlur={onSearchInputBlur}
+              onChangeText={setQ}
+            />
+          </Box>
 
-        {!isLoading && experiences.length > 0 && q && q !== "" && (
-          <FlashList
-            ref={listRef}
-            refreshing={isLoading}
-            estimatedItemSize={195}
-            onRefresh={() => refetch()}
-            data={experiences || []}
-            keyExtractor={(item) => `a-${item.id}`}
-            ListHeaderComponent={
-              <Box px="m">
-                <Text py="xl" variant="header">
-                  {t("results", "Results")}
-                </Text>
-              </Box>
-            }
-            onEndReachedThreshold={0.8}
-            onEndReached={() => fetchNextPage()}
-            ListEmptyComponent={<Text>{t("noResults", "No results")}</Text>}
-            renderItem={({ item }) => (
-              <ExperienceCard
-                experience={item}
-                onPress={() => {
-                  router.push(`experiences/${item.id}`);
+          {q && q.length > 0 && (
+            <Pressable onPress={() => handleSearch("")}>
+              <Icon name="close" size={24} />
+            </Pressable>
+          )}
+        </Box>
+        <Box px="m">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <Box flexDirection="row" gap="s" alignItems="center">
+              <PlaceFilter />
+              <DateFilter
+                title={t("date", "Date")}
+                value={{
+                  from: filters?.date_start || null,
+                  to: filters?.date_end || null,
+                }}
+                onChange={(value) => {
+                  setFilters({
+                    ...filters,
+                    date_start: value?.from || undefined,
+                    date_end: value?.to || undefined,
+                  });
+                }}
+                onConfirm={console.log}
+              />
+              <CategoryFilter
+                title={t("causes", "Causes")}
+                values={filters?.categories || []}
+                onChange={(values) => {
+                  setFilters({
+                    ...filters,
+                    categories: values,
+                  });
                 }}
               />
-            )}
-          />
-        )}
+            </Box>
+          </ScrollView>
+        </Box>
+
+        <Box flex={1}>
+          {(!q || q === "") && (
+            <ScrollView>
+              <Box px="m">
+                <RecentSearches onSelect={handleSearch} />
+              </Box>
+            </ScrollView>
+          )}
+
+          {!isLoading && experiences.length === 0 && (
+            <Box px="m">
+              <Text py="xl" variant="header">
+                {t("results", "Results")}
+              </Text>
+              <Text variant="body">
+                {t(
+                  "noResultsMsg",
+                  "We are sorry, we didn't found any volunteer match with these criterias.",
+                )}
+              </Text>
+            </Box>
+          )}
+
+          {!isLoading && experiences.length > 0 && q && q !== "" && (
+            <FlashList
+              ref={listRef}
+              refreshing={isLoading}
+              estimatedItemSize={195}
+              onRefresh={() => refetch()}
+              data={experiences || []}
+              keyExtractor={(item) => `a-${item.id}`}
+              ListHeaderComponent={
+                <Box px="m">
+                  <Text py="xl" variant="header">
+                    {t("results", "Results")}
+                  </Text>
+                </Box>
+              }
+              onEndReachedThreshold={0.8}
+              onEndReached={() => fetchNextPage()}
+              ListEmptyComponent={<Text>{t("noResults", "No results")}</Text>}
+              renderItem={({ item }) => (
+                <ExperienceCard
+                  experience={item}
+                  onPress={() => {
+                    router.push(`experiences/${item.id}` as Href);
+                  }}
+                />
+              )}
+            />
+          )}
+        </Box>
       </Box>
-    </Box>
+    </SafeAreaView>
   );
 }

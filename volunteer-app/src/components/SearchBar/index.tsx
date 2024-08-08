@@ -72,7 +72,7 @@ const SearchBar: FC = () => {
             }}
           />
           <CategoryFilter
-            title={t("causes", "Causes")}
+            title={t("categories", "Categories")}
             values={filters.categories || []}
             onChange={(values) => {
               setFilters({

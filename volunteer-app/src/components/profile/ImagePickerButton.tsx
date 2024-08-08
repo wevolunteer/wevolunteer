@@ -26,8 +26,6 @@ const ImagePickerButton: FC<ProfileDataFormProps> = ({ onSubmit }) => {
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.canceled && onSubmit) {
       onSubmit({
         uri: result.assets[0].uri,

@@ -1,10 +1,11 @@
-import { useNetwork } from "@/contexts/network";
+import { getApiUrl } from "@/config/network";
+import { useSession } from "@/contexts/authentication";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useMutation } from "@tanstack/react-query";
 import { Image } from "expo-image";
-import { FC, useCallback, useMemo, useRef } from "react";
+import { FC, useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Box from "../ui/Box";
 import Icon from "../ui/Icon";
@@ -28,44 +29,42 @@ interface ProfileAvatarProps {
 
 const ProfileAvatar: FC<ProfileAvatarProps> = ({ url, onChange, editable }) => {
   const { t } = useTranslation();
-  const { client } = useNetwork();
+  const { getAccessToken } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
 
   const uploadMedia = useMutation({
     mutationFn: async (media: MediaResource) => {
+      const token = await getAccessToken();
       const formData = new FormData();
 
-      const res = await fetch(media.uri);
-      const blob = await res.blob();
-
-      const file = {
-        // uri: Platform.OS === "android" ? media.uri : media.uri.replace("file://", ""),
-        // type: media.type,
-        filename: blob,
+      // @ts-ignore
+      formData.append("file", {
+        uri: media.uri,
         name: media.name,
-      };
-
-      formData.append("filename", blob);
+        type: media.type,
+      });
       formData.append("name", media.name);
 
-      const response = await client.POST("/media", {
-        body: formData,
+      setIsLoading(true);
+
+      const response = await fetch(`${getApiUrl()}/media`, {
+        method: "POST",
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
-        bodySerializer(body) {
-          const fd = new FormData();
-          console.log("=====================");
-          for (const name in body) {
-            console.log(name, body[name]);
-            fd.append(name, body[name]);
-          }
-          return fd;
-        },
+        body: formData,
       });
 
-      console.log(response);
+      if (!response.ok) {
+        alert("Failed to upload media");
+      }
 
-      return;
+      const data = await response.json();
+
+      setIsLoading(false);
+
+      return data;
     },
   });
 
@@ -81,22 +80,23 @@ const ProfileAvatar: FC<ProfileAvatarProps> = ({ url, onChange, editable }) => {
 
   const handleImagePickerSubmit = useCallback(
     async (media: MediaResource) => {
-      // if (onChange) {
-      //   onChange(url);
-      // }
       try {
-        await uploadMedia.mutateAsync(media);
+        uploadMedia.mutate(media, {
+          onSuccess: (data) => {
+            onChange && onChange(data.Url);
+          },
+        });
         handleCloseModalPress();
       } catch (e) {
         console.log(e);
       }
     },
-    [onChange, handleCloseModalPress],
+    [onChange, handleCloseModalPress, uploadMedia],
   );
 
   const source = useMemo(() => {
     if (url) {
-      return { uri: url };
+      return url;
     }
 
     return emptyAvatarImage;
@@ -104,14 +104,29 @@ const ProfileAvatar: FC<ProfileAvatarProps> = ({ url, onChange, editable }) => {
 
   return (
     <Box justifyContent="center" alignItems="center">
-      <Image
-        source={source}
-        style={{
-          width: 160,
-          height: 160,
-        }}
-      />
-      {editable && (
+      {isLoading ? (
+        <Box
+          width={160}
+          height={160}
+          borderRadius="full"
+          borderRightColor="mainBorder"
+          borderWidth={1}
+          justifyContent="center"
+          alignItems="center"
+        >
+          <ActivityIndicator />
+        </Box>
+      ) : (
+        <Image
+          source={source}
+          style={{
+            width: 160,
+            height: 160,
+            borderRadius: 80,
+          }}
+        />
+      )}
+      {editable && !isLoading && (
         <>
           <TouchableOpacity onPress={handlePresentModalPress}>
             <Box

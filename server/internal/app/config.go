@@ -27,6 +27,7 @@ var Config struct {
 	AWS_ENDPOINT   string
 	AWS_REGION     string
 	AWS_BUCKET     string
+	CDN_ENDPOINT   string
 }
 
 func ParseConfig(path string) {
@@ -63,6 +64,7 @@ func ParseConfig(path string) {
 	Config.AWS_ENDPOINT = viper.GetString("aws_endpoint")
 	Config.AWS_REGION = viper.GetString("aws_region")
 	Config.AWS_BUCKET = viper.GetString("aws_bucket")
+	Config.CDN_ENDPOINT = viper.GetString("cdn_endpoint")
 
 	if Config.JWT_SECRET == "" {
 		log.Fatal("JWT_SECRET must be set")

@@ -1,6 +1,6 @@
 import SafeAreaView from "@/components/ui/SafeAreaView";
 import { Theme } from "@/config/theme";
-import { FiltersProvider } from "@/contexts/filters";
+import ExperienceFiltersProvider from "@/contexts/experienceFilters";
 import { SearchesProvider } from "@/contexts/searches";
 import { useTheme } from "@shopify/restyle";
 import { Stack } from "expo-router";
@@ -10,7 +10,7 @@ export default function ExporeLayout() {
 
   return (
     <SafeAreaView>
-      <FiltersProvider>
+      <ExperienceFiltersProvider>
         <SearchesProvider>
           <Stack
             screenOptions={{
@@ -22,7 +22,7 @@ export default function ExporeLayout() {
             }}
           />
         </SearchesProvider>
-      </FiltersProvider>
+      </ExperienceFiltersProvider>
     </SafeAreaView>
   );
 }

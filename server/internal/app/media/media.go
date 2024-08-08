@@ -3,7 +3,6 @@ package media
 import (
 	"bytes"
 	"fmt"
-	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -51,7 +50,7 @@ func MediaUpload(data MediaUploadData) (string, error) {
 	var url string
 
 	if app.Config.AWS_ENDPOINT != "" {
-		url = fmt.Sprintf("%s/%s/%s", strings.TrimSuffix(app.Config.AWS_ENDPOINT, "/"), app.Config.AWS_BUCKET, data.Filename)
+		url = fmt.Sprintf("%s/%s", app.Config.CDN_ENDPOINT, data.Filename)
 	} else {
 		url = fmt.Sprintf("https://%s.s3.%s.amazonaws.com/%s", app.Config.AWS_BUCKET, app.Config.AWS_REGION, data.Filename)
 	}

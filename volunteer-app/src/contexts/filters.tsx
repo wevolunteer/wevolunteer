@@ -25,18 +25,6 @@ export function useFilters<T extends Record<string, any>>(initialFilters?: T) {
   };
 }
 
-export const withFilters = <T extends Record<string, any>>(Component: React.ComponentType<T>) => {
-  return (props: T) => {
-    const [filters, setFilters] = useState<Record<string, any>>({});
-
-    return (
-      <FiltersContext.Provider value={{ filters, setFilters }}>
-        <Component {...props} />
-      </FiltersContext.Provider>
-    );
-  };
-};
-
 export function FiltersProvider(props: React.PropsWithChildren) {
   const [filters, setFilters] = useState<Record<string, any>>({});
 
@@ -46,3 +34,13 @@ export function FiltersProvider(props: React.PropsWithChildren) {
     </FiltersContext.Provider>
   );
 }
+
+export const withFilters = <T extends Record<string, any>>(Component: React.ComponentType<T>) => {
+  return (props: T) => {
+    return (
+      <FiltersProvider>
+        <Component {...props} />
+      </FiltersProvider>
+    );
+  };
+};

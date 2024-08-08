@@ -19,6 +19,10 @@ export interface paths {
     /** Update activity */
     patch: operations["activities-update"];
   };
+  "/admin/login": {
+    /** Login */
+    post: operations["login"];
+  };
   "/auth/refresh": {
     /** Refresh token */
     post: operations["refresh-token"];
@@ -63,10 +67,6 @@ export interface paths {
     /** Delete experience */
     delete: operations["experiences-delete"];
   };
-  "/login": {
-    /** Login */
-    post: operations["login"];
-  };
   "/media": {
     /** Upload new Media */
     post: operations["media-upload"];
@@ -94,10 +94,6 @@ export interface paths {
   "/places": {
     /** List places */
     get: operations["places-list"];
-  };
-  "/signup": {
-    /** Signup */
-    post: operations["signup"];
   };
   "/user-devices": {
     /** List users devices */
@@ -171,7 +167,7 @@ export interface components {
        */
       $schema?: string;
       page_info: components["schemas"]["PaginationInfo"];
-      results: components["schemas"]["Activity"][];
+      results: components["schemas"]["Activity"][] | null;
     };
     ActivityUpdateData: {
       /**
@@ -211,7 +207,7 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      results: components["schemas"]["Category"][];
+      results: components["schemas"]["Category"][] | null;
     };
     CategoryUpdateData: {
       /**
@@ -244,7 +240,7 @@ export interface components {
       /** @description A human-readable explanation specific to this occurrence of the problem. */
       detail?: string;
       /** @description Optional list of individual error details */
-      errors?: components["schemas"]["ErrorDetail"][];
+      errors?: components["schemas"]["ErrorDetail"][] | null;
       /**
        * Format: uri
        * @description A URI reference that identifies the specific occurrence of the problem.
@@ -329,7 +325,7 @@ export interface components {
        */
       $schema?: string;
       page_info: components["schemas"]["PaginationInfo"];
-      results: components["schemas"]["Experience"][];
+      results: components["schemas"]["Experience"][] | null;
     };
     ExperienceUpdateData: {
       /**
@@ -445,7 +441,7 @@ export interface components {
        */
       $schema?: string;
       page_info: components["schemas"]["PaginationInfo"];
-      results: components["schemas"]["ExtendedOrganization"][];
+      results: components["schemas"]["ExtendedOrganization"][] | null;
     };
     OrganizationUpdateData: {
       /**
@@ -483,7 +479,7 @@ export interface components {
        */
       $schema?: string;
       page_info: components["schemas"]["PaginationInfo"];
-      results: components["schemas"]["Place"][];
+      results: components["schemas"]["Place"][] | null;
     };
     RefreshTokenData: {
       /**
@@ -500,17 +496,6 @@ export interface components {
        */
       $schema?: string;
       email: string;
-    };
-    SignupData: {
-      /**
-       * Format: uri
-       * @description A URL to the JSON Schema for this object.
-       */
-      $schema?: string;
-      email: string;
-      first_name: string;
-      last_name: string;
-      password: string;
     };
     TokenData: {
       /**
@@ -613,7 +598,16 @@ export interface components {
        */
       $schema?: string;
       page_info: components["schemas"]["PaginationInfo"];
-      results: components["schemas"]["UserDevice"][];
+      results: components["schemas"]["UserDevice"][] | null;
+    };
+    UserListData: {
+      /**
+       * Format: uri
+       * @description A URL to the JSON Schema for this object.
+       */
+      $schema?: string;
+      page_info: components["schemas"]["PaginationInfo"];
+      results: components["schemas"]["User"][] | null;
     };
     UserProfileUpdateData: {
       /**
@@ -787,6 +781,28 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Activity"];
+        };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** Login */
+  login: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["LoginData"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TokenData"];
         };
       };
       /** @description Error */
@@ -998,10 +1014,11 @@ export interface operations {
         page?: number;
         per_page?: number;
         q?: string;
-        distance?: number;
+        lat?: number;
+        lng?: number;
         date_start?: string;
         date_end?: string;
-        categories?: number[];
+        categories?: number[] | null;
         organization?: number;
       };
     };
@@ -1102,28 +1119,6 @@ export interface operations {
       /** @description No Content */
       204: {
         content: never;
-      };
-      /** @description Error */
-      default: {
-        content: {
-          "application/problem+json": components["schemas"]["ErrorModel"];
-        };
-      };
-    };
-  };
-  /** Login */
-  login: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["LoginData"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TokenData"];
-        };
       };
       /** @description Error */
       default: {
@@ -1343,28 +1338,6 @@ export interface operations {
       };
     };
   };
-  /** Signup */
-  signup: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SignupData"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TokenData"];
-        };
-      };
-      /** @description Error */
-      default: {
-        content: {
-          "application/problem+json": components["schemas"]["ErrorModel"];
-        };
-      };
-    };
-  };
   /** List users devices */
   "user-devices-list": {
     parameters: {
@@ -1423,7 +1396,7 @@ export interface operations {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["User"][];
+          "application/json": components["schemas"]["UserListData"];
         };
       };
       /** @description Error */

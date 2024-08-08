@@ -4,7 +4,7 @@ import { FC } from "react";
 import Box from "./Box";
 
 const Divider: FC<BoxProps<Theme>> = (props) => {
-  return <Box height={1} width="100%" backgroundColor="mainBorder" {...props} />;
+  return <Box height={1} flex={1} backgroundColor="mainBorder" {...props} />;
 };
 
 export default Divider;

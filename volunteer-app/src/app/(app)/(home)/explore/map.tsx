@@ -3,36 +3,43 @@ import SearchBar from "@/components/SearchBar";
 import Box from "@/components/ui/Box";
 import Icon from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
+import { useFilters } from "@/contexts/filters";
 import { useExperiences } from "@/hooks/useExperiences";
 import { Experience } from "@/types/data";
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet";
-import * as Location from "expo-location";
-import { router } from "expo-router";
+import { Href, router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ActivityIndicator } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, Region } from "react-native-maps";
 
 const pinBlack = require("@/assets/images/location-pin-black.png");
 const pinPink = require("@/assets/images/location-pin-pink.png");
 
-export default function ExporeMapScreen() {
+export default function ExploreMapScreen() {
+  const mapRef = useRef<MapView>(null);
   const { t } = useTranslation();
+  const { filters, setFilters } = useFilters();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const [movingCamera, setMovingCamera] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        return;
-      }
+    if (!mapRef.current) return;
 
-      let location = await Location.getCurrentPositionAsync({});
-      console.log(location);
-    })();
-  }, []);
+    mapRef.current.getCamera().then((camera) => {
+      setMovingCamera(true);
 
-  const { experiences } = useExperiences();
+      mapRef.current?.setCamera({
+        center: {
+          latitude: filters.lat,
+          longitude: filters.lng,
+        },
+      });
+    });
+  }, [filters.lat, filters.lng]);
+
+  const { experiences, isLoading } = useExperiences();
 
   const [selectedExperience, setSelectedExperience] = useState<Experience | null>(null);
 
@@ -43,26 +50,43 @@ export default function ExporeMapScreen() {
     setSelectedExperience(experience);
   }
 
+  function handleRegionChange(region: Region) {
+    if (movingCamera) {
+      setMovingCamera(false);
+      return;
+    }
+
+    setFilters({
+      ...filters,
+      lat: region.latitude,
+      lng: region.longitude,
+      per_page: 100,
+    });
+  }
+
   function handleCloseExperience() {
     if (selectedExperience) {
       bottomSheetModalRef.current?.dismiss();
+      setSelectedExperience(null);
     }
   }
 
   return (
     <Box flex={1}>
-                <Box paddingHorizontal="m" marginBottom="m" backgroundColor="mainBackground">
-            <SearchBar />
-          </Box>
+      <Box paddingHorizontal="m" marginBottom="m" backgroundColor="mainBackground">
+        <SearchBar />
+      </Box>
       <MapView
         initialRegion={{
-          latitude: 41.87194,
-          longitude: 12.56738,
-          latitudeDelta: 8,
-          longitudeDelta: 8,
+          latitude: filters.lat || 41.87194,
+          longitude: filters.lng || 12.56738,
+          latitudeDelta: 0.3,
+          longitudeDelta: 0.3,
         }}
+        ref={mapRef}
         moveOnMarkerPress={false}
         rotateEnabled={false}
+        onRegionChangeComplete={handleRegionChange}
         onRegionChange={handleCloseExperience}
         style={{
           width: "100%",
@@ -102,10 +126,16 @@ export default function ExporeMapScreen() {
               alignItems="center"
               gap="m"
             >
-              <Icon name="list" size={28} color="#FFF" />
-              <Text variant="body" fontSize={13} color="whiteText">
-                {t("seeAsList", "See as list")}
-              </Text>
+              {isLoading ? (
+                <ActivityIndicator color="#FFF" />
+              ) : (
+                <>
+                  <Icon name="list" size={28} color="#FFF" />
+                  <Text variant="body" fontSize={13} color="whiteText">
+                    {t("seeAsList", "See as list")}
+                  </Text>
+                </>
+              )}
             </Box>
           </TouchableOpacity>
         )}
@@ -128,7 +158,7 @@ export default function ExporeMapScreen() {
                 <ExperienceCard
                   experience={selectedExperience}
                   onPress={() => {
-                    router.push(`experiences/${selectedExperience.id}`);
+                    router.push(`experiences/${selectedExperience.id}` as Href);
                   }}
                   onClose={handleCloseExperience}
                 />

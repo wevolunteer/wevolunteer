@@ -48,7 +48,9 @@ export default function SettingsListScreen() {
           />
         </Box>
 
-        <Text variant="link">{t("credits", "Credits")}</Text>
+        <Pressable onPress={() => router.push("/settings/credits")}>
+          <Text variant="link">{t("credits", "Credits")}</Text>
+        </Pressable>
       </Box>
     </SafeAreaView>
   );

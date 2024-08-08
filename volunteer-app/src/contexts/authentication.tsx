@@ -12,12 +12,14 @@ const AuthContext = React.createContext<{
   fetchUser: () => Promise<void>;
   signOut: () => void;
   session?: Session | null;
+  getAccessToken: () => Promise<string | null>;
   isLoading: boolean;
 }>({
   requestAuthCode: () => Promise.resolve(false),
   verifyAuthCode: () => Promise.resolve(false),
   fetchUser: () => Promise.resolve(),
   signOut: () => null,
+  getAccessToken: () => Promise.resolve(null),
   session: null,
   isLoading: false,
 });
@@ -42,13 +44,11 @@ export function SessionProvider(props: React.PropsWithChildren) {
   const tokenMiddleware: Middleware = {
     async onRequest({ request, options }) {
       if (session?.token?.accessToken) {
-        console.log("Setting access token", session.token.accessToken);
         request.headers.set("Authorization", `Bearer ${session.token.accessToken}`);
       }
       return request;
     },
     async onResponse({ request, response, options }) {
-      console.log("Response", response.status, request.url);
       if (
         response.status === 401 &&
         session?.token?.refreshToken &&
@@ -99,6 +99,45 @@ export function SessionProvider(props: React.PropsWithChildren) {
   };
 
   client.use(tokenMiddleware);
+
+  const getAccessToken = useCallback(async () => {
+    if (session?.token?.accessToken) {
+      const res = await client.GET("/auth/user", {
+        headers: {
+          Authorization: `Bearer ${session.token.accessToken}`,
+        },
+      });
+
+      if (res.error) {
+        try {
+          const refreshTokenResponse = await client.POST("/auth/refresh", {
+            body: {
+              refresh_token: session.token.refreshToken,
+            },
+          });
+
+          if (refreshTokenResponse.error) {
+            throw new Error(refreshTokenResponse.error.errors?.join(", "));
+          }
+
+          setSession({
+            user: session.user,
+            token: {
+              accessToken: refreshTokenResponse.data.access_token,
+              refreshToken: refreshTokenResponse.data.refresh_token,
+            },
+          });
+        } catch (error) {
+          setSession(null);
+          console.error("Failed to refresh token", error);
+        }
+      }
+
+      return session.token.accessToken;
+    }
+
+    return null;
+  }, [session, client, setSession]);
 
   const fetchUser = useCallback(async () => {
     if (session?.token?.accessToken) {
@@ -175,9 +214,10 @@ export function SessionProvider(props: React.PropsWithChildren) {
         setSession(null);
       },
       session,
+      getAccessToken,
       isLoading,
     }),
-    [session, isLoading, fetchUser, setSession, client, expoPushToken],
+    [session, isLoading, fetchUser, setSession, client, expoPushToken, getAccessToken],
   );
 
   return <AuthContext.Provider value={initialState}>{props.children}</AuthContext.Provider>;

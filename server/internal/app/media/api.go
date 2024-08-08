@@ -38,6 +38,7 @@ func MediaUploadController(ctx context.Context, input *MediaUploadRequest) (*Med
 
 	buf := bytes.NewBuffer(nil)
 	if _, err := io.Copy(buf, file); err != nil {
+		fmt.Println("Failed to copy file")
 		return nil, fmt.Errorf("failed to copy file: %v", err)
 	}
 
@@ -49,6 +50,7 @@ func MediaUploadController(ctx context.Context, input *MediaUploadRequest) (*Med
 	})
 
 	if err != nil {
+		fmt.Printf("Failed to upload file: %v\n", err)
 		return nil, fmt.Errorf("failed to upload file: %v", err)
 	}
 

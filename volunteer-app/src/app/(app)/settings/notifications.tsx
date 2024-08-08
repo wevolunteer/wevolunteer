@@ -54,7 +54,6 @@ export default function SettingsNotificationsScreen() {
         fetchUser();
       },
     });
-    console.log("updateProfile.mutate(data);");
   }, [nearbyActivities, followedOrganizations, activityReminders]);
 
   return (

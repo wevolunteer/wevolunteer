@@ -20,7 +20,7 @@ export default function ProfileEditScreen() {
   const { session, fetchUser } = useSession();
   const { updateProfile } = useProfile();
 
-  const { control, handleSubmit, watch } = useForm<ProfileData>({
+  const { control, handleSubmit, watch, setValue } = useForm<ProfileData>({
     defaultValues: {
       avatar: session?.user?.avatar,
       first_name: session?.user?.first_name,
@@ -39,10 +39,19 @@ export default function ProfileEditScreen() {
     router.push("/");
     return null;
   }
+  const values = watch();
+
+  async function handleAvatarChange(url: string) {
+    if (!session?.user) {
+      return;
+    }
+
+    setValue("avatar", url);
+
+    handleSubmit(onSubmit)();
+  }
 
   async function onSubmit(values: ProfileData) {
-    console.log(values);
-
     if (!session?.user) {
       return;
     }
@@ -59,8 +68,6 @@ export default function ProfileEditScreen() {
     });
   }
 
-  const values = watch();
-
   return (
     <ScrollView style={{ flex: 1 }}>
       <Topbar empty goBack title={t("editProfile", "Edit Profile")} />
@@ -71,9 +78,9 @@ export default function ProfileEditScreen() {
             name="avatar"
             render={({ field }) => (
               <ProfileAvatar
-                url={session?.user?.avatar || undefined}
+                url={field.value || undefined}
                 editable
-                onChange={field.onChange}
+                onChange={handleAvatarChange}
               />
             )}
           />

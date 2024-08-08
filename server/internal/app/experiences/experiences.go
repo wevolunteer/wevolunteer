@@ -1,6 +1,7 @@
 package experiences
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/wevolunteer/wevolunteer/internal/app"
@@ -34,7 +35,8 @@ type ExperienceListData struct {
 type ExperienceFilters struct {
 	app.PaginationInput
 	Query        string  `query:"q"`
-	Distance     float64 `query:"distance"`
+	Latitude     float64 `query:"lat"`
+	Longitude    float64 `query:"lng"`
 	DateStart    string  `query:"date_start"`
 	DateEnd      string  `query:"date_end"`
 	Categories   []uint  `query:"categories"`
@@ -55,8 +57,10 @@ func ExperienceList(ctx *app.Context, filters *ExperienceFilters) (*ExperienceLi
 			q = q.Where("end_time <= ?", filters.DateEnd)
 		}
 
-		if filters.Distance != 0 && ctx.User != nil && ctx.User.Latitude != 0 && ctx.User.Longitude != 0 {
-			q = q.Where("ST_Distance_Sphere(point(longitude, latitude), point(?, ?)) <= ?", ctx.User.Longitude, ctx.User.Latitude, filters.Distance)
+		if filters.Latitude != 0 && filters.Longitude != 0 {
+			q = q.Order(fmt.Sprintf(
+				"ST_Distance(ST_SetSRID(ST_Point(longitude, latitude), 4326)::geography, ST_SetSRID(ST_Point(%f, %f), 4326)::geography) ASC",
+				filters.Longitude, filters.Latitude))
 		}
 
 		if filters.Query != "" {
