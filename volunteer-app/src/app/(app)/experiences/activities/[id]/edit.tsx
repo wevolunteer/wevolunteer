@@ -1,6 +1,5 @@
 import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
-import Checkbox from "@/components/ui/Checkbox";
 import InputDate from "@/components/ui/InputDate";
 import InputText from "@/components/ui/InputText";
 import InputTime from "@/components/ui/InputTime";
@@ -12,9 +11,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Trans, useTranslation } from "react-i18next";
-import { Pressable, TextInput } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { useTranslation } from "react-i18next";
+import { Pressable } from "react-native";
 import Toast from "react-native-toast-message";
 
 interface EnrollmentData {
@@ -129,7 +127,12 @@ export default function ActivityEditScreen() {
       return;
     }
 
-    router.push("/experiences/activities/" + activityId + "/confirm");
+    router.push({
+      pathname: "/experiences/activities/[id]/confirm",
+      params: {
+        id: activityId,
+      },
+    });
   }
   if (!data) {
     return null;
@@ -229,7 +232,7 @@ export default function ActivityEditScreen() {
         />
 
         <Button
-          label={t("edit", "Modifica")}
+          label={t("Edit", "Edit")}
           marginVertical="s"
           onPress={handleSubmit(onSubmit)}
           variant="primary"

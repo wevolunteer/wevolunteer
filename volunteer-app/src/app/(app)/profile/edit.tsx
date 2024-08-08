@@ -279,7 +279,7 @@ const ProfileDataForm: FC<ProfileDataFormProps> = ({ label, value, onSubmit, chi
           <Text variant="secondary">{value || t("notSet", "Not set")}</Text>
         </Box>
         <Pressable onPress={handleToggle}>
-          <Text variant="link">{value ? t("edit", "Edit") : t("add", "Add")}</Text>
+          <Text variant="link">{value ? t("Edit", "Edit") : t("add", "Add")}</Text>
         </Pressable>
       </When>
       <When condition={showForm}>

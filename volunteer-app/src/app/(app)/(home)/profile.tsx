@@ -27,7 +27,7 @@ export default function ProfileScreen() {
           empty
           rightComponent={
             <Link href="/profile/edit">
-              <Text variant="link">{t("edit", "Edit")}</Text>
+              <Text variant="link">{t("Edit", "Edit")}</Text>
             </Link>
           }
         />

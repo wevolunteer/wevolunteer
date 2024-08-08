@@ -48,17 +48,18 @@ module.exports = {
   // Namespace separator used in your translation keys
   // If you want to use plain english keys, separators such as `.` and `:` will conflict. You might want to set `keySeparator: false` and `namespaceSeparator: false`. That way, `t('Status: Loading...')` will not think that there are a namespace and three separator dots for instance.
 
-  output: "locales/translations/$LOCALE.json",
+  output: "src/locales/translations/$LOCALE.json",
   // Supports $LOCALE and $NAMESPACE injection
   // Supports JSON (.json) and YAML (.yml) file formats
   // Where to write the locale files relative to process.cwd()
 
   input: [
-    "app/**/*.{js,jsx,ts,tsx}",
-    "components/**/*.{js,jsx,ts,tsx}",
-    "contexts/**/*.{js,jsx,ts,tsx}",
-    "hooks/**/*.{js,jsx,ts,tsx}",
-    "config/**/*.{js,jsx,ts,tsx}",
+    "src/app/**/*.{js,jsx,ts,tsx}",
+    "src/components/**/*.{js,jsx,ts,tsx}",
+    "src/contexts/**/*.{js,jsx,ts,tsx}",
+    "src/hooks/**/*.{js,jsx,ts,tsx}",
+    "src/config/**/*.{js,jsx,ts,tsx}",
+    "src/**/*.{js,jsx,ts,tsx}",
   ],
   // An array of globs that describe where to look for source files
   // relative to the location of the configuration file

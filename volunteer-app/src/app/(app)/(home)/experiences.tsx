@@ -31,7 +31,7 @@ export default function ExperiencesScreen() {
   return (
     <SafeAreaView>
       <Box px="m" mt="2xl" mb="l">
-        <Text variant="header">{t("volunteerActivities", "Volunteer activities")}</Text>
+        <Text variant="header">{t("volunteersActvities", "Volunteer activities")}</Text>
       </Box>
 
       <Box flex={1}>

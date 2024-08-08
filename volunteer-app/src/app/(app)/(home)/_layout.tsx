@@ -74,7 +74,7 @@ export default function AppLayout() {
         <Tabs.Screen
           name="experiences"
           options={{
-            title: t("experiences", "Experiences"),
+            title: t("Experiences", "Experiences"),
             tabBarIcon: ({ color }) => <AppIcon color={color} />,
           }}
         />

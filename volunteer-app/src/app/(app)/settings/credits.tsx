@@ -28,7 +28,7 @@ export default function CreditsScreen() {
             <Trans i18nKey="welcome">Trentino's voluntary app</Trans>
           </Text>
           <Text variant="body" textAlign="center" mt="l">
-            <Trans i18nKey="credits">
+            <Trans i18nKey="creditsMessage">
               This app was developed with the support and contribution of the Municipality of Trento
               and Dolomiti Energia, thanks to the collaboration and technical support of ITAS Mutua.
             </Trans>

@@ -90,7 +90,7 @@ const DateFilter: FC<DateFilterProps> = ({ title, value, onChange, onConfirm }) 
             justifyContent="space-between"
             alignItems="center"
           >
-            <Text variant="body">{t("form", "From")}:</Text>
+            <Text variant="body">{t("From", "From")}:</Text>
             <Box width={150}>
               <DateMaskInputBottomSheet
                 value={value?.from || ""}

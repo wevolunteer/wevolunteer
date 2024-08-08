@@ -2,17 +2,16 @@ import { ExperienceCard } from "@/components/ExperienceCard";
 import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
 import FavoriteButton from "@/components/ui/FavoriteButton";
-import Icon from "@/components/ui/Icon";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useNetwork } from "@/contexts/network";
 import { useExperiences } from "@/hooks/useExperiences";
 import { Experience } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Linking } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -121,7 +120,7 @@ export default function OrganizationsListScreen() {
               </ScrollView>
             </Box>
             <Box my="l" px="m">
-              <Text variant="title">{t("experiences", "Experiences")}</Text>
+              <Text variant="title">{t("Experiences", "Experiences")}</Text>
             </Box>
           </>
         )}
@@ -129,7 +128,12 @@ export default function OrganizationsListScreen() {
           <ExperienceCard
             experience={item}
             onPress={() => {
-              router.push(`experiences/${item.id}`);
+              router.push({
+                pathname: "/experiences/[id]",
+                params: {
+                  id: item.id,
+                },
+              });
             }}
           />
         )}

@@ -8,7 +8,7 @@ import { useNetwork } from "@/contexts/network";
 import { tActivityStatus } from "@/utils/enumTransl";
 import { processColorByStatus } from "@/utils/formatters";
 import { useQuery } from "@tanstack/react-query";
-import { format, isAfter, isBefore, isToday } from "date-fns";
+import { format, isAfter, isToday } from "date-fns";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -81,7 +81,9 @@ export default function ActivityScreen() {
             backgroundColor="statusAccepted"
             width="100%"
           >
-            <Text color="whiteText">{t("doneAt", "Completed in date") + " " + format(new Date(), "d/MM")}</Text>
+            <Text color="whiteText">
+              {t("doneAt", "Completed in date") + " " + format(new Date(), "d/MM")}
+            </Text>
           </Box>
         )}
         <Image
@@ -190,41 +192,41 @@ export default function ActivityScreen() {
       </ScrollView>
 
       {!isDone && (
-      <Box
-        position="absolute"
-        flexDirection="row"
-        bottom={0}
-        left={0}
-        right={0}
-        p="s"
-        justifyContent="space-between"
-        alignItems="center"
-        backgroundColor="whiteText"
-        width="100%"
-      >
-        <Box>
-          <Text>{t("waitYouAt", "We wait you:")}</Text>
-          {format(data.start_date, "d/MM") === format(data.end_date, "d/MM") ? (
-            <Text>
-              {t("the", "The")} {format(data.start_date, "d/MM")}
-            </Text>
-          ) : (
-            <Text>
-              {t("from", "From")} {format(data.start_date, "d/MM")} {t("to", "al")}{" "}
-              {format(data.end_date, "d/MM")}
-            </Text>
-          )}
+        <Box
+          position="absolute"
+          flexDirection="row"
+          bottom={0}
+          left={0}
+          right={0}
+          p="s"
+          justifyContent="space-between"
+          alignItems="center"
+          backgroundColor="whiteText"
+          width="100%"
+        >
+          <Box>
+            <Text>{t("waitYouAt", "We wait you:")}</Text>
+            {format(data.start_date, "d/MM") === format(data.end_date, "d/MM") ? (
+              <Text>
+                {t("the", "The")} {format(data.start_date, "d/MM")}
+              </Text>
+            ) : (
+              <Text>
+                {t("from", "From")} {format(data.start_date, "d/MM")} {t("to", "To")}{" "}
+                {format(data.end_date, "d/MM")}
+              </Text>
+            )}
+          </Box>
+          <Button
+            variant="primary"
+            label={t("Edit", "Edit")}
+            paddingHorizontal="xl"
+            borderRadius="m"
+            onPress={() => {
+              router.push(`/experiences/activities/${id}/edit`);
+            }}
+          />
         </Box>
-        <Button
-          variant="primary"
-          label={t("edit", "Modifica")}
-          paddingHorizontal="xl"
-          borderRadius="m"
-          onPress={() => {
-            router.push(`/experiences/activities/${id}/edit`);
-          }}
-        />
-      </Box>
       )}
     </SafeAreaView>
   );
