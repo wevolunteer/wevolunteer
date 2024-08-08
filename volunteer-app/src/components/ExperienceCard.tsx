@@ -48,7 +48,7 @@ export const ExperienceCard: FC<ExperienceCardProps> = ({ experience, onPress, o
               borderWidth={1}
               borderColor="mainBorder"
             >
-              <Icon name="close" size={20} color="#000" />
+              <Icon name="close" color="#000" />
             </Box>
           </Pressable>
         )}

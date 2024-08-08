@@ -18,7 +18,7 @@ const SearchBar: FC = () => {
 
   return (
     <Box>
-      <Pressable onPress={() => router.push("/explore/search")}>
+      <Pressable onPress={() => router.push("/search")}>
         <Box
           borderRadius="full"
           height={64}

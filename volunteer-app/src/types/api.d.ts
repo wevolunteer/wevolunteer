@@ -48,6 +48,8 @@ export interface paths {
     post: operations["category-create"];
   };
   "/categories/{id}": {
+    /** Get category */
+    get: operations["category-get"];
     /** Update category */
     put: operations["category-update"];
     /** Delete category */
@@ -316,7 +318,30 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
+      address?: string;
+      /** Format: int64 */
+      category_id?: number;
+      city?: string;
+      contact_email?: string;
+      contact_name?: string;
+      contact_phone?: string;
+      country?: string;
+      description: string;
+      end_date: string;
+      end_time: string;
+      image?: string;
+      /** Format: double */
+      latitude?: number;
+      /** Format: double */
+      longitude?: number;
+      /** Format: int64 */
+      organization_id?: number;
+      published?: boolean;
+      start_date: string;
+      start_time: string;
+      state?: string;
       title: string;
+      zip_code?: string;
     };
     ExperienceListData: {
       /**
@@ -333,7 +358,30 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
+      address?: string;
+      /** Format: int64 */
+      category_id?: number;
+      city?: string;
+      contact_email?: string;
+      contact_name?: string;
+      contact_phone?: string;
+      country?: string;
+      description: string;
+      end_date: string;
+      end_time: string;
+      image?: string;
+      /** Format: double */
+      latitude?: number;
+      /** Format: double */
+      longitude?: number;
+      /** Format: int64 */
+      organization_id?: number;
+      published?: boolean;
+      start_date: string;
+      start_time: string;
+      state?: string;
       title: string;
+      zip_code?: string;
     };
     ExtendedOrganization: {
       /**
@@ -630,9 +678,9 @@ export interface components {
       latitude?: number;
       /** Format: double */
       longitude?: number;
-      notifications_activity_reminders: boolean | null;
-      notifications_followed_organizations: boolean | null;
-      notifications_nearby_activities: boolean | null;
+      notifications_activity_reminders?: boolean;
+      notifications_followed_organizations?: boolean;
+      notifications_nearby_activities?: boolean;
       phone?: string;
       tax_code?: string;
     };
@@ -646,6 +694,7 @@ export interface components {
       first_name: string;
       is_superuser: boolean;
       last_name: string;
+      password: string;
       phone: string;
     };
     VerifyCodeData: {
@@ -943,6 +992,28 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["CategoryCreateData"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Category"];
+        };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** Get category */
+  "category-get": {
+    parameters: {
+      path: {
+        id: number;
       };
     };
     responses: {

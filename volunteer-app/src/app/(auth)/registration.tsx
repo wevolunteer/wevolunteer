@@ -63,7 +63,7 @@ export default function RegistrationScreen() {
     try {
       setIsLoading(true);
 
-      if(data.tax_code && !validateCF(data.tax_code)) {
+      if (data.tax_code && !validateCF(data.tax_code)) {
         setError("tax_code", {
           type: "manual",
           message: t("Invalid tax code"),
@@ -78,12 +78,12 @@ export default function RegistrationScreen() {
 
       await fetchUser();
       setIsLoading(false);
-      
+
       if (!response.error) {
         router.replace("/explore");
         return;
       } else {
-        
+        console.log("profile error:", response.error);
         Toast.show({
           type: "error",
           text2: t(
@@ -123,7 +123,7 @@ export default function RegistrationScreen() {
   }, [dateOfBirth, setValue]);
 
   useEffect(() => {
-    if(taxCode) {
+    if (taxCode) {
       setValue("tax_code", taxCode.toUpperCase());
     }
   }, [taxCode, setValue]);
@@ -189,7 +189,7 @@ export default function RegistrationScreen() {
               )}
             />
             <Text variant="secondary" marginTop="s">
-            {errors.date_of_birth && <Text variant="error">{errors.date_of_birth.message}</Text>}
+              {errors.date_of_birth && <Text variant="error">{errors.date_of_birth.message}</Text>}
               <Trans i18nKey="registrationAgeDescription">
                 To register for FaXTe you must be at least 16 years old.
               </Trans>

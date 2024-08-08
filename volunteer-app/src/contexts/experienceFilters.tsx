@@ -1,7 +1,7 @@
 import { ExperienceFilters, Place } from "@/types/data";
 import * as Location from "expo-location";
 import { createContext, useContext, useEffect, useState } from "react";
-import { FiltersProvider, useFilters, withFilters } from "./filters";
+import { useFilters, withFilters } from "./filters";
 
 export const ExperienceFiltersContext = createContext<{
   place: Place | null;
@@ -33,8 +33,8 @@ function ExperienceFiltersProvider(props: React.PropsWithChildren) {
       if (status !== "granted") {
         return;
       }
-
       let location = await Location.getCurrentPositionAsync({});
+      console.log("===>", location);
       setFilters({
         ...filters,
         lat: location.coords.latitude,
@@ -44,11 +44,9 @@ function ExperienceFiltersProvider(props: React.PropsWithChildren) {
   }, [setFilters]);
 
   return (
-    <FiltersProvider>
-      <ExperienceFiltersContext.Provider value={{ place, setPlace }}>
-        {props.children}
-      </ExperienceFiltersContext.Provider>
-    </FiltersProvider>
+    <ExperienceFiltersContext.Provider value={{ place, setPlace }}>
+      {props.children}
+    </ExperienceFiltersContext.Provider>
   );
 }
 
