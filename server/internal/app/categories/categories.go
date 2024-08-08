@@ -12,6 +12,16 @@ func CategoryQuery(ctx *app.Context) *gorm.DB {
 	return q
 }
 
+func CategoryGet(ctx *app.Context, id uint) (*models.Category, error) {
+	var category models.Category
+
+	if err := CategoryQuery(ctx).Where("id = ?", id).First(&category).Error; err != nil {
+		return nil, err
+	}
+
+	return &category, nil
+}
+
 type CategoryListData struct {
 	Results []models.Category `json:"results"`
 }

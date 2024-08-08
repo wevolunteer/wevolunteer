@@ -9,6 +9,14 @@ import (
 
 func RegisterRoutes(api huma.API) {
 	huma.Register(api, huma.Operation{
+		OperationID: "category-get",
+		Summary:     "Get category",
+		Method:      http.MethodGet,
+		Path:        "/categories/{id}",
+		Tags:        []string{"Categories"},
+	}, CategoryGetController)
+
+	huma.Register(api, huma.Operation{
 		OperationID: "category-list",
 		Summary:     "List categories",
 		Method:      http.MethodGet,

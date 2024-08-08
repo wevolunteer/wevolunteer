@@ -38,6 +38,7 @@ import {
 import { dataProvider } from "./rest-data-provider";
 import { ExperienceCreate, ExperienceEdit, ExperienceList, ExperienceShow } from "./pages/experiences";
 import { ActivityCreate, ActivityEdit, ActivityList, ActivityShow } from "./pages/activities";
+import { CategoryCreate, CategoryEdit, CategoryList, CategoryShow } from "./pages/categories";
 
 function App() {
   const apiEndpoint = getApiEndpoint();
@@ -94,6 +95,16 @@ function App() {
                     canDelete: true,
                   },
                 },
+                {
+                  name: "categories",
+                  list: "/categories",
+                  create: "/categories/create",
+                  edit: "/categories/edit/:id",
+                  show: "/categories/show/:id",
+                  meta: {
+                    canDelete: true,
+                  },
+                },
               ]}
               options={{
                 syncWithLocation: true,
@@ -143,12 +154,18 @@ function App() {
                     <Route path="show/:id" element={<ExperienceShow />} />
                   </Route>
 
-
                   <Route path="/activities">
                     <Route index element={<ActivityList />} />
                     <Route path="create" element={<ActivityCreate />} />
                     <Route path="edit/:id" element={<ActivityEdit />} />
                     <Route path="show/:id" element={<ActivityShow />} />
+                  </Route>
+
+                  <Route path="/categories">
+                    <Route index element={<CategoryList />} />
+                    <Route path="create" element={<CategoryCreate />} />
+                    <Route path="edit/:id" element={<CategoryEdit />} />
+                    <Route path="show/:id" element={<CategoryShow />} />
                   </Route>
 
                   <Route path="*" element={<ErrorComponent />} />
