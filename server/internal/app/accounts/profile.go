@@ -21,9 +21,9 @@ type UserProfileUpdateData struct {
 	Bio                                *string  `json:"bio,omitempty"`
 	Latitude                           *float64 `json:"latitude,omitempty"`
 	Longitude                          *float64 `json:"longitude,omitempty"`
-	NotificationsNearbyActivities      *bool    `json:"notifications_nearby_activities" gorm:"default:true"`
-	NotificationsFollowedOrganizations *bool    `json:"notifications_followed_organizations" gorm:"default:true"`
-	NotificationActivityReminders      *bool    `json:"notifications_activity_reminders" gorm:"default:true"`
+	NotificationsNearbyActivities      *bool    `json:"notifications_nearby_activities,omitempty" gorm:"default:true"`
+	NotificationsFollowedOrganizations *bool    `json:"notifications_followed_organizations,omitempty" gorm:"default:true"`
+	NotificationActivityReminders      *bool    `json:"notifications_activity_reminders,omitempty" gorm:"default:true"`
 }
 
 func UserProfileGet(user *models.User) (*models.User, error) {
