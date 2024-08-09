@@ -50,6 +50,7 @@ import {
   CategoryList,
   CategoryShow,
 } from "./pages/categories";
+import { ApartmentOutlined, CalendarOutlined, EnvironmentOutlined, GlobalOutlined, PartitionOutlined, UserOutlined } from "@ant-design/icons";
 
 function App() {
   const apiEndpoint = getApiEndpoint();
@@ -74,6 +75,7 @@ function App() {
                   show: "/users/show/:id",
                   meta: {
                     canDelete: true,
+                    icon: <UserOutlined />,
                   },
                 },
                 {
@@ -84,6 +86,7 @@ function App() {
                   show: "/organizations/show/:id",
                   meta: {
                     canDelete: true,
+                    icon: <ApartmentOutlined />
                   },
                 },
                 {
@@ -94,6 +97,7 @@ function App() {
                   show: "/experiences/show/:id",
                   meta: {
                     canDelete: true,
+                    icon: <EnvironmentOutlined />
                   },
                 },
                 {
@@ -104,6 +108,7 @@ function App() {
                   show: "/activities/show/:id",
                   meta: {
                     canDelete: true,
+                    icon: <CalendarOutlined />
                   },
                 },
                 {
@@ -114,6 +119,7 @@ function App() {
                   show: "/categories/show/:id",
                   meta: {
                     canDelete: true,
+                    icon: <PartitionOutlined />
                   },
                 },
               ]}
