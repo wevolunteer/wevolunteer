@@ -30,6 +30,9 @@ const SearchBar: FC = () => {
           flexDirection="row"
           paddingHorizontal="m"
           shadowColor="shadow"
+          shadowOffset={{ width: -2, height: 4 }}
+          shadowOpacity={0.2}
+          shadowRadius={3}
           elevation={6}
         >
           <Icon name="search" />

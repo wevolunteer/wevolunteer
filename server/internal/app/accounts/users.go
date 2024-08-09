@@ -115,6 +115,7 @@ type UserUpdateData struct {
 	Email       string `json:"email"`
 	Password    string `json:"password"`
 	IsSuperUser bool   `json:"is_superuser"`
+	TaxCode     string `json:"tax_code"`
 }
 
 func UserUpdate(id uint, data *UserUpdateData) (*models.User, error) {
@@ -138,6 +139,7 @@ func UserUpdate(id uint, data *UserUpdateData) (*models.User, error) {
 	user.Phone = data.Phone
 	user.Email = data.Email
 	user.IsRootAdmin = data.IsSuperUser
+	user.TaxCode = data.TaxCode
 
 	if err := app.DB.Save(&user).Error; err != nil {
 		return nil, err

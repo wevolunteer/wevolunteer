@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/wevolunteer/wevolunteer/internal/app"
+	"github.com/wevolunteer/wevolunteer/internal/app/accounts"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 	"gorm.io/gorm"
 )
@@ -27,6 +28,16 @@ func ActivityQuery(ctx *app.Context) *gorm.DB {
 	}
 
 	return q
+}
+
+func ActivityGet(ctx *app.Context, id uint) (*models.Activity, error) {
+	var activity models.Activity
+
+	if err := ActivityQuery(ctx).Preload("Experience.Organization").Where("id = ?", id).First(&activity).Error; err != nil {
+		return nil, err
+	}
+
+	return &activity, nil
 }
 
 type ActivityFilters struct {
@@ -109,6 +120,7 @@ func ActivityList(ctx *app.Context, filters *ActivityFilters) (*ActivityListData
 }
 
 type ActivityCreateData struct {
+	TaxCode      string `json:"tax_code"`
 	ExperienceID uint   `json:"experience_id"`
 	StartDate    string `json:"start_date"`
 	EndDate      string `json:"end_date"`
@@ -117,20 +129,14 @@ type ActivityCreateData struct {
 	Message      string `json:"message"`
 }
 
-func ActivityGet(ctx *app.Context, id uint) (*models.Activity, error) {
-	var activity models.Activity
-
-	if err := ActivityQuery(ctx).Preload("Experience.Organization").Where("id = ?", id).First(&activity).Error; err != nil {
-		return nil, err
-	}
-
-	return &activity, nil
-}
-
 func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activity, error) {
 	err := error(nil)
 
 	// todo check roles
+
+	if data.TaxCode != "" {
+		accounts.UserProfileUpdate(ctx.User, accounts.UserProfileUpdateData{TaxCode: &data.TaxCode})
+	}
 
 	startDate := time.Time{}
 	if data.StartDate != "" {

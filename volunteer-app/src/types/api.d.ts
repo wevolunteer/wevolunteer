@@ -19,10 +19,6 @@ export interface paths {
     /** Update activity */
     patch: operations["activities-update"];
   };
-  "/admin/login": {
-    /** Login */
-    post: operations["login"];
-  };
   "/auth/refresh": {
     /** Refresh token */
     post: operations["refresh-token"];
@@ -98,9 +94,7 @@ export interface paths {
     get: operations["places-list"];
   };
   "/user-devices": {
-    /** List users devices */
-    get: operations["user-devices-list"];
-    /** Create user devices */
+    /** Register user devices */
     post: operations["user-device-create"];
   };
   "/users": {
@@ -161,6 +155,7 @@ export interface components {
       message: string;
       start_date: string;
       start_time: string;
+      tax_code?: string;
     };
     ActivityListData: {
       /**
@@ -421,11 +416,6 @@ export interface components {
       zip_code: string;
     };
     LoginData: {
-      /**
-       * Format: uri
-       * @description A URL to the JSON Schema for this object.
-       */
-      $schema?: string;
       email: string;
       password: string;
     };
@@ -640,11 +630,6 @@ export interface components {
       token: string;
     };
     UserDeviceListData: {
-      /**
-       * Format: uri
-       * @description A URL to the JSON Schema for this object.
-       */
-      $schema?: string;
       page_info: components["schemas"]["PaginationInfo"];
       results: components["schemas"]["UserDevice"][] | null;
     };
@@ -830,28 +815,6 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Activity"];
-        };
-      };
-      /** @description Error */
-      default: {
-        content: {
-          "application/problem+json": components["schemas"]["ErrorModel"];
-        };
-      };
-    };
-  };
-  /** Login */
-  login: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["LoginData"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TokenData"];
         };
       };
       /** @description Error */
@@ -1409,30 +1372,7 @@ export interface operations {
       };
     };
   };
-  /** List users devices */
-  "user-devices-list": {
-    parameters: {
-      query?: {
-        page?: number;
-        per_page?: number;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["UserDeviceListData"];
-        };
-      };
-      /** @description Error */
-      default: {
-        content: {
-          "application/problem+json": components["schemas"]["ErrorModel"];
-        };
-      };
-    };
-  };
-  /** Create user devices */
+  /** Register user devices */
   "user-device-create": {
     requestBody: {
       content: {

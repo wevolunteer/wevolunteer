@@ -17,9 +17,12 @@ export const ExperienceCard: FC<ExperienceCardProps> = ({ experience, onPress, o
   return (
     <Pressable onPress={onPress}>
       <Box
-        elevation={7}
-        position="relative"
         shadowColor="shadow"
+        shadowOffset={{ width: -2, height: 4 }}
+        shadowOpacity={0.2}
+        shadowRadius={3}
+        elevation={6}
+        position="relative"
         borderRadius="m"
         overflow="hidden"
         flexDirection="row"

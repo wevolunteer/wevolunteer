@@ -7,12 +7,12 @@ import InputTime from "@/components/ui/InputTime";
 import SafeAreaView from "@/components/ui/SafeAreaView";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
+import { useSession } from "@/contexts/authentication";
 import { useNetwork } from "@/contexts/network";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
-import { TextInput } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 
@@ -21,6 +21,7 @@ interface EnrollmentData {
   to_date: string;
   from_time: string;
   to_time: string;
+  tax_code?: string;
   accepted_requirements: boolean;
   accepted_privacy: boolean;
   message: string;
@@ -30,6 +31,7 @@ export default function ExperienceEnrollScreen() {
   const { id } = useLocalSearchParams();
   const { t } = useTranslation();
   const { client } = useNetwork();
+  const { session, fetchUser } = useSession();
   const queryClient = useQueryClient();
 
   if (!id || Array.isArray(id)) {
@@ -71,9 +73,8 @@ export default function ExperienceEnrollScreen() {
           end_date: data.to_date.split("/").reverse().join("-"),
           end_time: data.to_time,
           experience_id: experienceId,
+          tax_code: data.tax_code || "",
           message: data.message || "",
-          // accepted_requirements: data.accepted_requirements,
-          // accepted_privacy: data.accepted_privacy,
         },
       });
 
@@ -81,8 +82,11 @@ export default function ExperienceEnrollScreen() {
         throw new Error(res.error.detail);
       }
 
-      queryClient.refetchQueries({ queryKey: ["activities"] });
+      if (data.tax_code) {
+        fetchUser();
+      }
 
+      queryClient.refetchQueries({ queryKey: ["activities"] });
     } catch (error: any) {
       Toast.show({
         type: "error",
@@ -105,7 +109,7 @@ export default function ExperienceEnrollScreen() {
           </Text>
           <Text variant="header">{data.organization.name}</Text>
         </Box>
-        <Box marginHorizontal="m" gap="l" marginTop="m">
+        <Box marginHorizontal="m" gap="l">
           <Box flexDirection="row" justifyContent="space-between" marginVertical="m" gap="m">
             <Box flex={1}>
               <Controller
@@ -142,8 +146,8 @@ export default function ExperienceEnrollScreen() {
           </Box>
         </Box>
 
-        <Box marginHorizontal="m" gap="l" marginTop="m">
-          <Box flexDirection="row" justifyContent="space-between" marginVertical="m" gap="m">
+        <Box marginHorizontal="m" gap="l">
+          <Box flexDirection="row" justifyContent="space-between" marginVertical="s" gap="m">
             <Box flex={1}>
               <Controller
                 control={control}
@@ -177,6 +181,22 @@ export default function ExperienceEnrollScreen() {
               />
             </Box>
           </Box>
+          {!session?.user?.tax_code && (
+            <Controller
+              control={control}
+              name="tax_code"
+              render={({ field: { onChange, value } }) => (
+                <InputText
+                  label={t("taxCode", "Tax code")}
+                  value={value}
+                  onChangeText={onChange}
+                  placeholder={t("yourTaxCode", "Insert your tax code for insurance purposes")}
+                  multiline
+                  numberOfLines={4}
+                />
+              )}
+            />
+          )}
 
           <Controller
             control={control}

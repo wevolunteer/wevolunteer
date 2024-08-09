@@ -1,5 +1,5 @@
 import { Theme } from "@/config/theme";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { BaseToastProps, ErrorToast } from "react-native-toast-message";
 import Box from "./Box";
 import Icon, { IconName } from "./Icon";
@@ -31,11 +31,11 @@ export const toastConfig = (theme: Theme) => {
           borderColor="mainBorder"
           paddingHorizontal="m"
           paddingVertical="m"
-          shadowOffset={{ width: 0, height: 0 }}
-          shadowOpacity={0.1}
-          shadowRadius={8}
-          shadowColor="darkBackground"
-          elevation={5}
+          shadowColor="shadow"
+          shadowOffset={{ width: -2, height: 4 }}
+          shadowOpacity={0.2}
+          shadowRadius={3}
+          elevation={6}
           width="90%"
           backgroundColor="mainBackground"
         >
@@ -93,11 +93,3 @@ export const toastConfig = (theme: Theme) => {
     // )
   };
 };
-
-export const styles = StyleSheet.create({
-  base: {
-    borderRadius: 8,
-    elevation: 2,
-    backgroundColor: "#FFF",
-  },
-});

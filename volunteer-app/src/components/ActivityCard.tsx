@@ -1,15 +1,14 @@
 import Box from "@/components/ui/Box";
 import Text from "@/components/ui/Text";
 import { Activity } from "@/types/data";
+import { tActivityStatus } from "@/utils/enumTransl";
+import { processColorByStatus } from "@/utils/formatters";
 import { format } from "date-fns";
 import { FC } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable } from "react-native";
 import Animated from "react-native-reanimated";
 import Icon from "./ui/Icon";
-import { TFunction } from "i18next";
-import { useTranslation } from "react-i18next";
-import { processColorByStatus } from "@/utils/formatters";
-import { tActivityStatus } from "@/utils/enumTransl";
 
 export interface ActivityCardProps {
   activity: Activity;
@@ -19,7 +18,6 @@ export interface ActivityCardProps {
 
 export const ActivityCard: FC<ActivityCardProps> = ({ activity, onPress, onClose }) => {
   const { t } = useTranslation();
-
 
   return (
     <Pressable onPress={onPress}>
@@ -36,9 +34,12 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, onPress, onClose
         <Text color="whiteText">{tActivityStatus(activity.status)}</Text>
       </Box>
       <Box
-        elevation={7}
-        position="relative"
         shadowColor="shadow"
+        shadowOffset={{ width: -2, height: 4 }}
+        shadowOpacity={0.2}
+        shadowRadius={3}
+        elevation={6}
+        position="relative"
         borderRadius="m"
         overflow="hidden"
         flexDirection="row"

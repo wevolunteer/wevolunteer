@@ -27,7 +27,7 @@ const schema = Yup.object().shape({
   first_name: Yup.string().required("Questo campo è obbligatorio"),
   last_name: Yup.string().required("Questo campo è obbligatorio"),
   date_of_birth: Yup.string().required("Questo campo è obbligatorio"),
-  tax_code: Yup.string().required("Questo campo è obbligatorio"),
+  tax_code: Yup.string(),
   accepted_tos: Yup.boolean()
     .required("Devi accettare i Termini di Servizio")
     .oneOf([true], "Devi accettare i Termini di Servizio"),
