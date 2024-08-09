@@ -111,11 +111,11 @@ func UserCreate(data *UserCreateData) (*models.User, error) {
 type UserUpdateData struct {
 	FistName    string `json:"first_name"`
 	LastName    string `json:"last_name"`
-	Phone       string `json:"phone"`
+	Phone       string `json:"phone,omitempty"`
 	Email       string `json:"email"`
-	Password    string `json:"password"`
-	IsSuperUser bool   `json:"is_superuser"`
 	TaxCode     string `json:"tax_code"`
+	Password    string `json:"password,omitempty"`
+	IsSuperUser bool   `json:"is_superuser,omitempty"`
 }
 
 func UserUpdate(id uint, data *UserUpdateData) (*models.User, error) {
