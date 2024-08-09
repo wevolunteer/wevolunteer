@@ -1,15 +1,15 @@
 import { DataProvider } from "@refinedev/core";
 import { AxiosInstance } from "axios";
 import { stringify } from "query-string";
-import { axiosInstance, generateFilter, generateSort } from "./utils";
-import { log } from "console";
+import { generateFilter, generateSort } from "./utils";
+import { getAxiosInstance } from "../config/network";
 
 type MethodTypes = "get" | "delete" | "head" | "options";
 type MethodTypesWithBody = "post" | "put" | "patch";
 
 export const dataProvider = (
   apiUrl: string,
-  httpClient: AxiosInstance = axiosInstance
+  httpClient: AxiosInstance = getAxiosInstance()
 ): Omit<
   Required<DataProvider>,
   "createMany" | "updateMany" | "deleteMany"
