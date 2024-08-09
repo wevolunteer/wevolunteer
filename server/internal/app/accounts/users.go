@@ -73,9 +73,10 @@ func UsersList(ctx *app.Context, filters *UserFilters) (*UserListData, error) {
 type UserCreateData struct {
 	FirstName   string `json:"first_name"`
 	LastName    string `json:"last_name"`
-	Phone       string `json:"phone"`
+	Phone       string `json:"phone,omitempty"`
 	Email       string `json:"email"`
 	Password    string `json:"password"`
+	TaxCode     string `json:"tax_code,omitempty"`
 	IsSuperUser bool   `json:"is_superuser"`
 }
 
@@ -113,7 +114,7 @@ type UserUpdateData struct {
 	LastName    string `json:"last_name"`
 	Phone       string `json:"phone,omitempty"`
 	Email       string `json:"email"`
-	TaxCode     string `json:"tax_code"`
+	TaxCode     string `json:"tax_code,omitempty"`
 	Password    string `json:"password,omitempty"`
 	IsSuperUser bool   `json:"is_superuser,omitempty"`
 }
