@@ -37,9 +37,16 @@ func Init(cfgFile string) (*Application, error) {
 	}
 
 	apiConfig := huma.DefaultConfig("WeVolunteer", "1.0.0")
+	apiConfig.Components.SecuritySchemes = map[string]*huma.SecurityScheme{
+		"bearer": {
+			Type:         "http",
+			Scheme:       "bearer",
+			BearerFormat: "JWT",
+		},
+	}
 
 	apiConfig.Servers = []*huma.Server{
-		{URL: "http://localhost:3000/api"},
+		{URL: fmt.Sprintf("%s/api", Config.APP_URL)},
 	}
 
 	group := e.Group("/api")

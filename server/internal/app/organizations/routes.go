@@ -46,6 +46,9 @@ func RegisterRoutes(api huma.API) {
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.OrganizationWrite),
 		},
+		Security: []map[string][]string{
+			{"bearer": {}},
+		},
 	}, OrganizationCreateController)
 
 	huma.Register(api, huma.Operation{
@@ -57,6 +60,9 @@ func RegisterRoutes(api huma.API) {
 		Middlewares: huma.Middlewares{
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.OrganizationWrite),
+		},
+		Security: []map[string][]string{
+			{"bearer": {}},
 		},
 	}, OrganizationUpdateController)
 
@@ -70,6 +76,9 @@ func RegisterRoutes(api huma.API) {
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.OrganizationWrite),
 		},
+		Security: []map[string][]string{
+			{"bearer": {}},
+		},
 	}, OrganizationDeleteController)
 
 	huma.Register(api, huma.Operation{
@@ -82,6 +91,9 @@ func RegisterRoutes(api huma.API) {
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.OrganizationRead),
 		},
+		Security: []map[string][]string{
+			{"bearer": {}},
+		},
 	}, OrganizationAddToFavoritesController)
 
 	huma.Register(api, huma.Operation{
@@ -93,6 +105,9 @@ func RegisterRoutes(api huma.API) {
 		Middlewares: huma.Middlewares{
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.OrganizationRead),
+		},
+		Security: []map[string][]string{
+			{"bearer": {}},
 		},
 	}, OrganizationRemoveFromFavoritesController)
 }

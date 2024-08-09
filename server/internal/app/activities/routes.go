@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	RouteTag []string = []string{"Activities"}
+	RouteTagActivities []string = []string{"Activities"}
 )
 
 func RegisterRoutes(api huma.API) {
@@ -19,10 +19,13 @@ func RegisterRoutes(api huma.API) {
 			Summary:     "List activities",
 			Method:      http.MethodGet,
 			Path:        "/activities",
-			Tags:        RouteTag,
+			Tags:        RouteTagActivities,
 			Middlewares: huma.Middlewares{
 				app.AuthMiddleware(api),
 				app.RoleMiddleware(api, app.ActivityRead),
+			},
+			Security: []map[string][]string{
+				{"bearer": {}},
 			},
 		},
 		ActivityListController,
@@ -35,11 +38,14 @@ func RegisterRoutes(api huma.API) {
 			Summary:     "Get activity",
 			Method:      http.MethodGet,
 			Path:        "/activities/{id}",
-			Tags:        RouteTag,
+			Tags:        RouteTagActivities,
 
 			Middlewares: huma.Middlewares{
 				app.AuthMiddleware(api),
 				app.RoleMiddleware(api, app.ActivityRead),
+			},
+			Security: []map[string][]string{
+				{"bearer": {}},
 			},
 		},
 		ActivityGetController,
@@ -52,10 +58,13 @@ func RegisterRoutes(api huma.API) {
 			Summary:     "Create activity",
 			Method:      http.MethodPost,
 			Path:        "/activities",
-			Tags:        RouteTag,
+			Tags:        RouteTagActivities,
 			Middlewares: huma.Middlewares{
 				app.AuthMiddleware(api),
 				app.RoleMiddleware(api, app.ActivityWrite),
+			},
+			Security: []map[string][]string{
+				{"bearer": {}},
 			},
 		},
 		ActivityCreateController,
@@ -68,10 +77,13 @@ func RegisterRoutes(api huma.API) {
 			Summary:     "Update activity",
 			Method:      http.MethodPatch,
 			Path:        "/activities/{id}",
-			Tags:        RouteTag,
+			Tags:        RouteTagActivities,
 			Middlewares: huma.Middlewares{
 				app.AuthMiddleware(api),
 				app.RoleMiddleware(api, app.ActivityWrite),
+			},
+			Security: []map[string][]string{
+				{"bearer": {}},
 			},
 		},
 		ActivityUpdateController,
@@ -85,10 +97,13 @@ func RegisterRoutes(api huma.API) {
 			Summary: "Delete activity",
 			Method:  http.MethodDelete,
 			Path:    "/activities/{id}",
-			Tags:    RouteTag,
+			Tags:    RouteTagActivities,
 			Middlewares: huma.Middlewares{
 				app.AuthMiddleware(api),
 				app.RoleMiddleware(api, app.ActivityWrite),
+			},
+			Security: []map[string][]string{
+				{"bearer": {}},
 			},
 		},
 		ActivityDeleteController,

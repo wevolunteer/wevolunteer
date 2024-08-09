@@ -34,6 +34,9 @@ func RegisterRoutes(api huma.API) {
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.CategoryWrite),
 		},
+		Security: []map[string][]string{
+			{"bearer": {}},
+		},
 	}, CategoryCreateController)
 
 	huma.Register(api, huma.Operation{
@@ -46,6 +49,9 @@ func RegisterRoutes(api huma.API) {
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.CategoryWrite),
 		},
+		Security: []map[string][]string{
+			{"bearer": {}},
+		},
 	}, CategoryUpdateController)
 
 	huma.Register(api, huma.Operation{
@@ -57,6 +63,9 @@ func RegisterRoutes(api huma.API) {
 		Middlewares: huma.Middlewares{
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.CategoryWrite),
+		},
+		Security: []map[string][]string{
+			{"bearer": {}},
 		},
 	}, CategoryDeleteController)
 

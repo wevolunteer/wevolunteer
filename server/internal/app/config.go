@@ -13,8 +13,9 @@ const (
 )
 
 var Config struct {
-	ENV                     string
-	DEBUG                   bool
+	ENV   string
+	DEBUG bool
+
 	JWT_SECRET              string
 	DB_DSN                  string
 	DB_MAX_OPEN_CONNECTIONS int
@@ -27,7 +28,10 @@ var Config struct {
 	AWS_ENDPOINT   string
 	AWS_REGION     string
 	AWS_BUCKET     string
-	CDN_ENDPOINT   string
+
+	CDN_ENDPOINT string
+
+	APP_URL string
 }
 
 func ParseConfig(path string) {
@@ -43,6 +47,7 @@ func ParseConfig(path string) {
 	viper.SetDefault("db_max_idle_connections", 10)
 
 	viper.SetDefault("aws_region", "us-east-1")
+	viper.SetDefault("app_url", "http://localhost:3000")
 
 	viper.SetConfigFile(".env")
 	viper.AddConfigPath(".")
@@ -65,6 +70,8 @@ func ParseConfig(path string) {
 	Config.AWS_REGION = viper.GetString("aws_region")
 	Config.AWS_BUCKET = viper.GetString("aws_bucket")
 	Config.CDN_ENDPOINT = viper.GetString("cdn_endpoint")
+
+	Config.APP_URL = viper.GetString("app_url")
 
 	if Config.JWT_SECRET == "" {
 		log.Fatal("JWT_SECRET must be set")
