@@ -136,7 +136,7 @@ function App() {
                         Sider={(props) => (
                           <ThemedSiderV2
                             {...props}
-                            Title={() => <Typography>WeVolunteer</Typography>}
+                            Title={() => <Typography>ATTIVATI</Typography>}
                             fixed
                           />
                         )}
