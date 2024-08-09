@@ -1,4 +1,4 @@
-import { BooleanField, Edit, useForm, useSelect } from "@refinedev/antd";
+import { Edit, useForm, useSelect } from "@refinedev/antd";
 import { Form, Input, Select, Switch } from "antd";
 
 export const ExperienceEdit = () => {
@@ -7,6 +7,7 @@ export const ExperienceEdit = () => {
     saveButtonProps,
     formLoading,
     query: experienceData,
+    form: { setFieldValue },
   } = useForm({});
 
   const { selectProps: categorySelectProps, queryResult: categoriesResult } =
@@ -159,7 +160,12 @@ export const ExperienceEdit = () => {
         </Form.Item>
 
         <Form.Item label={"Published"} name={["published"]}>
-          <Switch />
+          <Switch
+            defaultChecked={experienceData?.data?.data.published}
+            onChange={(e) => {
+              setFieldValue("published", e);
+            }}
+          />
         </Form.Item>
       </Form>
     </Edit>

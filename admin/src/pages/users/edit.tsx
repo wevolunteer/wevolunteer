@@ -1,5 +1,5 @@
 import { Edit, useForm } from "@refinedev/antd";
-import { Checkbox, Form, Input, Switch } from "antd";
+import { Form, Input, Switch } from "antd";
 
 export const UserEdit = () => {
   const {
