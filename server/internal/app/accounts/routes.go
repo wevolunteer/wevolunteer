@@ -85,7 +85,7 @@ func RegisterRoutes(api huma.API) {
 		api,
 		huma.Operation{
 			OperationID: "users-profile-update",
-			Method:      http.MethodPatch,
+			Method:      http.MethodPut,
 			Summary:     "Update user profile",
 			Path:        "/auth/user",
 			Middlewares: huma.Middlewares{
@@ -141,7 +141,7 @@ func RegisterRoutes(api huma.API) {
 		api,
 		huma.Operation{
 			OperationID: "user-update",
-			Method:      http.MethodPatch,
+			Method:      http.MethodPut,
 			Summary:     "Update user",
 			Path:        "/users/:id",
 			Tags:        RouteTagsUsers,

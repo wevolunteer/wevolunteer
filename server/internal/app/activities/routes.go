@@ -75,7 +75,7 @@ func RegisterRoutes(api huma.API) {
 		huma.Operation{
 			OperationID: "activities-update",
 			Summary:     "Update activity",
-			Method:      http.MethodPatch,
+			Method:      http.MethodPut,
 			Path:        "/activities/{id}",
 			Tags:        RouteTagActivities,
 			Middlewares: huma.Middlewares{
