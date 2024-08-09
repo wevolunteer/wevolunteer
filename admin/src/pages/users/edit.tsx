@@ -55,7 +55,7 @@ export const UserEdit = () => {
 
         <Form.Item label={"Is Superuser"} name={["is_superuser"]}>
           <Switch
-            defaultChecked={queryResult?.data?.is_superuser}
+            defaultChecked={queryResult?.data?.data.is_superuser}
             onChange={(e) => {
               setFieldValue("is_superuser", e);
             }}
