@@ -53,7 +53,7 @@ func CategoryList(ctx *app.Context, filters *CategoryFilters) (*CategoryListData
 
 type CategoryCreateData struct {
 	Name string `json:"name"`
-	Code string `json:"code"`
+	Code string `json:"code,omitempty"`
 }
 
 func CategoryCreate(ctx *app.Context, data *CategoryCreateData) (*models.Category, error) {
@@ -71,7 +71,7 @@ func CategoryCreate(ctx *app.Context, data *CategoryCreateData) (*models.Categor
 
 type CategoryUpdateData struct {
 	Name string `json:"name"`
-	Code string `json:"code"`
+	Code string `json:"code,omitempty"`
 }
 
 func CategoryUpdate(ctx *app.Context, id uint, data *CategoryUpdateData) (*models.Category, error) {

@@ -19,12 +19,12 @@ export const CategoryCreate = () => {
           <Input />
         </Form.Item>
 
-        <Form.Item
+        {/* <Form.Item
           label={"Code"}
           name={["code"]}
         >
           <Input />
-        </Form.Item>
+        </Form.Item> */}
       </Form>
     </Create>
   );

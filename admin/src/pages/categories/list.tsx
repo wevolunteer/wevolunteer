@@ -19,7 +19,7 @@ export const CategoryList = () => {
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title={"ID"} />
         <Table.Column dataIndex="name" title={"Name"} />
-        <Table.Column dataIndex="code" title={"Code"} />
+        {/* <Table.Column dataIndex="code" title={"Code"} /> */}
 
         <Table.Column
           title={"Actions"}
