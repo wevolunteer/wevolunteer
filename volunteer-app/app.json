@@ -18,11 +18,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/images/adaptive-icon.png",
+        "foregroundImage": "./src/assets/images/adaptive-icon-fg.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.metadonors.wevolunteer",
-      "versionCode": 10,
+      "versionCode": 14,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyBHAIlIrdW_sepiJyVuBE8KDaosCNwvQK0"

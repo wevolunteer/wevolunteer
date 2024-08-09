@@ -34,7 +34,6 @@ function ExperienceFiltersProvider(props: React.PropsWithChildren) {
         return;
       }
       let location = await Location.getCurrentPositionAsync({});
-      console.log("===>", location);
       setFilters({
         ...filters,
         lat: location.coords.latitude,
