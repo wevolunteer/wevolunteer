@@ -108,7 +108,7 @@ export const authProvider: AuthProvider = {
     console.log(error);
 
     return {
-      logout: true,
+      logout: false,
     };
   },
 };
