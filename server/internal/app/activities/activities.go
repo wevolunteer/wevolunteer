@@ -186,11 +186,13 @@ func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activit
 }
 
 type ActivityUpdateData struct {
-	StartDate string `json:"start_date"`
-	EndDate   string `json:"end_date"`
-	StartTime string `json:"start_time"`
-	EndTime   string `json:"end_time"`
-	Message   string `json:"message"`
+	ExpericeID uint   `json:"experience_id,omitempty"`
+	Status     string `json:"status,omitempty"`
+	StartDate  string `json:"start_date"`
+	EndDate    string `json:"end_date"`
+	StartTime  string `json:"start_time"`
+	EndTime    string `json:"end_time"`
+	Message    string `json:"message"`
 }
 
 func ActivityUpdate(ctx *app.Context, id uint, data *ActivityUpdateData) (*models.Activity, error) {
@@ -227,6 +229,17 @@ func ActivityUpdate(ctx *app.Context, id uint, data *ActivityUpdateData) (*model
 	activity.StartTime = data.StartTime
 	activity.EndTime = data.EndTime
 	activity.Message = data.Message
+
+	if ctx.Role == app.RoleSuperUser || ctx.Role == app.RoleOrganization {
+		status := models.ActivityStatus(data.Status)
+		if status != models.ActivityStatus("") {
+			activity.Status = status
+		}
+	}
+
+	if ctx.Role == app.RoleSuperUser {
+		activity.ExperienceID = data.ExpericeID
+	}
 
 	if err := app.DB.Save(&activity).Error; err != nil {
 		return nil, err

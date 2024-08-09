@@ -1,5 +1,7 @@
-import { BooleanField, Edit, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select, Switch } from "antd";
+import { Edit, useForm, useSelect } from "@refinedev/antd";
+import { useList } from "@refinedev/core";
+import { AutoComplete, Form, Input, Select } from "antd";
+import { useState } from "react";
 
 export const ActivityEdit = () => {
   const {
@@ -9,33 +11,41 @@ export const ActivityEdit = () => {
     query: experienceData,
   } = useForm({});
 
+  // const [experienceSearch, setExperienceSearch] = useState("");
+  // const [selectedExperience, setSelectedExperience] = useState(
+  //   experienceData?.data?.data.experience
+  // );
+
+  // const { data } = useList({
+  //   resource: "experiences",
+  //   filters: [
+  //     {
+  //       field: "q",
+  //       value: experienceSearch,
+  //       operator: "contains",
+  //     },
+  //   ],
+  // });
+
   const { selectProps: experiencesSelectProps } = useSelect({
     resource: "experiences",
     optionLabel: "title",
     optionValue: "id",
   });
-  /*
 
-  	ID             uint           `json:"id" gorm:"primaryKey"`
-	CreatedAt      time.Time      `json:"created_at"`
-	UpdatedAt      time.Time      `json:"updated_at"`
-	UserID         uint           `json:"-"`
-	User           User           `json:"user"`
-	ExperienceID   uint           `json:"-"`
-	Experience     Experience     `json:"experience"`
-	OrganizationID uint           `json:"-"`
-	Organization   Organization   `json:"-"`
-	StartDate      time.Time      `json:"start_date"`
-	EndDate        time.Time      `json:"end_date"`
-	StartTime      string         `json:"start_time"`
-	EndTime        string         `json:"end_time"`
-	Status         ActivityStatus `json:"status" gorm:"type:varchar(20);default:pending"` // pending, approved, rejected
-	Message        string         `json:"message" gorm:"type:text"`
-
-  */
   return (
     <Edit saveButtonProps={saveButtonProps} isLoading={formLoading}>
-      <Form {...formProps} layout="vertical">
+      <Form
+        {...{
+          ...formProps,
+          initialValues: {
+            ...formProps.initialValues,
+            start_date: formProps.initialValues?.start_date.split("T")[0],
+            end_date: formProps.initialValues?.end_date.split("T")[0],
+          },
+        }}
+        layout="vertical"
+      >
         <Form.Item
           label={"Experience"}
           name={["experience_id"]}
@@ -45,6 +55,24 @@ export const ActivityEdit = () => {
             },
           ]}
         >
+          {/* <AutoComplete
+            value={selectedExperience?.title || ""}
+            options={data?.data.map((experience) => ({
+              label: experience.title,
+              value: experience.id,
+            }))}
+            onSearch={(q) => setExperienceSearch(q)}
+            onSelect={(id) => {
+              const exp = data?.data.find(
+                (experience) => experience.id === (id as unknown as string)
+              );
+              setSelectedExperience(exp);
+            }}
+            notFoundContent={"No experiences found"}
+          >
+            <Input.Search />
+          </AutoComplete> */}
+
           <Select
             style={{
               width: "100%",
