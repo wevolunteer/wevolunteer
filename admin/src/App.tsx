@@ -3,6 +3,7 @@ import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 
 import {
   ErrorComponent,
+  RefineThemes,
   ThemedLayoutV2,
   ThemedSiderV2,
   useNotificationProvider,
@@ -15,7 +16,7 @@ import routerBindings, {
   NavigateToResource,
   UnsavedChangesNotifier,
 } from "@refinedev/react-router-v6";
-import { App as AntdApp } from "antd";
+import { App as AntdApp, ConfigProvider, Typography } from "antd";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { authProvider } from "./authProvider";
 import { Header } from "./components/header";
@@ -29,16 +30,26 @@ import {
   OrganizationList,
   OrganizationShow,
 } from "./pages/organizations";
-import {
-  UserCreate,
-  UserEdit,
-  UserList,
-  UserShow,
-} from "./pages/users";
+import { UserCreate, UserEdit, UserList, UserShow } from "./pages/users";
 import { dataProvider } from "./rest-data-provider";
-import { ExperienceCreate, ExperienceEdit, ExperienceList, ExperienceShow } from "./pages/experiences";
-import { ActivityCreate, ActivityEdit, ActivityList, ActivityShow } from "./pages/activities";
-import { CategoryCreate, CategoryEdit, CategoryList, CategoryShow } from "./pages/categories";
+import {
+  ExperienceCreate,
+  ExperienceEdit,
+  ExperienceList,
+  ExperienceShow,
+} from "./pages/experiences";
+import {
+  ActivityCreate,
+  ActivityEdit,
+  ActivityList,
+  ActivityShow,
+} from "./pages/activities";
+import {
+  CategoryCreate,
+  CategoryEdit,
+  CategoryList,
+  CategoryShow,
+} from "./pages/categories";
 
 function App() {
   const apiEndpoint = getApiEndpoint();
@@ -122,7 +133,13 @@ function App() {
                     >
                       <ThemedLayoutV2
                         Header={() => <Header sticky />}
-                        Sider={(props) => <ThemedSiderV2 {...props} fixed />}
+                        Sider={(props) => (
+                          <ThemedSiderV2
+                            {...props}
+                            Title={() => <Typography>WeVolunteer</Typography>}
+                            fixed
+                          />
+                        )}
                       >
                         <Outlet />
                       </ThemedLayoutV2>
@@ -181,10 +198,7 @@ function App() {
                   }
                 >
                   <Route path="/login" element={<Login />} />
-                  <Route
-                    path="/forgot-password"
-                    element={<ForgotPassword />}
-                  />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
                 </Route>
               </Routes>
 
