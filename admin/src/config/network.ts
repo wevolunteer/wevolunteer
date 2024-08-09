@@ -2,7 +2,11 @@ import axios from "axios";
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "../authProvider";
 
 export function getApiEndpoint() {
-  return "http://localhost:3000/api";
+  if (process.env.NODE_ENV === "production") {
+    return "https://wevolunteer.app/api";
+  } else {
+    return "http://localhost:3000/api";
+  }
 }
 
 export function getAxiosInstance() {
