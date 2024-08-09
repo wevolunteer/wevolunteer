@@ -2,21 +2,34 @@ import { BooleanField, Edit, useForm, useSelect } from "@refinedev/antd";
 import { Form, Input, Select, Switch } from "antd";
 
 export const ExperienceEdit = () => {
-  const { formProps, saveButtonProps, formLoading , query: experienceData} = useForm({});
+  const {
+    formProps,
+    saveButtonProps,
+    formLoading,
+    query: experienceData,
+  } = useForm({});
 
-  
   const { selectProps: categorySelectProps, queryResult: categoriesResult } =
-  useSelect({
+    useSelect({
       resource: "categories",
       defaultValue: experienceData?.data?.data.category_id,
       optionLabel: "name",
       optionValue: "id",
-  });
-
+    });
 
   return (
     <Edit saveButtonProps={saveButtonProps} isLoading={formLoading}>
-      <Form {...formProps} layout="vertical">
+      <Form
+        {...{
+          ...formProps,
+          initialValues: {
+            ...formProps.initialValues,
+            start_date: formProps.initialValues?.start_date.split("T")[0],
+            end_date: formProps.initialValues?.end_date.split("T")[0],
+          },
+        }}
+        layout="vertical"
+      >
         <Form.Item
           label={"Title"}
           name={["title"]}
@@ -41,12 +54,9 @@ export const ExperienceEdit = () => {
           <Input.TextArea />
         </Form.Item>
 
-        <Form.Item
-          label={"Image URL"}
-          name={["image"]}
-        >
+        <Form.Item label={"Image URL"} name={["image"]}>
           <Input />
-        </Form.Item> 
+        </Form.Item>
 
         <Form.Item
           label={"Category"}
@@ -57,93 +67,52 @@ export const ExperienceEdit = () => {
             },
           ]}
         >
-          <Select style={{width: "100%"}} {...categorySelectProps} />
+          <Select style={{ width: "100%" }} {...categorySelectProps} />
         </Form.Item>
 
-        <Form.Item
-          label={"Latitude"}
-          name={["latitude"]}
-          
-        >
+        <Form.Item label={"Latitude"} name={["latitude"]}>
           <Input />
         </Form.Item>
 
-        <Form.Item
-          label={"Longitude"}
-          name={["longitude"]}
-          
-        >
+        <Form.Item label={"Longitude"} name={["longitude"]}>
           <Input />
         </Form.Item>
 
-        <Form.Item
-          label={"Address"}
-          name={["address"]}
-          
-        >
+        <Form.Item label={"Address"} name={["address"]}>
           <Input />
         </Form.Item>
 
-        <Form.Item
-          label={"City"}
-          name={["city"]}
-          
-        >
+        <Form.Item label={"City"} name={["city"]}>
           <Input />
         </Form.Item>
 
-        <Form.Item
-          label={"State"}
-          name={["state"]}
-          
-        >
+        <Form.Item label={"State"} name={["state"]}>
           <Input />
         </Form.Item>
 
-        <Form.Item
-          label={"Zip Code"}
-          name={["zip_code"]}
-          
-        >
+        <Form.Item label={"Zip Code"} name={["zip_code"]}>
           <Input />
         </Form.Item>
 
-        <Form.Item
-          label={"Country"}
-          name={["country"]}
-          
-        >
+        <Form.Item label={"Country"} name={["country"]}>
           <Input />
         </Form.Item>
 
-        <Form.Item
-          label={"Contact Name"}
-          name={["contact_name"]}
-          
-        >
+        <Form.Item label={"Contact Name"} name={["contact_name"]}>
           <Input />
         </Form.Item>
 
-        <Form.Item
-          label={"Contact Email"}
-          name={["contact_email"]}
-          
-        > 
+        <Form.Item label={"Contact Email"} name={["contact_email"]}>
           <Input />
         </Form.Item>
 
-        <Form.Item
-          label={"Contact Phone"}
-          name={["contact_phone"]}
-          
-        >
+        <Form.Item label={"Contact Phone"} name={["contact_phone"]}>
           <Input />
         </Form.Item>
 
         <Form.Item
           label={"Start Date"}
           name={["start_date"]}
-          
           rules={[
             {
               required: true,
@@ -189,12 +158,8 @@ export const ExperienceEdit = () => {
           <Input />
         </Form.Item>
 
-        <Form.Item
-          label={"Published"}
-          name={["published"]}
-        >
-          <Switch 
-          />
+        <Form.Item label={"Published"} name={["published"]}>
+          <Switch />
         </Form.Item>
       </Form>
     </Edit>
