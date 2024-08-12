@@ -6,6 +6,7 @@
   "accounts": "Account",
   "accountSettings": "Account Settings",
   "accountSettingsEdited": "You have successfully updated your email address.",
+  "activities": "Activities",
   "activityDeleted": "Activity deleted",
   "activityMessageLabel": "Why you would like to help",
   "activityWriteMessagePlaceholder": "Your message to the organization (optional)",
@@ -144,5 +145,6 @@
   "website": "Website",
   "welcome": "Found your volunteering opportunity: express your talents and cultivate your passions.",
   "yearOnFaxte": "years on FaXte",
-  "yourLocation": "Your location"
+  "yourLocation": "Your location",
+  "yourTaxCode": "Insert your tax code for insurance purposes"
 }

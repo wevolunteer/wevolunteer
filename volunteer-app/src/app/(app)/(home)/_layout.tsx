@@ -35,9 +35,9 @@ export default function AppLayout() {
             headerShown: false,
             tabBarStyle: {
               backgroundColor: theme.colors.mainBackground,
-              paddingBottom: 18,
-              paddingTop: 5,
-              height: 82,
+              paddingBottom: 25,
+              paddingTop: 13,
+              height: 88,
             },
             tabBarButton: (props) => (
               <Pressable
@@ -76,7 +76,7 @@ export default function AppLayout() {
           <Tabs.Screen
             name="experiences"
             options={{
-              title: t("Experiences", "Experiences"),
+              title: t("activities", "Activities"),
               tabBarIcon: ({ color }) => <AppIcon color={color} />,
             }}
           />

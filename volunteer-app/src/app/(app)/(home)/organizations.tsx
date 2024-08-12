@@ -111,6 +111,7 @@ function OrganizationListScreen() {
           refreshing={isLoading}
           onRefresh={() => refetch()}
           data={organizations || []}
+          extraData={organizations}
           keyExtractor={(item) => `o-${item.id}`}
           onEndReachedThreshold={0.8}
           onEndReached={() => fetchNextPage()}

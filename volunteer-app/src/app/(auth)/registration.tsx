@@ -130,7 +130,7 @@ export default function RegistrationScreen() {
 
   return (
     <SafeAreaView>
-      <ScrollView>
+      <ScrollView automaticallyAdjustKeyboardInsets={true}>
         <Topbar
           title={t("completeRegistration", "Complete registration")}
           goBackFn={() => {

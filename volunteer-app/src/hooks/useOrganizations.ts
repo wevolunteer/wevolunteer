@@ -27,8 +27,14 @@ export function useOrganizations(initialFilters?: ActivityFilters) {
     initialPageParam: 1,
   });
 
+  console.log("fetching organizations", data);
+
   const organizations = useMemo(() => {
-    return data?.pages.flatMap((page) => page?.results || []) || [];
+    console.log("memoizing organizations");
+
+    const newOrganization = data?.pages.flatMap((page) => page?.results || []) || [];
+
+    return newOrganization;
   }, [data]);
 
   return {

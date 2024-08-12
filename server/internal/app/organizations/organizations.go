@@ -11,6 +11,7 @@ import (
 
 type ExtendedOrganization struct {
 	models.Organization
+
 	IsFavorite bool `json:"is_favorite"`
 }
 
@@ -130,8 +131,8 @@ type OrganizationUpdateData struct {
 	ExternalId string `json:"external_id"`
 }
 
-func OrganizationUpdate(c *app.Context, id uint, data *OrganizationUpdateData) (*models.Organization, error) {
-	var organization models.Organization
+func OrganizationUpdate(c *app.Context, id uint, data *OrganizationUpdateData) (*ExtendedOrganization, error) {
+	var organization ExtendedOrganization
 
 	if err := OrganizationQuery(c).Where("id = ?", id).First(&organization).Error; err != nil {
 		return nil, &app.ErrNotAuthorized{

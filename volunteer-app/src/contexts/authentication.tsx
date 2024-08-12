@@ -124,6 +124,8 @@ export function SessionProvider(props: React.PropsWithChildren) {
               refreshToken: refreshTokenResponse.data.refresh_token,
             },
           });
+
+          return refreshTokenResponse.data.access_token;
         } catch (error) {
           setSession(null);
           console.error("Failed to refresh token", error);

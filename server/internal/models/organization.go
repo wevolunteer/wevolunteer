@@ -11,7 +11,7 @@ type Organization struct {
 	UID        string         `json:"uid" gorm:"uniqueIndex"`
 	CreatedAt  time.Time      `json:"created_at"`
 	UpdatedAt  time.Time      `json:"updated_at"`
-	DeletedAt  gorm.DeletedAt `gorm:"index"`
+	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
 	CategoryID uint           `json:"category_id"`
 	Category   Category       `json:"category"`
 	Name       string         `json:"name"`

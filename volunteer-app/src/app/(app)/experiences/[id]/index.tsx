@@ -224,7 +224,7 @@ export default function ExperienceScreen() {
       </ScrollView>
       <Box
         position="absolute"
-        bottom={16}
+        bottom={32}
         left={0}
         right={0}
         justifyContent="center"

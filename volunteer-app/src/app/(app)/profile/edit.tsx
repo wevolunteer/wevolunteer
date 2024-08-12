@@ -69,7 +69,7 @@ export default function ProfileEditScreen() {
   }
 
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }} automaticallyAdjustKeyboardInsets={true}>
       <Topbar empty goBack title={t("editProfile", "Edit Profile")} />
       <Box px="m" mt="l">
         <Box alignItems="center" gap="l">

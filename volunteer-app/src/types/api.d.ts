@@ -14,10 +14,10 @@ export interface paths {
   "/activities/{id}": {
     /** Get activity */
     get: operations["activities-get"];
+    /** Update activity */
+    put: operations["activities-update"];
     /** Delete activity */
     delete: operations["activities-delete"];
-    /** Update activity */
-    patch: operations["activities-update"];
   };
   "/auth/refresh": {
     /** Refresh token */
@@ -78,10 +78,10 @@ export interface paths {
   "/organizations/{id}": {
     /** Get organization */
     get: operations["organizations-get"];
+    /** Update organization */
+    put: operations["organizations-update"];
     /** Delete organization */
     delete: operations["organizations-delete"];
-    /** Update organization */
-    patch: operations["organizations-update"];
   };
   "/organizations/{id}/favorite": {
     /** Add organization to favorites */
@@ -104,10 +104,10 @@ export interface paths {
     post: operations["user-create"];
   };
   "/users/:id": {
+    /** Update user */
+    put: operations["user-update"];
     /** Delete user */
     delete: operations["user-delete"];
-    /** Update user */
-    patch: operations["user-update"];
   };
   "/users/{id}": {
     /** Get user */
@@ -155,7 +155,7 @@ export interface components {
       message: string;
       start_date: string;
       start_time: string;
-      tax_code?: string;
+      tax_code: string;
     };
     ActivityListData: {
       /**
@@ -174,9 +174,12 @@ export interface components {
       $schema?: string;
       end_date: string;
       end_time: string;
+      /** Format: int64 */
+      experience_id?: number;
       message: string;
       start_date: string;
       start_time: string;
+      status?: string;
     };
     Category: {
       /**
@@ -195,7 +198,7 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      code: string;
+      code?: string;
       name: string;
     };
     CategoryListData: {
@@ -212,13 +215,8 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      code: string;
+      code?: string;
       name: string;
-    };
-    DeletedAt: {
-      /** Format: date-time */
-      Time: string;
-      Valid: boolean;
     };
     ErrorDetail: {
       /** @description Where the error occurred, e.g. 'body.items[3].tags' or 'path.thing-id' */
@@ -384,7 +382,6 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      DeletedAt: components["schemas"]["DeletedAt"];
       address: string;
       category: components["schemas"]["Category"];
       /** Format: int64 */
@@ -433,7 +430,6 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      DeletedAt: components["schemas"]["DeletedAt"];
       address: string;
       category: components["schemas"]["Category"];
       /** Format: int64 */
@@ -592,7 +588,8 @@ export interface components {
       is_superuser: boolean;
       last_name: string;
       password: string;
-      phone: string;
+      phone?: string;
+      tax_code?: string;
     };
     UserDevice: {
       /**
@@ -677,10 +674,11 @@ export interface components {
       $schema?: string;
       email: string;
       first_name: string;
-      is_superuser: boolean;
+      is_superuser?: boolean;
       last_name: string;
-      password: string;
-      phone: string;
+      password?: string;
+      phone?: string;
+      tax_code?: string;
     };
     VerifyCodeData: {
       /**
@@ -778,26 +776,6 @@ export interface operations {
       };
     };
   };
-  /** Delete activity */
-  "activities-delete": {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description No Content */
-      204: {
-        content: never;
-      };
-      /** @description Error */
-      default: {
-        content: {
-          "application/problem+json": components["schemas"]["ErrorModel"];
-        };
-      };
-    };
-  };
   /** Update activity */
   "activities-update": {
     parameters: {
@@ -816,6 +794,26 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["Activity"];
         };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** Delete activity */
+  "activities-delete": {
+    parameters: {
+      path: {
+        id: number;
+      };
+    };
+    responses: {
+      /** @description No Content */
+      204: {
+        content: never;
       };
       /** @description Error */
       default: {
@@ -1261,26 +1259,6 @@ export interface operations {
       };
     };
   };
-  /** Delete organization */
-  "organizations-delete": {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description No Content */
-      204: {
-        content: never;
-      };
-      /** @description Error */
-      default: {
-        content: {
-          "application/problem+json": components["schemas"]["ErrorModel"];
-        };
-      };
-    };
-  };
   /** Update organization */
   "organizations-update": {
     parameters: {
@@ -1299,6 +1277,26 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["Organization"];
         };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** Delete organization */
+  "organizations-delete": {
+    parameters: {
+      path: {
+        id: number;
+      };
+    };
+    responses: {
+      /** @description No Content */
+      204: {
+        content: never;
       };
       /** @description Error */
       default: {
@@ -1440,26 +1438,6 @@ export interface operations {
       };
     };
   };
-  /** Delete user */
-  "user-delete": {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description No Content */
-      204: {
-        content: never;
-      };
-      /** @description Error */
-      default: {
-        content: {
-          "application/problem+json": components["schemas"]["ErrorModel"];
-        };
-      };
-    };
-  };
   /** Update user */
   "user-update": {
     parameters: {
@@ -1478,6 +1456,26 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["User"];
         };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** Delete user */
+  "user-delete": {
+    parameters: {
+      path: {
+        id: number;
+      };
+    };
+    responses: {
+      /** @description No Content */
+      204: {
+        content: never;
       };
       /** @description Error */
       default: {

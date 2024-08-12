@@ -9,6 +9,7 @@ import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useSession } from "@/contexts/authentication";
 import { useNetwork } from "@/contexts/network";
+import { validateCF } from "@/utils/validators";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
@@ -57,6 +58,7 @@ export default function ExperienceEnrollScreen() {
   const {
     control,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<EnrollmentData>();
 
@@ -66,6 +68,23 @@ export default function ExperienceEnrollScreen() {
 
   async function onSubmit(data: EnrollmentData) {
     try {
+      if (data.tax_code && !validateCF(data.tax_code)) {
+        setError("tax_code", {
+          type: "manual",
+          message: t("Invalid tax code"),
+        });
+        return;
+      }
+
+      if (!data.accepted_requirements) {
+        Toast.show({
+          type: "error",
+          text1: t("error", "Error"),
+          text2: t("youMustAcceptRequirements", "You must accept the required criteria"),
+        });
+        return;
+      }
+
       const res = await client.POST("/activities", {
         body: {
           start_date: data.from_date.split("/").reverse().join("-"),
@@ -100,7 +119,7 @@ export default function ExperienceEnrollScreen() {
 
   return (
     <SafeAreaView>
-      <ScrollView>
+      <ScrollView automaticallyAdjustKeyboardInsets={true}>
         <Topbar goBack title="Conferma esperienza" />
 
         <Box marginTop="xl" marginBottom="l" marginHorizontal="m" gap="s">

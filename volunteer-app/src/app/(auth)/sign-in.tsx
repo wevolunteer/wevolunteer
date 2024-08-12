@@ -45,6 +45,10 @@ export default function SignInScreen() {
     }
   }
 
+  function handleEmailChange(value: string, onChange: (value: string) => void) {
+    onChange(value.toLocaleLowerCase());
+  }
+
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: "space-between", alignItems: "center" }}>
       <Topbar title={t("signInOrRegister", "Sign in or register")} goBack />
@@ -65,7 +69,7 @@ export default function SignInScreen() {
               value={value}
               autoFocus
               keyboardType="email-address"
-              onChangeText={onChange}
+              onChangeText={(value) => handleEmailChange(value, onChange)}
               placeholder={t("emailPlaceholder", "Insert your email")}
             />
           )}

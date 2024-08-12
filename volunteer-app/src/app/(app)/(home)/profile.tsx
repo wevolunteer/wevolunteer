@@ -81,7 +81,7 @@ const ProfileStats: FC<ProfileStatsProps> = ({ years, experiences }) => {
           {years}
         </Text>
         <Text textAlign="center" variant="secondary">
-          {t("yearOnFaxte", "years on FaXte")}
+          {t("yearOnApp", "years on App")}
         </Text>
       </Box>
       <Box width={1} height="100%" borderLeftWidth={1} borderLeftColor="lightBorder" />
