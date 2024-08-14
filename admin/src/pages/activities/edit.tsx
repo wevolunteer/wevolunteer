@@ -1,37 +1,35 @@
 import { Edit, useForm, useSelect } from "@refinedev/antd";
-import { useList } from "@refinedev/core";
+import { useList, useShow } from "@refinedev/core";
 import { AutoComplete, Form, Input, Select } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const ActivityEdit = () => {
   const {
     formProps,
     saveButtonProps,
     formLoading,
-    query: experienceData,
+    query: activityData,
+    form: { getFieldValue },
   } = useForm({});
 
-  // const [experienceSearch, setExperienceSearch] = useState("");
-  // const [selectedExperience, setSelectedExperience] = useState(
-  //   experienceData?.data?.data.experience
-  // );
+  const [searchValue, setSearchValue] = useState("");
 
-  // const { data } = useList({
-  //   resource: "experiences",
-  //   filters: [
-  //     {
-  //       field: "q",
-  //       value: experienceSearch,
-  //       operator: "contains",
-  //     },
-  //   ],
-  // });
-
-  const { selectProps: experiencesSelectProps } = useSelect({
+  const { data } = useList({
     resource: "experiences",
-    optionLabel: "title",
-    optionValue: "id",
+    filters: [{ field: "q", operator: "eq", value: searchValue }],
   });
+
+  const { query: experience } = useShow({
+    resource: "experiences",
+    id: formProps.initialValues?.experience.id,
+  });
+
+  useEffect(() => {
+    if (experience.data?.data) {
+      console.log(experience.data.data);
+      setSearchValue(experience.data.data.title);
+    }
+  }, [experience]);
 
   return (
     <Edit saveButtonProps={saveButtonProps} isLoading={formLoading}>
@@ -55,29 +53,31 @@ export const ActivityEdit = () => {
             },
           ]}
         >
-          {/* <AutoComplete
-            value={selectedExperience?.title || ""}
-            options={data?.data.map((experience) => ({
-              label: experience.title,
-              value: experience.id,
-            }))}
-            onSearch={(q) => setExperienceSearch(q)}
-            onSelect={(id) => {
-              const exp = data?.data.find(
-                (experience) => experience.id === (id as unknown as string)
+          <AutoComplete
+            getRawInputElement={() => {
+              return (
+                <Input
+                  value={searchValue}
+                  onChange={(e) => {
+                    setSearchValue(e.target.value);
+                  }}
+                />
               );
-              setSelectedExperience(exp);
             }}
-            notFoundContent={"No experiences found"}
-          >
-            <Input.Search />
-          </AutoComplete> */}
+            options={data?.data.map((item) => ({
+              label: item.title,
+              value: item.id,
+            }))}
+            onSearch={(value) => {
+              setSearchValue(value as unknown as string);
+            }}
+            onSelect={(value, option) => {
+              formProps.form?.setFieldValue("experience_id", {
+                experience_id: value,
+              });
 
-          <Select
-            style={{
-              width: "100%",
+              setSearchValue(option.label);
             }}
-            {...experiencesSelectProps}
           />
         </Form.Item>
 

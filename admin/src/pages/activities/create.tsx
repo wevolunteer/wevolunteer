@@ -1,14 +1,16 @@
 import { Create, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Switch } from "antd";
+import { useList, useResource, useShow } from "@refinedev/core";
+import { AutoComplete, Form, Input, Switch } from "antd";
 import { Select } from "antd/lib";
+import { useRef, useState } from "react";
 
 export const ActivityCreate = () => {
   const { formProps, saveButtonProps } = useForm({});
+  const [searchValue, setSearchValue] = useState("");
 
-  const { selectProps: experiencesSelectProps } = useSelect({
+  const { data } = useList({
     resource: "experiences",
-    optionLabel: "title",
-    optionValue: "id",
+    filters: [{ field: "q", operator: "eq", value: searchValue }],
   });
 
   return (
@@ -23,11 +25,31 @@ export const ActivityCreate = () => {
             },
           ]}
         >
-          <Select
-            style={{
-              width: "100%",
+          <AutoComplete
+            getRawInputElement={() => {
+              return (
+                <Input
+                  value={searchValue}
+                  onChange={(e) => {
+                    setSearchValue(e.target.value);
+                  }}
+                />
+              );
             }}
-            {...experiencesSelectProps}
+            options={data?.data.map((item) => ({
+              label: item.title,
+              value: item.id,
+            }))}
+            onSearch={(value) => {
+              setSearchValue(value as unknown as string);
+            }}
+            onSelect={(value, option) => {
+              formProps.form?.setFieldValue("experience_id", {
+                experience_id: value,
+              });
+
+              setSearchValue(option.label);
+            }}
           />
         </Form.Item>
 
