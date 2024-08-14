@@ -3,6 +3,8 @@ import { useList, useShow } from "@refinedev/core";
 import { AutoComplete, Form, Input, Select } from "antd";
 import { useEffect, useState } from "react";
 
+let initialized = false
+
 export const ActivityEdit = () => {
   const {
     formProps,
@@ -25,9 +27,9 @@ export const ActivityEdit = () => {
   });
 
   useEffect(() => {
-    if (experience.data?.data) {
-      console.log(experience.data.data);
+    if (experience.data?.data && !initialized) {
       setSearchValue(experience.data.data.title);
+      initialized = true;
     }
   }, [experience]);
 
@@ -72,10 +74,7 @@ export const ActivityEdit = () => {
               setSearchValue(value as unknown as string);
             }}
             onSelect={(value, option) => {
-              formProps.form?.setFieldValue("experience_id", {
-                experience_id: value,
-              });
-
+              formProps.form?.setFieldValue("experience_id", value);
               setSearchValue(option.label);
             }}
           />

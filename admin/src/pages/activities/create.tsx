@@ -44,10 +44,7 @@ export const ActivityCreate = () => {
               setSearchValue(value as unknown as string);
             }}
             onSelect={(value, option) => {
-              formProps.form?.setFieldValue("experience_id", {
-                experience_id: value,
-              });
-
+              formProps.form?.setFieldValue("experience_id", value);
               setSearchValue(option.label);
             }}
           />
