@@ -49,12 +49,16 @@ func ExperienceList(ctx *app.Context, filters *ExperienceFilters) (*ExperienceLi
 	q := ExperienceQuery(ctx)
 
 	if filters != nil {
+		if filters.DateStart != "" && filters.DateEnd != "" {
+			filters.DateEnd = filters.DateStart
+		}
+
 		if filters.DateStart != "" {
-			q = q.Where("start_time >= ?", filters.DateStart)
+			q = q.Where("end_time >= ?", filters.DateStart)
 		}
 
 		if filters.DateEnd != "" {
-			q = q.Where("end_time <= ?", filters.DateEnd)
+			q = q.Where("start_time <= ?", filters.DateEnd)
 		}
 
 		if filters.Latitude != 0 && filters.Longitude != 0 {
@@ -91,7 +95,7 @@ func ExperienceList(ctx *app.Context, filters *ExperienceFilters) (*ExperienceLi
 
 	q = q.Scopes(app.Paginate(filters.PaginationInput))
 
-	if err := q.Debug().Find(&data.Results).Error; err != nil {
+	if err := q.Find(&data.Results).Error; err != nil {
 		return nil, err
 	}
 
