@@ -1,6 +1,3 @@
-# This Dockerfile uses `serve` npm package to serve the static files with node process.
-# You can find the Dockerfile for nginx in the following link:
-# https://github.com/refinedev/dockerfiles/blob/main/vite/Dockerfile.nginx
 FROM refinedev/node:18 AS base
 
 FROM base as deps
@@ -24,14 +21,12 @@ COPY . .
 
 RUN npm run build
 
-FROM base as runner
+FROM nginx:1.21.3-alpine as runner
 
 ENV NODE_ENV production
 
-RUN npm install -g serve
+COPY --from=builder /app/refine/dist /usr/share/nginx/html
 
-COPY --from=builder /app/refine/dist ./
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 
-USER refine
-
-CMD ["serve"]
+CMD ["nginx", "-g", "daemon off;"]
