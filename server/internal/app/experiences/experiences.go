@@ -91,7 +91,7 @@ func ExperienceList(ctx *app.Context, filters *ExperienceFilters) (*ExperienceLi
 
 	q = q.Scopes(app.Paginate(filters.PaginationInput))
 
-	if err := q.Find(&data.Results).Error; err != nil {
+	if err := q.Debug().Find(&data.Results).Error; err != nil {
 		return nil, err
 	}
 
