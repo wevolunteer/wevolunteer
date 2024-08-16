@@ -141,7 +141,7 @@ func OrganizationAddToFavoritesController(
 	input *OrganizationFavoriteRequest,
 ) (*OrganizationFavoriteResponse, error) {
 	ctx := app.FromHTTPContext(c)
-	err := OrganizationAddToFavorites(ctx, input.ID)
+	err := OrganizationFollow(ctx, input.ID)
 
 	if err != nil {
 		fmt.Println(err)
@@ -158,7 +158,7 @@ func OrganizationRemoveFromFavoritesController(
 	input *OrganizationFavoriteRequest,
 ) (*OrganizationFavoriteResponse, error) {
 	ctx := app.FromHTTPContext(c)
-	err := OrganizationRemoveFromFavorites(ctx, input.ID)
+	err := OrganizationUnfollow(ctx, input.ID)
 
 	if err != nil {
 		return nil, err

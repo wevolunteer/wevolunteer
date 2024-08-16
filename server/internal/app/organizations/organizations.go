@@ -174,7 +174,7 @@ func OrganizationDelete(c *app.Context, id uint) error {
 	return nil
 }
 
-func OrganizationAddToFavorites(c *app.Context, id uint) error {
+func OrganizationFollow(c *app.Context, id uint) error {
 	var organization models.Organization
 
 	if err := OrganizationQuery(c).Where("id = ?", id).First(&organization).Error; err != nil {
@@ -193,7 +193,7 @@ func OrganizationAddToFavorites(c *app.Context, id uint) error {
 	return nil
 }
 
-func OrganizationRemoveFromFavorites(c *app.Context, id uint) error {
+func OrganizationUnfollow(c *app.Context, id uint) error {
 	var organization models.Organization
 
 	if err := OrganizationQuery(c).Where("id = ?", id).First(&organization).Error; err != nil {

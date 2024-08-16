@@ -21,12 +21,16 @@ type UserProfileUpdateData struct {
 	Bio                                *string  `json:"bio,omitempty"`
 	Latitude                           *float64 `json:"latitude,omitempty"`
 	Longitude                          *float64 `json:"longitude,omitempty"`
+	Categories                         *[]uint  `json:"categories,omitempty"`
 	NotificationsNearbyActivities      *bool    `json:"notifications_nearby_activities,omitempty" gorm:"default:true"`
 	NotificationsFollowedOrganizations *bool    `json:"notifications_followed_organizations,omitempty" gorm:"default:true"`
 	NotificationActivityReminders      *bool    `json:"notifications_activity_reminders,omitempty" gorm:"default:true"`
 }
 
 func UserProfileGet(user *models.User) (*models.User, error) {
+	if err := app.DB.Preload("FavoriteCategories").First(&user).Error; err != nil {
+		return nil, err
+	}
 	return user, nil
 }
 
@@ -73,7 +77,7 @@ func UserProfileUpdate(user *models.User, data UserProfileUpdateData) error {
 	}
 
 	if data.DateOfBirth != nil {
-		// TODO: user.DateOfBirth = *data.DateOfBirth
+		user.DateOfBirth = *data.DateOfBirth
 	}
 
 	if data.City != nil {
@@ -86,6 +90,21 @@ func UserProfileUpdate(user *models.User, data UserProfileUpdateData) error {
 
 	if data.Job != nil {
 		user.Job = *data.Job
+	}
+
+	if data.Categories != nil {
+		app.DB.Model(&user).Association("FavoriteCategories").Clear()
+
+		for _, categoryID := range *data.Categories {
+			var category models.Category
+			if err := app.DB.Where("id = ?", categoryID).First(&category).Error; err != nil {
+				return err
+			}
+
+			if err := app.DB.Model(&user).Association("FavoriteCategories").Append(&category); err != nil {
+				return err
+			}
+		}
 	}
 
 	if data.HasAcceptedNewsletter != nil {
