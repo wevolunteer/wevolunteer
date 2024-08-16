@@ -39,12 +39,15 @@ export default function ProfileScreen() {
             </Text>
           </Box>
 
-          <ProfileStats years={2} experiences={14} />
+          <ProfileStats years={0} experiences={0} />
 
           <Box>
             <ProfileItem label={t("profile.iLiveIn", "I live in")} value={user.city || "-"} />
             <ProfileItem label={t("profile.myJob", "My Job")} value={user.job || "-"} />
-            <ProfileItem label={t("profile.myCauses", "My Causes")} value={user.phone || "-"} />
+            <ProfileItem
+              label={t("profile.myCauses", "My Causes")}
+              value={user.categories?.map((c) => c.name).join(", ") || "-"}
+            />
             <ProfileItem
               label={t("profile.myLanguages", "My Languages")}
               value={user.languages || "-"}

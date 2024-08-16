@@ -77,19 +77,30 @@ export default function ExperienceEnrollScreen() {
       }
 
       if (!data.accepted_requirements) {
-        Toast.show({
-          type: "error",
-          text1: t("error", "Error"),
-          text2: t("youMustAcceptRequirements", "You must accept the required criteria"),
+        setError("accepted_requirements", {
+          type: "manual",
+          message: t("youMustAcceptRequirements", "You must accept the required criteria"),
         });
+        return;
+      }
+
+      const start_date = data.from_date.split("/").reverse().join("-");
+      const end_date = data.to_date.split("/").reverse().join("-");
+
+      if (new Date(start_date) > new Date(end_date)) {
+        setError("to_date", {
+          type: "manual",
+          message: t("endDateBeforeStartDate", "End date must be after start date"),
+        });
+
         return;
       }
 
       const res = await client.POST("/activities", {
         body: {
-          start_date: data.from_date.split("/").reverse().join("-"),
+          start_date,
           start_time: data.from_time,
-          end_date: data.to_date.split("/").reverse().join("-"),
+          end_date,
           end_time: data.to_time,
           experience_id: experienceId,
           tax_code: data.tax_code || "",

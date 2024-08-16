@@ -22,6 +22,7 @@ type Activity = components["schemas"]["Activity"];
 type Experience = components["schemas"]["Experience"];
 type Organization = components["schemas"]["Organization"];
 type Place = components["schemas"]["Place"];
+type Category = components["schemas"]["Category"];
 
 type ActivityFilters = NonNullable<paths["/activities"]["get"]["parameters"]["query"]>;
 type ExperienceFilters = NonNullable<paths["/experiences"]["get"]["parameters"]["query"]>;

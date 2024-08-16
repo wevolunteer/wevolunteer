@@ -1,12 +1,16 @@
+import CategoryPicker from "@/components/profile/CategoryPicker";
 import ProfileAvatar from "@/components/profile/ProfileAvatar";
 import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
 import InputText from "@/components/ui/InputText";
+import InputTextDate from "@/components/ui/InputTextDate";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useSession } from "@/contexts/authentication";
 import useProfile from "@/hooks/useProfile";
 import { ProfileData } from "@/types/data";
+import { convertToDDMMYYYY } from "@/utils/formatters";
+import { validateCF } from "@/utils/validators";
 import { router } from "expo-router";
 import { FC, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -20,7 +24,7 @@ export default function ProfileEditScreen() {
   const { session, fetchUser } = useSession();
   const { updateProfile } = useProfile();
 
-  const { control, handleSubmit, watch, setValue } = useForm<ProfileData>({
+  const { control, handleSubmit, watch, setValue, setError } = useForm<ProfileData>({
     defaultValues: {
       avatar: session?.user?.avatar,
       first_name: session?.user?.first_name,
@@ -29,6 +33,7 @@ export default function ProfileEditScreen() {
       date_of_birth: session?.user?.date_of_birth,
       city: session?.user?.city,
       job: session?.user?.job,
+      categories: session?.user?.categories?.map((category) => category.id) || [],
       // preferred_causes: session?.user?.preferred_causes,
       languages: session?.user?.languages,
       bio: session?.user?.bio,
@@ -53,6 +58,14 @@ export default function ProfileEditScreen() {
 
   async function onSubmit(values: ProfileData) {
     if (!session?.user) {
+      return;
+    }
+
+    if (values.tax_code && !validateCF(values.tax_code)) {
+      setError("tax_code", {
+        type: "manual",
+        message: t("Invalid tax code"),
+      });
       return;
     }
 
@@ -118,7 +131,7 @@ export default function ProfileEditScreen() {
           </ProfileDataForm>
           <ProfileDataForm
             label={t("tax_code", "Tax Code")}
-            value={values.tax_code || "-"}
+            value={values.tax_code || t("notSpecified", "Not specified")}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
@@ -135,14 +148,16 @@ export default function ProfileEditScreen() {
           </ProfileDataForm>
           <ProfileDataForm
             label={t("dob", "Date of birth")}
-            value={values.date_of_birth || "-"}
+            value={
+              convertToDDMMYYYY(values.date_of_birth || "") || t("notSpecified", "Not specified")
+            }
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
               control={control}
               name="date_of_birth"
               render={({ field }) => (
-                <InputText
+                <InputTextDate
                   label={t("dateOfBirth", "Date of birth")}
                   value={field.value}
                   onChangeText={field.onChange}
@@ -155,7 +170,7 @@ export default function ProfileEditScreen() {
           </ProfileDataForm>
           <ProfileDataForm
             label={t("city", "City")}
-            value={values.city || "-"}
+            value={values.city || t("notSpecified", "Not specified")}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
@@ -172,7 +187,7 @@ export default function ProfileEditScreen() {
           </ProfileDataForm>
           <ProfileDataForm
             label={t("job", "Job")}
-            value={values.job || "-"}
+            value={values.job || t("notSpecified", "Not specified")}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
@@ -183,6 +198,27 @@ export default function ProfileEditScreen() {
                   value={field.value}
                   onChangeText={field.onChange}
                   label={t("job", "Job")}
+                />
+              )}
+            />
+          </ProfileDataForm>
+          <ProfileDataForm
+            label={t("favoriteCategories", "Favorite categories")}
+            value={
+              session?.user?.categories?.length
+                ? session?.user?.categories.map((c) => c.name).join(", ")
+                : t("notSpecified", "Not specified")
+            }
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <Controller
+              control={control}
+              name="categories"
+              render={({ field }) => (
+                <CategoryPicker
+                  value={field.value || []}
+                  onChange={field.onChange}
+                  label={t("favoriteCategories", "Favorite categories")}
                 />
               )}
             />
@@ -205,7 +241,7 @@ export default function ProfileEditScreen() {
           </ProfileDataForm> */}
           <ProfileDataForm
             label={t("languages", "Languages")}
-            value={values.languages || "-"}
+            value={values.languages || t("notSpecified", "Not specified")}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
@@ -222,7 +258,7 @@ export default function ProfileEditScreen() {
           </ProfileDataForm>
           <ProfileDataForm
             label={t("aboutMe", "About me")}
-            value={values.bio || "-"}
+            value={values.bio || t("notSpecified", "Not specified")}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller

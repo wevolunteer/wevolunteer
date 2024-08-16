@@ -9,7 +9,7 @@ const SIZES = {
   l: 64,
 };
 
-interface InputTextProps {
+export interface InputTextProps {
   label?: string;
   error?: string;
   size?: keyof typeof SIZES;

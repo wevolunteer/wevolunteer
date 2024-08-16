@@ -58,10 +58,8 @@ export const ExperienceCard: FC<ExperienceCardProps> = ({ experience, onPress, o
         <Box flex={1} padding="m">
           <Text variant="secondary">{experience.organization.name}</Text>
           <Box flex={1} marginVertical="s">
-            <Text variant="title" fontSize={16} fontWeight={500}>
-              {experience.title.length > 20
-                ? `${experience.title.slice(0, 20)}...`
-                : experience.title}
+            <Text variant="body" fontSize={16} fontFamily={"DMSansMedium"} numberOfLines={3}>
+              {experience.title}
             </Text>
           </Box>
           <Text variant="body" fontSize={13}>

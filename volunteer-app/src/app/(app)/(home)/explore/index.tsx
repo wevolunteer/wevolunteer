@@ -9,8 +9,9 @@ import { useExperiences } from "@/hooks/useExperiences";
 import { Experience, ExperienceFilters } from "@/types/data";
 import { FlashList } from "@shopify/flash-list";
 import { useTheme } from "@shopify/restyle";
+import { useQueryClient } from "@tanstack/react-query";
 import { Href, router } from "expo-router";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -19,6 +20,7 @@ function ExploreListScreen() {
   const theme = useTheme<Theme>();
   const { t } = useTranslation();
   const listRef = useRef<FlashList<Experience>>(null);
+  const queryClient = useQueryClient();
 
   const { filters } = useFilters<ExperienceFilters>();
 
@@ -29,11 +31,16 @@ function ExploreListScreen() {
     q: filters.q,
   });
 
-  useEffect(() => {
+  const handleRefetch = useCallback(() => {
+    queryClient.invalidateQueries();
     refetch();
-
+    console.log("refetch", filters);
     listRef.current?.scrollToOffset({ offset: 0, animated: true });
-  }, [filters, refetch]);
+  }, [filters, refetch, queryClient]);
+
+  useEffect(() => {
+    handleRefetch();
+  }, [handleRefetch]);
 
   return (
     <Box flex={1}>
@@ -41,7 +48,7 @@ function ExploreListScreen() {
         ref={listRef}
         estimatedItemSize={195}
         refreshing={isLoading}
-        onRefresh={() => refetch()}
+        onRefresh={handleRefetch}
         data={experiences || []}
         keyExtractor={(item) => `a-${item.id}`}
         onEndReachedThreshold={0.8}

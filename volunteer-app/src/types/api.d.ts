@@ -425,11 +425,6 @@ export interface components {
       Url: string;
     };
     Organization: {
-      /**
-       * Format: uri
-       * @description A URL to the JSON Schema for this object.
-       */
-      $schema?: string;
       address: string;
       category: components["schemas"]["Category"];
       /** Format: int64 */
@@ -550,10 +545,10 @@ export interface components {
       accepted_tos: boolean;
       avatar: string;
       bio: string;
+      categories: components["schemas"]["Category"][] | null;
       city: string;
       /** Format: date-time */
       created_at: string;
-      /** Format: date-time */
       date_of_birth: string;
       email: string;
       first_name: string;
@@ -649,6 +644,7 @@ export interface components {
       accepted_tos?: boolean;
       avatar?: string;
       bio?: string;
+      categories?: number[];
       city?: string;
       date_of_birth?: string;
       email?: string;
@@ -1226,7 +1222,7 @@ export interface operations {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["Organization"];
+          "application/json": components["schemas"]["ExtendedOrganization"];
         };
       };
       /** @description Error */
@@ -1275,7 +1271,7 @@ export interface operations {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["Organization"];
+          "application/json": components["schemas"]["ExtendedOrganization"];
         };
       };
       /** @description Error */

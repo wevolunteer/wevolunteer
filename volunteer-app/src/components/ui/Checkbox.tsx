@@ -6,13 +6,16 @@ import Box from "./Box";
 import Icon from "./Icon";
 
 interface CheckboxProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   value: boolean;
   onChange: (checked: boolean) => void;
+  accent?: boolean;
 }
 
-const Checkbox: FC<CheckboxProps> = ({ children, value, onChange }) => {
+const Checkbox: FC<CheckboxProps> = ({ children, value, onChange, accent }) => {
   const theme = useTheme<Theme>();
+
+  const bgColor = accent ? "primaryBackground" : "invertedBackground";
 
   function handlePress() {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -27,14 +30,15 @@ const Checkbox: FC<CheckboxProps> = ({ children, value, onChange }) => {
           height={32}
           borderRadius="s"
           borderWidth={1}
-          backgroundColor={value ? "invertedBackground" : "mainBackground"}
+          borderColor="mainBorder"
+          backgroundColor={value ? bgColor : "mainBackground"}
           justifyContent="center"
           alignItems="center"
         >
           {value && <Icon name="check" size={24} color={theme.colors.whiteText} />}
         </Box>
       </Pressable>
-      <Box flex={1}>{children}</Box>
+      {children && <Box flex={1}>{children}</Box>}
     </Box>
   );
 };
