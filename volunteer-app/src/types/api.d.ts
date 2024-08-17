@@ -172,13 +172,12 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      end_date: string;
-      end_time: string;
+      end_date?: string;
+      end_time?: string;
       /** Format: int64 */
       experience_id?: number;
-      message: string;
-      start_date: string;
-      start_time: string;
+      start_date?: string;
+      start_time?: string;
       status?: string;
     };
     Category: {

@@ -5,7 +5,6 @@ import { tActivityStatus } from "@/utils/enumTransl";
 import { processColorByStatus } from "@/utils/formatters";
 import { format } from "date-fns";
 import { FC } from "react";
-import { useTranslation } from "react-i18next";
 import { Pressable } from "react-native";
 import Animated from "react-native-reanimated";
 import Icon from "./ui/Icon";
@@ -17,8 +16,6 @@ export interface ActivityCardProps {
 }
 
 export const ActivityCard: FC<ActivityCardProps> = ({ activity, onPress, onClose }) => {
-  const { t } = useTranslation();
-
   return (
     <Pressable onPress={onPress}>
       <Box

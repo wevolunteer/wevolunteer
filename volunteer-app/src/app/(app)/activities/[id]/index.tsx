@@ -1,14 +1,16 @@
 import ExperienceDetails from "@/components/ExperienceDetails";
 import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
+import Text from "@/components/ui/Text";
 import { useNetwork } from "@/contexts/network";
 import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function ExperienceScreen() {
+export default function ActivityScreen() {
   const { id } = useLocalSearchParams();
   const { t } = useTranslation();
   const { client } = useNetwork();
@@ -19,9 +21,9 @@ export default function ExperienceScreen() {
   const experienceId = parseInt(id);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["experiences", id],
+    queryKey: ["activities", id],
     queryFn: async () => {
-      const experienceResponse = await client.GET("/experiences/{id}", {
+      const response = await client.GET("/activities/{id}", {
         params: {
           path: {
             id: experienceId,
@@ -29,20 +31,20 @@ export default function ExperienceScreen() {
         },
       });
 
-      if (!experienceResponse?.data?.organization) {
+      if (!response?.data?.experience.organization) {
         return null;
       }
 
       const organizationResponse = await client.GET("/organizations/{id}", {
         params: {
           path: {
-            id: experienceResponse.data.organization.id,
+            id: response.data.experience.organization.id,
           },
         },
       });
 
       return {
-        experience: experienceResponse.data,
+        activity: response.data,
         organization: organizationResponse.data,
       };
     },
@@ -65,25 +67,44 @@ export default function ExperienceScreen() {
   return (
     <SafeAreaView>
       <ExperienceDetails
-        experience={data.experience}
+        activityStatus={data.activity.status}
+        experience={data.activity.experience}
         isFavorite={data?.organization?.is_favorite}
       />
 
       <Box
         position="absolute"
-        bottom={32}
+        bottom={0}
         left={0}
         right={0}
-        justifyContent="center"
+        justifyContent="space-between"
         alignItems="center"
+        backgroundColor="mainBackground"
+        flexDirection="row"
+        py="m"
+        px="m"
       >
+        <Box>
+          <Text variant="secondary">{t("weWillWaitYou", "We'll wait you")}:</Text>
+          <Box flexDirection="row" gap="xs">
+            <Text variant="body">{t("from", "From")}</Text>
+            <Text variant="body">
+              {data.activity.start_date ? format(new Date(data.activity.start_date), "d/MM") : ""}
+            </Text>
+            <Text variant="body">{t("to", "To").toLowerCase()}</Text>
+            <Text variant="body">
+              {data.activity.start_date ? format(new Date(data.activity.end_date), "d/MM") : ""}
+            </Text>
+          </Box>
+        </Box>
         <Button
           variant="primary"
-          label={t("iWantToPartecipate", "I want to partecipate!")}
-          paddingHorizontal="xl"
-          borderRadius="full"
+          label={t("Edit", "Edit")}
           onPress={() => {
-            router.push(`/experiences/${id}/enroll`);
+            router.push({
+              pathname: `/activities/[id]/edit`,
+              params: { id: data.activity.id },
+            });
           }}
         />
       </Box>

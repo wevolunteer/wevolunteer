@@ -49,7 +49,7 @@ export default function ExperiencesScreen() {
               activity={item}
               onPress={() => {
                 router.push({
-                  pathname: `/experiences/[id]`,
+                  pathname: `/activities/[id]`,
                   params: { id: item.id },
                 });
               }}

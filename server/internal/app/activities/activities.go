@@ -186,17 +186,15 @@ func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activit
 }
 
 type ActivityUpdateData struct {
-	ExpericeID uint   `json:"experience_id,omitempty"`
-	Status     string `json:"status,omitempty"`
-	StartDate  string `json:"start_date"`
-	EndDate    string `json:"end_date"`
-	StartTime  string `json:"start_time"`
-	EndTime    string `json:"end_time"`
-	Message    string `json:"message"`
+	ExpericeID *uint                  `json:"experience_id,omitempty"`
+	Status     *models.ActivityStatus `json:"status,omitempty"`
+	StartDate  *string                `json:"start_date,omitempty"`
+	EndDate    *string                `json:"end_date,omitempty"`
+	StartTime  *string                `json:"start_time,omitempty"`
+	EndTime    *string                `json:"end_time,omitempty"`
 }
 
 func ActivityUpdate(ctx *app.Context, id uint, data *ActivityUpdateData) (*models.Activity, error) {
-	var err error
 	var activity models.Activity
 
 	// todo check roles
@@ -205,40 +203,35 @@ func ActivityUpdate(ctx *app.Context, id uint, data *ActivityUpdateData) (*model
 		return nil, err
 	}
 
-	startDate := time.Time{}
-	if data.StartDate != "" {
-		startDate, err = time.Parse("2006-01-02", data.StartDate)
+	if data.StartDate != nil {
+		startDate, err := time.Parse("2006-01-02", *data.StartDate)
 		if err != nil {
 			return nil, fmt.Errorf("invalid start date")
 		}
+		activity.StartDate = startDate
 	}
 
-	endDate := time.Time{}
-	if data.EndDate != "" {
-		endDate, err = time.Parse("2006-01-02", data.EndDate)
+	if data.EndDate != nil {
+		endDate, err := time.Parse("2006-01-02", *data.EndDate)
 		if err != nil {
 			return nil, fmt.Errorf("invalid end date")
 		}
+		activity.EndDate = endDate
 	}
 
-	// todo is timerage valid?
-	// todo is a timerange available for experience?
+	if data.StartTime != nil {
+		activity.StartTime = *data.StartTime
+	}
 
-	activity.StartDate = startDate
-	activity.EndDate = endDate
-	activity.StartTime = data.StartTime
-	activity.EndTime = data.EndTime
-	activity.Message = data.Message
+	if data.EndTime != nil {
+		activity.EndTime = *data.EndTime
+	}
 
-	if ctx.Role == app.RoleSuperUser || ctx.Role == app.RoleOrganization {
-		status := models.ActivityStatus(data.Status)
+	if data.Status != nil && (ctx.Role == app.RoleSuperUser || ctx.Role == app.RoleOrganization) {
+		status := models.ActivityStatus(*data.Status)
 		if status != models.ActivityStatus("") {
 			activity.Status = status
 		}
-	}
-
-	if ctx.Role == app.RoleSuperUser {
-		activity.ExperienceID = data.ExpericeID
 	}
 
 	if err := app.DB.Save(&activity).Error; err != nil {

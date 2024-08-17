@@ -31,8 +31,15 @@ const InputText: FC<TextInputProps & InputTextProps> = ({ label, size, error, ..
         height={size ? SIZES[size] : SIZES.m}
       >
         <TextInput
-          style={{ flex: 1, width: "100%", paddingHorizontal: 16 }}
           {...rest}
+          style={{
+            flex: 1,
+            width: "100%",
+            paddingHorizontal: 16,
+            paddingVertical: rest.multiline ? 16 : 0,
+            height: rest.multiline ? 300 : "auto",
+            textAlignVertical: rest.multiline ? "top" : "center",
+          }}
           secureTextEntry={isSecure}
         />
 

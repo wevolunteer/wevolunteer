@@ -96,7 +96,9 @@ export default function VerifyCodeScreen() {
         return;
       }
 
-      router.replace("registration");
+      router.replace({
+        pathname: "/registration",
+      });
       setIsLoading(false);
     } catch (error) {
       setError(t("invalidCode", "The code entered is not valid"));

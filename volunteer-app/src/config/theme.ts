@@ -23,6 +23,7 @@ const theme = createTheme({
     statusRejected: palette.red500,
   },
   spacing: {
+    xs: 4,
     s: 8,
     m: 16,
     l: 24,
@@ -84,8 +85,8 @@ const theme = createTheme({
       color: "mainText",
       textDecorationLine: "underline",
     },
-    default: {
-      color: "mainText",
+    defaults: {
+      color: "whiteText",
       backgroundColor: "darkBackground",
     },
   },

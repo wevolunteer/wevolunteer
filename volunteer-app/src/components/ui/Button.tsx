@@ -109,6 +109,8 @@ const Button = ({
         return "mainText";
       case "disabled":
         return "whiteText";
+      default:
+        return "whiteText";
     }
   }, [rest.variant]);
 
