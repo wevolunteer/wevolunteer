@@ -24,6 +24,8 @@ export default function SearchPage() {
   const [q, setQ] = useState<string>("");
   const listRef = useRef<FlashList<Experience>>(null);
 
+  console.log(filters);
+
   const { experiences, fetchNextPage, refetch, isLoading } = useExperiences();
 
   const { saveExperienceSearch } = useSearches();
@@ -33,8 +35,10 @@ export default function SearchPage() {
     if (needle !== "") {
       saveExperienceSearch(needle);
       setFilters({ ...filters, q: needle });
+      refetch();
     } else {
       setFilters({ ...filters, q: undefined });
+      refetch();
     }
   }
 
@@ -45,9 +49,10 @@ export default function SearchPage() {
   // clear q filter when unmount
   useEffect(() => {
     return () => {
+      setQ("");
       setFilters({ ...filters, q: undefined });
     };
-  }, []);
+  }, [setFilters]);
 
   return (
     <SafeAreaView>
@@ -79,7 +84,10 @@ export default function SearchPage() {
               returnKeyType="search"
               autoFocus
               onBlur={onSearchInputBlur}
-              onChangeText={setQ}
+              onChangeText={(value) => {
+                setQ(value);
+                setFilters({ ...filters, q: value });
+              }}
             />
           </Box>
 

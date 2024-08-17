@@ -2,7 +2,7 @@
   "expo": {
     "name": "Attivati",
     "slug": "wevolunteer",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
     "scheme": "wevolunteer",
@@ -16,7 +16,7 @@
     "ios": {
       "bundleIdentifier": "org.wevolunteer.attivati",
       "supportsTablet": true,
-      "buildNumber": "9"
+      "buildNumber": "10"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,7 +24,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.metadonors.wevolunteer",
-      "versionCode": 21,
+      "versionCode": 22,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyBHAIlIrdW_sepiJyVuBE8KDaosCNwvQK0"

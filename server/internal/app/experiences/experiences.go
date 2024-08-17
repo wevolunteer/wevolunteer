@@ -63,7 +63,7 @@ func ExperienceList(ctx *app.Context, filters *ExperienceFilters) (*ExperienceLi
 
 		if filters.Latitude != 0 && filters.Longitude != 0 {
 			q = q.Order(fmt.Sprintf(
-				"ST_Distance(ST_SetSRID(ST_Point(longitude, latitude), 4326)::geography, ST_SetSRID(ST_Point(%f, %f), 4326)::geography) ASC",
+				"ST_Distance(ST_SetSRID(ST_Point(experiences.longitude, experiences.latitude), 4326)::geography, ST_SetSRID(ST_Point(%f, %f), 4326)::geography) ASC",
 				filters.Longitude, filters.Latitude))
 		}
 
