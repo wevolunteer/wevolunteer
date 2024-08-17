@@ -12,6 +12,8 @@ import (
 
 func ActivityQuery(ctx *app.Context) *gorm.DB {
 	q := app.DB.Model(&models.Activity{})
+	q.Preload("Experience.Organization")
+	q.Preload("User")
 
 	if ctx.Role == app.RolePublic {
 		q = q.Where("1 != 1")
@@ -192,6 +194,7 @@ type ActivityUpdateData struct {
 	EndDate    *string                `json:"end_date,omitempty"`
 	StartTime  *string                `json:"start_time,omitempty"`
 	EndTime    *string                `json:"end_time,omitempty"`
+	Message    *string                `json:"message,omitempty"`
 }
 
 func ActivityUpdate(ctx *app.Context, id uint, data *ActivityUpdateData) (*models.Activity, error) {
@@ -227,10 +230,21 @@ func ActivityUpdate(ctx *app.Context, id uint, data *ActivityUpdateData) (*model
 		activity.EndTime = *data.EndTime
 	}
 
-	if data.Status != nil && (ctx.Role == app.RoleSuperUser || ctx.Role == app.RoleOrganization) {
-		status := models.ActivityStatus(*data.Status)
-		if status != models.ActivityStatus("") {
-			activity.Status = status
+	if data.Message != nil {
+		activity.Message = *data.Message
+	}
+
+	fmt.Println(data)
+
+	if data.Status != nil {
+		fmt.Println("status", *data.Status)
+		fmt.Println("role", activity.User.ID)
+		fmt.Println("role", ctx.User.ID)
+		fmt.Println("role", ctx.User.ID == activity.User.ID)
+		fmt.Println("role", *data.Status == "canceled")
+		if ctx.Role == app.RoleSuperUser || (*data.Status == "canceled" && ctx.User.ID == activity.User.ID) {
+			fmt.Println("status", *data.Status)
+			activity.Status = *data.Status
 		}
 	}
 

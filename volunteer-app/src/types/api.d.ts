@@ -176,6 +176,7 @@ export interface components {
       end_time?: string;
       /** Format: int64 */
       experience_id?: number;
+      message?: string;
       start_date?: string;
       start_time?: string;
       status?: string;

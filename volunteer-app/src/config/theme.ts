@@ -21,6 +21,7 @@ const theme = createTheme({
     statusPending: palette.orange500,
     statusAccepted: palette.green500,
     statusRejected: palette.red500,
+    statusCanceled: palette.gray500,
   },
   spacing: {
     xs: 4,

@@ -14,6 +14,10 @@ type AccessToken = {
 };
 
 type ProfileData = paths["/auth/user"]["patch"]["requestBody"]["content"]["application/json"];
+type ActivityCreateData =
+  paths["/activities"]["post"]["requestBody"]["content"]["application/json"];
+type ActivityUpdateData =
+  paths["/activities/{id}"]["put"]["requestBody"]["content"]["application/json"];
 
 type User = components["schemas"]["User"];
 type UserDevice = components["schemas"]["UserDevice"];

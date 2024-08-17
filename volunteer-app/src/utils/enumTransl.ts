@@ -8,6 +8,8 @@ export const tActivityStatus = (status: string) => {
       return t("accepted", "Accettato");
     case "rejected":
       return t("rejected", "Rifiutato");
+    case "canceled":
+      return t("canceled", "Rinunciato");
     default:
       return status;
   }

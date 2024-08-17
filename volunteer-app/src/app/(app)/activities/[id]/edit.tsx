@@ -6,6 +6,7 @@ import SafeAreaView from "@/components/ui/SafeAreaView";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useNetwork } from "@/contexts/network";
+import { ActivityUpdateData } from "@/types/data";
 import { convertToDDMMYYYY, convertToYYYYMMDD } from "@/utils/formatters";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
@@ -14,17 +15,6 @@ import { Controller, useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
-
-interface EnrollmentData {
-  from_date: string;
-  to_date: string;
-  from_time: string;
-  to_time: string;
-  tax_code?: string;
-  accepted_requirements: boolean;
-  accepted_privacy: boolean;
-  message: string;
-}
 
 export default function ActivityEditScreen() {
   const { id } = useLocalSearchParams();
@@ -58,14 +48,14 @@ export default function ActivityEditScreen() {
     setError,
     setValue,
     formState: { errors },
-  } = useForm<EnrollmentData>();
+  } = useForm<ActivityUpdateData>();
 
   useEffect(() => {
     if (data) {
-      setValue("from_date", convertToDDMMYYYY(data.start_date));
-      setValue("from_time", data.start_time);
-      setValue("to_date", convertToDDMMYYYY(data.end_date));
-      setValue("to_time", data.end_time);
+      setValue("start_date", convertToDDMMYYYY(data.start_date));
+      setValue("start_time", data.start_time);
+      setValue("end_date", convertToDDMMYYYY(data.end_date));
+      setValue("end_time", data.end_time);
     }
   }, [data, setValue]);
 
@@ -73,13 +63,13 @@ export default function ActivityEditScreen() {
     return null;
   }
 
-  async function onSubmit(data: EnrollmentData) {
+  async function onSubmit(data: ActivityUpdateData) {
     try {
-      const start_date = convertToYYYYMMDD(data.from_date);
-      const end_date = convertToYYYYMMDD(data.to_date);
+      const start_date = convertToYYYYMMDD(data.start_date || "");
+      const end_date = convertToYYYYMMDD(data.end_date || "");
 
       if (new Date(start_date) > new Date(end_date)) {
-        setError("to_date", {
+        setError("end_date", {
           type: "manual",
           message: t("endDateBeforeStartDate", "End date must be after start date"),
         });
@@ -95,9 +85,9 @@ export default function ActivityEditScreen() {
         },
         body: {
           start_date,
-          start_time: data.from_time,
+          start_time: data.start_time,
           end_date,
-          end_time: data.to_time,
+          end_time: data.end_time,
         },
       });
 
@@ -115,8 +105,10 @@ export default function ActivityEditScreen() {
     }
 
     router.replace({
-      pathname: "/activities/[id]",
-      params: { id: activityId },
+      pathname: "/activities/[id]/confirm",
+      params: {
+        id: activityId,
+      },
     });
   }
 
@@ -136,13 +128,13 @@ export default function ActivityEditScreen() {
             <Box flex={1}>
               <Controller
                 control={control}
-                name="from_time"
+                name="end_time"
                 rules={{ required: t("requiredField", "This field is required") }}
                 render={({ field: { onChange, value } }) => (
                   <InputTime
                     label={t("fromTime", "From hour")}
                     value={value}
-                    error={errors.from_time?.message}
+                    error={errors.end_time?.message}
                     onChangeText={onChange}
                     placeholder="HH:MM"
                   />
@@ -152,13 +144,13 @@ export default function ActivityEditScreen() {
             <Box flex={1}>
               <Controller
                 control={control}
-                name="from_date"
+                name="start_date"
                 rules={{ required: t("requiredField", "This field is required") }}
                 render={({ field: { onChange, value } }) => (
                   <InputDate
                     label={t("fromDay", "Of the day")}
                     value={value}
-                    error={errors.from_date?.message}
+                    error={errors.start_date?.message}
                     onChangeText={onChange}
                     placeholder="GG/MM/AAAA"
                   />
@@ -173,13 +165,13 @@ export default function ActivityEditScreen() {
             <Box flex={1}>
               <Controller
                 control={control}
-                name="to_time"
+                name="end_time"
                 rules={{ required: t("requiredField", "This field is required") }}
                 render={({ field: { onChange, value } }) => (
                   <InputTime
                     label={t("toTime", "To hour")}
                     value={value}
-                    error={errors.to_time?.message}
+                    error={errors.end_time?.message}
                     onChangeText={onChange}
                     placeholder="HH:MM"
                   />
@@ -189,13 +181,13 @@ export default function ActivityEditScreen() {
             <Box flex={1}>
               <Controller
                 control={control}
-                name="to_date"
+                name="end_date"
                 rules={{ required: t("requiredField", "This field is required") }}
                 render={({ field: { onChange, value } }) => (
                   <InputDate
                     label={t("toDate", "Of the day")}
                     value={value}
-                    error={errors.to_date?.message}
+                    error={errors.end_date?.message}
                     onChangeText={onChange}
                     placeholder="GG/MM/AAAA"
                   />

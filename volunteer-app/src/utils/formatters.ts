@@ -8,6 +8,8 @@ export const processColorByStatus = (status: string) => {
       return "statusAccepted";
     case "rejected":
       return "statusRejected";
+    case "canceled":
+      return "statusCanceled";
   }
 };
 

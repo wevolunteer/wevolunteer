@@ -97,16 +97,19 @@ export default function ActivityScreen() {
             </Text>
           </Box>
         </Box>
-        <Button
-          variant="primary"
-          label={t("Edit", "Edit")}
-          onPress={() => {
-            router.push({
-              pathname: `/activities/[id]/edit`,
-              params: { id: data.activity.id },
-            });
-          }}
-        />
+        {data.activity.status === "pending" && (
+          <Button
+            variant="primary"
+            label={t("Edit", "Edit")}
+            paddingHorizontal="l"
+            onPress={() => {
+              router.push({
+                pathname: `/activities/[id]/edit`,
+                params: { id: data.activity.id },
+              });
+            }}
+          />
+        )}
       </Box>
     </SafeAreaView>
   );

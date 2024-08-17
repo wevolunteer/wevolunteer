@@ -4,9 +4,8 @@ import InputText from "@/components/ui/InputText";
 import SafeAreaView from "@/components/ui/SafeAreaView";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
-import { useSession } from "@/contexts/authentication";
 import { useNetwork } from "@/contexts/network";
-import { validateCF } from "@/utils/validators";
+import { ActivityUpdateData } from "@/types/data";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { useForm } from "react-hook-form";
@@ -14,29 +13,17 @@ import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 
-interface EnrollmentData {
-  from_date: string;
-  to_date: string;
-  from_time: string;
-  to_time: string;
-  tax_code?: string;
-  accepted_requirements: boolean;
-  accepted_privacy: boolean;
-  message: string;
-}
-
 export default function ActivityGiveupScreen() {
   const { id } = useLocalSearchParams();
   const { t } = useTranslation();
   const { client } = useNetwork();
-  const { session, fetchUser } = useSession();
   const queryClient = useQueryClient();
 
   if (!id || Array.isArray(id)) {
     throw new Error("id should be a string");
   }
 
-  const experienceId = parseInt(id);
+  const activityId = parseInt(id);
 
   const { data } = useQuery({
     queryKey: ["experience", id],
@@ -44,7 +31,7 @@ export default function ActivityGiveupScreen() {
       const response = await client.GET("/experiences/{id}", {
         params: {
           path: {
-            id: experienceId,
+            id: activityId,
           },
         },
       });
@@ -52,69 +39,28 @@ export default function ActivityGiveupScreen() {
     },
   });
 
-  const {
-    control,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm<EnrollmentData>();
+  const { handleSubmit } = useForm<ActivityUpdateData>();
 
   if (!data) {
     return null;
   }
 
-  async function handleResign() {
-    console.log("resign");
-  }
-
-  async function onSubmit(data: EnrollmentData) {
+  async function onSubmit(data: ActivityUpdateData) {
     try {
-      if (data.tax_code && !validateCF(data.tax_code)) {
-        setError("tax_code", {
-          type: "manual",
-          message: t("Invalid tax code"),
-        });
-        return;
-      }
-
-      if (!data.accepted_requirements) {
-        setError("accepted_requirements", {
-          type: "manual",
-          message: t("youMustAcceptRequirements", "You must accept the required criteria"),
-        });
-        return;
-      }
-
-      const start_date = data.from_date.split("/").reverse().join("-");
-      const end_date = data.to_date.split("/").reverse().join("-");
-
-      if (new Date(start_date) > new Date(end_date)) {
-        setError("to_date", {
-          type: "manual",
-          message: t("endDateBeforeStartDate", "End date must be after start date"),
-        });
-
-        return;
-      }
-
-      const res = await client.POST("/activities", {
+      const res = await client.PUT("/activities/{id}", {
+        params: {
+          path: {
+            id: activityId,
+          },
+        },
         body: {
-          start_date,
-          start_time: data.from_time,
-          end_date,
-          end_time: data.to_time,
-          experience_id: experienceId,
-          tax_code: data.tax_code || "",
+          status: "canceled",
           message: data.message || "",
         },
       });
 
       if (res.error) {
         throw new Error(res.error.detail);
-      }
-
-      if (data.tax_code) {
-        fetchUser();
       }
 
       queryClient.refetchQueries({ queryKey: ["activities"] });
@@ -126,7 +72,12 @@ export default function ActivityGiveupScreen() {
       return;
     }
 
-    router.replace(`/experiences/${id}/confirm`);
+    router.replace({
+      pathname: "/activities/[id]/confirm",
+      params: {
+        id: activityId,
+      },
+    });
   }
 
   return (
