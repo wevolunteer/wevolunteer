@@ -2,6 +2,7 @@ import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
 import Checkbox from "@/components/ui/Checkbox";
 import InputText from "@/components/ui/InputText";
+import InputTextDate from "@/components/ui/InputTextDate";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useSession } from "@/contexts/authentication";
@@ -178,13 +179,10 @@ export default function RegistrationScreen() {
               control={control}
               name="date_of_birth"
               render={({ field: { onChange, value } }) => (
-                <InputText
+                <InputTextDate
                   label={t("dateOfBirth", "Date of birth")}
                   value={value}
                   onChangeText={onChange}
-                  keyboardType="numeric"
-                  maxLength={10}
-                  placeholder="GG/MM/AAAA"
                 />
               )}
             />

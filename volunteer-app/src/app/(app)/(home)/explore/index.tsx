@@ -34,9 +34,8 @@ function ExploreListScreen() {
   const handleRefetch = useCallback(() => {
     queryClient.invalidateQueries();
     refetch();
-    console.log("refetch", filters);
     listRef.current?.scrollToOffset({ offset: 0, animated: true });
-  }, [filters, refetch, queryClient]);
+  }, [refetch, queryClient]);
 
   useEffect(() => {
     handleRefetch();

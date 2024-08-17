@@ -12,7 +12,7 @@ import { ProfileData } from "@/types/data";
 import { convertToDDMMYYYY } from "@/utils/formatters";
 import { validateCF } from "@/utils/validators";
 import { router } from "expo-router";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { When } from "react-if";
@@ -24,7 +24,14 @@ export default function ProfileEditScreen() {
   const { session, fetchUser } = useSession();
   const { updateProfile } = useProfile();
 
-  const { control, handleSubmit, watch, setValue, setError } = useForm<ProfileData>({
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    setError,
+    formState: { errors },
+  } = useForm<ProfileData>({
     defaultValues: {
       avatar: session?.user?.avatar,
       first_name: session?.user?.first_name,
@@ -132,6 +139,7 @@ export default function ProfileEditScreen() {
           <ProfileDataForm
             label={t("tax_code", "Tax Code")}
             value={values.tax_code || t("notSpecified", "Not specified")}
+            error={errors.tax_code?.message}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
@@ -140,6 +148,7 @@ export default function ProfileEditScreen() {
               render={({ field }) => (
                 <InputText
                   value={field.value}
+                  error={errors.tax_code?.message}
                   onChangeText={field.onChange}
                   label={t("taxCode", "Tax code")}
                 />
@@ -282,11 +291,12 @@ export default function ProfileEditScreen() {
 interface ProfileDataFormProps {
   label: string;
   value: string;
+  error?: string;
   onSubmit?: () => void;
   children?: React.ReactNode | React.ReactNode[];
 }
 
-const ProfileDataForm: FC<ProfileDataFormProps> = ({ label, value, onSubmit, children }) => {
+const ProfileDataForm: FC<ProfileDataFormProps> = ({ label, value, onSubmit, error, children }) => {
   const { t } = useTranslation();
   const [showForm, setShowForm] = useState(false);
 
@@ -299,6 +309,12 @@ const ProfileDataForm: FC<ProfileDataFormProps> = ({ label, value, onSubmit, chi
     setShowForm(false);
     onSubmit && onSubmit();
   }
+
+  useEffect(() => {
+    if (error) {
+      setShowForm(true);
+    }
+  }, [error]);
 
   return (
     <Box

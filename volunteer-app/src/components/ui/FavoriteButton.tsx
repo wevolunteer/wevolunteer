@@ -34,7 +34,6 @@ const FavoriteButton: FC<{
     setIsLoading(false);
     setIsFavorite(true);
 
-    console.log("refetching");
     queryClient.invalidateQueries({
       queryKey: [],
       type: "all",
@@ -55,7 +54,6 @@ const FavoriteButton: FC<{
     setIsLoading(false);
     setIsFavorite(false);
 
-    console.log("refetching");
     queryClient.invalidateQueries({
       queryKey: [],
       type: "all",

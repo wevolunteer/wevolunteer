@@ -23,7 +23,16 @@ const InputTextDate: FC<InputTextProps & TextInputProps> = ({ value, onChangeTex
     }
   }
 
-  return <InputText {...rest} onChangeText={handleChange} value={displayValue || ""} />;
+  return (
+    <InputText
+      keyboardType="numeric"
+      maxLength={10}
+      placeholder="GG/MM/AAAA"
+      {...rest}
+      onChangeText={handleChange}
+      value={displayValue || ""}
+    />
+  );
 };
 
 export default InputTextDate;

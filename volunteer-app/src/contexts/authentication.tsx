@@ -11,7 +11,6 @@ const AuthContext = React.createContext<{
   signOut: () => void;
   session?: Session | null;
   getAccessToken: () => Promise<string | null>;
-  isLoading: boolean;
 }>({
   requestAuthCode: () => Promise.resolve(false),
   verifyAuthCode: () => Promise.resolve(false),
@@ -19,7 +18,6 @@ const AuthContext = React.createContext<{
   signOut: () => null,
   getAccessToken: () => Promise.resolve(null),
   session: null,
-  isLoading: false,
 });
 
 // This hook can be used to access the user info.
@@ -35,7 +33,7 @@ export function useSession() {
 }
 
 export function SessionProvider(props: React.PropsWithChildren) {
-  const [[isLoading, session], setSession] = useStorageState("session");
+  const [session, setSession] = useStorageState("session");
   const { client } = useNetwork();
 
   const tokenMiddleware: Middleware = {
@@ -191,18 +189,6 @@ export function SessionProvider(props: React.PropsWithChildren) {
               },
             });
 
-            // await client.POST("/user-devices", {
-            //   body: {
-            //     brand: Device.brand || "Unknown",
-            //     device_name: Device.deviceName || "Unknown",
-            //     model: Device.modelName || "Unknown",
-            //     device_type: Device.deviceType?.toString() || "Unknown",
-            //     os_name: Device.osName || "Unknown",
-            //     token: expoPushToken,
-            //   },
-            //   headers,
-            // });
-
             return true;
           }
         }
@@ -214,9 +200,8 @@ export function SessionProvider(props: React.PropsWithChildren) {
       },
       session,
       getAccessToken,
-      isLoading,
     }),
-    [session, isLoading, fetchUser, setSession, client, getAccessToken],
+    [session, fetchUser, setSession, client, getAccessToken],
   );
 
   return <AuthContext.Provider value={initialState}>{props.children}</AuthContext.Provider>;

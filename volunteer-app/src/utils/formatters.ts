@@ -16,12 +16,15 @@ export const convertToDDMMYYYY = (dateString: string): string => {
     const parsedDate = parseISO(dateString);
     return format(parsedDate, "dd/MM/yyyy");
   } catch (err) {
-    // eslint-disable-line
     return "";
   }
 };
 
 export const convertToYYYYMMDD = (dateString: string): string => {
-  const parsedDate = parse(dateString, "dd/MM/yyyy", new Date());
-  return format(parsedDate, "yyyy-MM-dd");
+  try {
+    const parsedDate = parse(dateString, "dd/MM/yyyy", new Date());
+    return format(parsedDate, "yyyy-MM-dd");
+  } catch (err) {
+    return "";
+  }
 };
