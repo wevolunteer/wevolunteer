@@ -18,19 +18,25 @@ const CameraPickerButton: FC<ProfileDataFormProps> = ({ onSubmit }) => {
   const { t } = useTranslation();
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
+    const permissionStatus = await ImagePicker.requestCameraPermissionsAsync();
 
-    if (!result.canceled && onSubmit) {
-      onSubmit({
-        uri: result.assets[0].uri,
-        name: result.assets[0].uri.split("/").pop() || "",
-        type: result.assets[0].mimeType || "",
+    if (permissionStatus.granted) {
+      let result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
       });
+
+      if (!result.canceled && onSubmit) {
+        const filename = result.assets[0].uri.split("/").pop();
+
+        onSubmit({
+          uri: result.assets[0].uri,
+          name: result.assets[0].fileName || filename || "avatar.jpg",
+          type: result.assets[0].mimeType || "",
+        });
+      }
     }
   };
 

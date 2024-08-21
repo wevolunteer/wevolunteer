@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { FC, useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Pressable, StyleSheet } from "react-native";
+import { ActivityIndicator, Platform, Pressable, StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Box from "../ui/Box";
 import Icon from "../ui/Icon";
@@ -39,11 +39,11 @@ const ProfileAvatar: FC<ProfileAvatarProps> = ({ url, onChange, editable }) => {
 
       // @ts-ignore
       formData.append("file", {
-        uri: media.uri,
+        uri: Platform.OS === "android" ? media.uri : media.uri.replace("file://", ""),
         name: media.name,
         type: media.type,
       });
-      formData.append("name", media.name);
+      // formData.append("name", media.name);
 
       setIsLoading(true);
 

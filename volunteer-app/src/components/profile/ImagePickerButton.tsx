@@ -27,9 +27,11 @@ const ImagePickerButton: FC<ProfileDataFormProps> = ({ onSubmit }) => {
     });
 
     if (!result.canceled && onSubmit) {
+      const filename = result.assets[0].uri.split("/").pop();
+
       onSubmit({
         uri: result.assets[0].uri,
-        name: result.assets[0].fileName || "",
+        name: result.assets[0].fileName || filename || "avatar.jpg",
         type: result.assets[0].mimeType || "",
       });
     }
