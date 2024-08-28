@@ -120,7 +120,7 @@ export default function OrganizationsListScreen() {
               </ScrollView>
             </Box>
             <Box my="l" px="m">
-              <Text variant="title">{t("Experiences", "Experiences")}</Text>
+              <Text variant="title">{t("activities", "Activities")}</Text>
             </Box>
           </>
         )}

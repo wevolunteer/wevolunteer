@@ -26,9 +26,9 @@ export default function ActivityGiveupScreen() {
   const activityId = parseInt(id);
 
   const { data } = useQuery({
-    queryKey: ["experience", id],
+    queryKey: ["activity", id],
     queryFn: async () => {
-      const response = await client.GET("/experiences/{id}", {
+      const response = await client.GET("/activities/{id}", {
         params: {
           path: {
             id: activityId,
@@ -73,7 +73,7 @@ export default function ActivityGiveupScreen() {
     }
 
     router.replace({
-      pathname: "/activities/[id]/confirm",
+      pathname: "/activities/[id]/confirm_giveup",
       params: {
         id: activityId,
       },
@@ -89,7 +89,7 @@ export default function ActivityGiveupScreen() {
           <Text variant="header" color="secondaryText">
             {t("giveupVolunteerActivvityWith", "Give up activity with")}
           </Text>
-          <Text variant="header">{data.organization.name}</Text>
+          <Text variant="header">{data.experience.organization.name}</Text>
         </Box>
 
         <Box px="m">

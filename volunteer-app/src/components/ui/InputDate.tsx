@@ -17,12 +17,16 @@ interface InpuDateProps {
   label?: string;
   error?: string;
   size?: keyof typeof SIZES;
+  minimumDate?: Date;
+  maximumDate?: Date;
 }
 
 const InputDate: FC<TextInputProps & InpuDateProps> = ({
   label,
   value,
   error,
+  maximumDate,
+  minimumDate,
   onChangeText,
   ...props
 }) => {
@@ -49,6 +53,9 @@ const InputDate: FC<TextInputProps & InpuDateProps> = ({
           mode="date"
           value={currentDate}
           is24Hour={false}
+          locale="it-IT"
+          maximumDate={maximumDate}
+          minimumDate={minimumDate}
           style={{ backgroundColor: theme.colors.accentText }}
           onChange={(event, selectedDate) => {
             if (selectedDate) {

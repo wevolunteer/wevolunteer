@@ -81,7 +81,8 @@ export default function ActivityScreen() {
         alignItems="center"
         backgroundColor="mainBackground"
         flexDirection="row"
-        py="m"
+        pt="l"
+        pb="xl"
         px="m"
       >
         <Box>

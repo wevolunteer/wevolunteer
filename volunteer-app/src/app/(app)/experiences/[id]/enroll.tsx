@@ -9,6 +9,7 @@ import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useSession } from "@/contexts/authentication";
 import { useNetwork } from "@/contexts/network";
+import { convertToDate } from "@/utils/formatters";
 import { validateCF } from "@/utils/validators";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
@@ -66,26 +67,39 @@ export default function ExperienceEnrollScreen() {
     return null;
   }
 
-  async function onSubmit(data: EnrollmentData) {
+  async function onSubmit(values: EnrollmentData) {
+    let errors = false;
     try {
-      if (data.tax_code && !validateCF(data.tax_code)) {
+      if (values.tax_code && !validateCF(values.tax_code)) {
+        errors = true;
         setError("tax_code", {
           type: "manual",
           message: t("Invalid tax code"),
         });
-        return;
       }
 
-      if (!data.accepted_requirements) {
+      if (!values.accepted_requirements) {
+        errors = true;
         setError("accepted_requirements", {
           type: "manual",
           message: t("youMustAcceptRequirements", "You must accept the required criteria"),
         });
+      }
+
+      if (!values.accepted_privacy) {
+        errors = true;
+        setError("accepted_privacy", {
+          type: "manual",
+          message: t("youMustAcceptPrivacy", "You must accept the privacy policy"),
+        });
+      }
+
+      if (errors) {
         return;
       }
 
-      const start_date = data.from_date.split("/").reverse().join("-");
-      const end_date = data.to_date.split("/").reverse().join("-");
+      const start_date = values.from_date.split("/").reverse().join("-");
+      const end_date = values.to_date.split("/").reverse().join("-");
 
       if (new Date(start_date) > new Date(end_date)) {
         setError("to_date", {
@@ -99,12 +113,12 @@ export default function ExperienceEnrollScreen() {
       const res = await client.POST("/activities", {
         body: {
           start_date,
-          start_time: data.from_time,
+          start_time: values.from_time,
           end_date,
-          end_time: data.to_time,
+          end_time: values.to_time,
           experience_id: experienceId,
-          tax_code: data.tax_code || "",
-          message: data.message || "",
+          tax_code: values.tax_code || "",
+          message: values.message || "",
         },
       });
 
@@ -112,7 +126,7 @@ export default function ExperienceEnrollScreen() {
         throw new Error(res.error.detail);
       }
 
-      if (data.tax_code) {
+      if (values.tax_code) {
         fetchUser();
       }
 
@@ -166,6 +180,8 @@ export default function ExperienceEnrollScreen() {
                   <InputDate
                     label={t("fromDay", "Of the day")}
                     value={value}
+                    minimumDate={convertToDate(data.start_date)}
+                    maximumDate={convertToDate(data.end_date)}
                     error={errors.from_date?.message}
                     onChangeText={onChange}
                     placeholder="GG/MM/AAAA"
@@ -219,6 +235,8 @@ export default function ExperienceEnrollScreen() {
                 <InputText
                   label={t("taxCode", "Tax code")}
                   value={value}
+                  autoCapitalize={"characters"}
+                  uppercase
                   onChangeText={onChange}
                   placeholder={t("yourTaxCode", "Insert your tax code for insurance purposes")}
                   multiline
@@ -250,7 +268,11 @@ export default function ExperienceEnrollScreen() {
             control={control}
             name="accepted_requirements"
             render={({ field: { onChange, value } }) => (
-              <Checkbox value={value || false} onChange={onChange}>
+              <Checkbox
+                value={value || false}
+                onChange={onChange}
+                error={errors.accepted_requirements?.message}
+              >
                 <Box flexDirection="row" gap="s" flexWrap="wrap">
                   <Text variant="body">
                     <Trans i18nKey="acceptedRequirements">
@@ -274,7 +296,11 @@ export default function ExperienceEnrollScreen() {
             control={control}
             name="accepted_privacy"
             render={({ field: { onChange, value } }) => (
-              <Checkbox value={value || false} onChange={onChange}>
+              <Checkbox
+                value={value || false}
+                onChange={onChange}
+                error={errors.accepted_privacy?.message}
+              >
                 <Box flexDirection="row" gap="s" flexWrap="wrap">
                   <Text variant="body">
                     <Trans

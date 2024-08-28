@@ -4,15 +4,17 @@ import React, { FC } from "react";
 import { LayoutAnimation, Pressable } from "react-native";
 import Box from "./Box";
 import Icon from "./Icon";
+import Text from "./Text";
 
 interface CheckboxProps {
   children?: React.ReactNode;
   value: boolean;
   onChange: (checked: boolean) => void;
   accent?: boolean;
+  error?: string;
 }
 
-const Checkbox: FC<CheckboxProps> = ({ children, value, onChange, accent }) => {
+const Checkbox: FC<CheckboxProps> = ({ children, error, value, onChange, accent }) => {
   const theme = useTheme<Theme>();
 
   const bgColor = accent ? "primaryBackground" : "invertedBackground";
@@ -38,7 +40,14 @@ const Checkbox: FC<CheckboxProps> = ({ children, value, onChange, accent }) => {
           {value && <Icon name="check" size={24} color={theme.colors.whiteText} />}
         </Box>
       </Pressable>
-      {children && <Box flex={1}>{children}</Box>}
+      <Box flex={1}>
+        {children && <Box flex={1}>{children}</Box>}
+        {error && (
+          <Box flex={1}>
+            <Text color="errorText">{error}</Text>
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 };

@@ -199,7 +199,13 @@ export default function RegistrationScreen() {
               control={control}
               name="tax_code"
               render={({ field: { onChange, value } }) => (
-                <InputText label={t("taxCode", "Tax code")} value={value} onChangeText={onChange} />
+                <InputText
+                  label={t("taxCode", "Tax code")}
+                  value={value}
+                  onChangeText={onChange}
+                  autoCapitalize={"characters"}
+                  uppercase
+                />
               )}
             />
             {errors.tax_code && <Text variant="error">{errors.tax_code.message}</Text>}

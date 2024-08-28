@@ -13,10 +13,19 @@ export interface InputTextProps {
   label?: string;
   error?: string;
   size?: keyof typeof SIZES;
+  uppercase?: boolean;
 }
 
 const InputText: FC<TextInputProps & InputTextProps> = ({ label, size, error, ...rest }) => {
   const [isSecure, setIsSecure] = useState(rest.secureTextEntry || false);
+
+  function handleTextChange(text: string) {
+    if (rest.uppercase) {
+      rest.onChangeText?.(text.toUpperCase());
+    } else {
+      rest.onChangeText?.(text);
+    }
+  }
 
   return (
     <Box width="100%">
@@ -40,6 +49,7 @@ const InputText: FC<TextInputProps & InputTextProps> = ({ label, size, error, ..
             height: rest.multiline ? 300 : "auto",
             textAlignVertical: rest.multiline ? "top" : "center",
           }}
+          onChangeText={handleTextChange}
           secureTextEntry={isSecure}
         />
 

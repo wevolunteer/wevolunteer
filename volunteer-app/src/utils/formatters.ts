@@ -30,3 +30,15 @@ export const convertToYYYYMMDD = (dateString: string): string => {
     return "";
   }
 };
+
+export const convertToDate = (dateString?: string): Date | undefined => {
+  if (!dateString) {
+    return undefined;
+  }
+
+  try {
+    return parseISO(dateString);
+  } catch (err) {
+    return undefined;
+  }
+};

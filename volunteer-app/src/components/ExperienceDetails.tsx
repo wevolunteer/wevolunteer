@@ -11,7 +11,7 @@ import { processColorByStatus } from "@/utils/formatters";
 import { format } from "date-fns";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Linking, Pressable } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -21,6 +21,7 @@ interface ExeperienceDetailsProps {
   isFavorite?: boolean;
   activityStatus?: string;
 }
+const imagePlaceholder = require("@/assets/images/experience-placeholder.png");
 
 const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
   experience,
@@ -28,6 +29,10 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
   activityStatus,
 }) => {
   const { t } = useTranslation();
+
+  const image = useMemo(() => {
+    return experience.image ? { uri: experience.image } : imagePlaceholder;
+  }, [experience.image]);
 
   return (
     <ScrollView>
@@ -47,7 +52,7 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
         </Box>
       )}
       <Image
-        source={experience.image}
+        source={image}
         style={{
           width: "100%",
           height: 390,
@@ -73,15 +78,17 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
             borderBottomWidth={1}
             borderBottomColor="mainBorder"
           >
-            <Image
-              source={experience.organization.logo}
-              contentFit="cover"
-              style={{
-                width: 54,
-                height: 54,
-                borderRadius: 1000,
-              }}
-            />
+            {experience.organization.logo && (
+              <Image
+                source={experience.organization.logo}
+                contentFit="cover"
+                style={{
+                  width: 54,
+                  height: 54,
+                  borderRadius: 1000,
+                }}
+              />
+            )}
             <Box flex={1}>
               <Text variant="body">{experience.organization.name}</Text>
             </Box>
@@ -110,7 +117,7 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
             borderBottomColor="mainBorder"
           >
             <Icon name="marker" size={32} color="black" strokeWith="1.5" />
-            <Box>
+            <Box flex={1}>
               <Text variant="body">{experience.address}</Text>
               <Text variant="body">{experience.city}</Text>
             </Box>

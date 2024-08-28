@@ -4,9 +4,9 @@ import { Activity } from "@/types/data";
 import { tActivityStatus } from "@/utils/enumTransl";
 import { processColorByStatus } from "@/utils/formatters";
 import { format } from "date-fns";
-import { FC } from "react";
+import { Image } from "expo-image";
+import { FC, useMemo } from "react";
 import { Pressable } from "react-native";
-import Animated from "react-native-reanimated";
 import Icon from "./ui/Icon";
 
 export interface ActivityCardProps {
@@ -15,7 +15,13 @@ export interface ActivityCardProps {
   onClose?: () => void;
 }
 
+const imagePlaceholder = require("@/assets/images/experience-placeholder.png");
+
 export const ActivityCard: FC<ActivityCardProps> = ({ activity, onPress, onClose }) => {
+  const image = useMemo(() => {
+    return activity.experience.image ? { uri: activity.experience.image } : imagePlaceholder;
+  }, [activity.experience.image]);
+
   return (
     <Pressable onPress={onPress}>
       <Box
@@ -38,7 +44,6 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, onPress, onClose
         elevation={6}
         position="relative"
         borderRadius="m"
-        overflow="hidden"
         flexDirection="row"
         backgroundColor="mainBackground"
         marginHorizontal="m"
@@ -83,9 +88,14 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, onPress, onClose
           </Text>
         </Box>
         <Box flex={1}>
-          <Animated.Image
-            source={{ uri: activity.experience.image }}
-            style={{ width: "100%", height: 179 }}
+          <Image
+            source={image}
+            style={{
+              width: "100%",
+              height: 179,
+              borderBottomRightRadius: 16,
+              borderTopRightRadius: 16,
+            }}
           />
         </Box>
       </Box>

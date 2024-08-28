@@ -2,7 +2,7 @@ import Box from "@/components/ui/Box";
 import Text from "@/components/ui/Text";
 import { Experience } from "@/types/data";
 import { format } from "date-fns";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { Pressable } from "react-native";
 import Animated from "react-native-reanimated";
 import Icon from "./ui/Icon";
@@ -13,7 +13,13 @@ export interface ExperienceCardProps {
   onClose?: () => void;
 }
 
+const imagePlaceholder = require("@/assets/images/experience-placeholder.png");
+
 export const ExperienceCard: FC<ExperienceCardProps> = ({ experience, onPress, onClose }) => {
+  const image = useMemo(() => {
+    return experience.image ? { uri: experience.image } : imagePlaceholder;
+  }, [experience.image]);
+
   return (
     <Pressable onPress={onPress}>
       <Box
@@ -72,10 +78,7 @@ export const ExperienceCard: FC<ExperienceCardProps> = ({ experience, onPress, o
           </Text>
         </Box>
         <Box flex={1}>
-          <Animated.Image
-            source={{ uri: experience.image }}
-            style={{ width: "100%", height: 179 }}
-          />
+          <Animated.Image source={image} style={{ width: "100%", height: 179 }} />
         </Box>
       </Box>
     </Pressable>

@@ -148,6 +148,8 @@ export default function ProfileEditScreen() {
               render={({ field }) => (
                 <InputText
                   value={field.value}
+                  autoCapitalize={"characters"}
+                  uppercase
                   error={errors.tax_code?.message}
                   onChangeText={field.onChange}
                   label={t("taxCode", "Tax code")}
