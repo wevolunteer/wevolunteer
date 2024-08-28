@@ -39,20 +39,28 @@ func FakeDataCommand() error {
 
 	return nil
 }
+
 func generateCategories(count int) ([]*models.Category, error) {
 
-	var categories []*models.Category
+	categories := []*models.Category{
+		{Name: "Cultura, sport e ricreazione", Code: "CulturaSportRicreazione"},
+		{Name: "Istruzione e ricerca", Code: "IstruzioneRicerca"},
+		{Name: "Sanità", Code: "Sanita"},
+		{Name: "Assistenza sociale e protezione civile", Code: "AssistenzaSocialeProtezioneCivile"},
+		{Name: "Ambiente", Code: "Ambiente"},
+		{Name: "Sviluppo economico e coesione sociale", Code: "SviluppoEconomicoCoesioneSociale"},
+		{Name: "Tutela dei diritti e attività politica", Code: "TutelaDirittiAttivitaPolitica"},
+		{Name: "Filantropia e promozione del volontariato", Code: "FilantropiaPromozioneVolontariato"},
+		{Name: "Cooperazione e solidarietà internazionale", Code: "CooperazioneSolitarietaInternazionale"},
+		{Name: "Religione", Code: "Religione"},
+		{Name: "Relazioni sindacali e rappresentanza di interessi", Code: "RelazioniSindacali"},
+		{Name: "Altre attività", Code: "AltreAttivita"},
+	}
 
-	for i := 0; i < count; i++ {
-		category := &models.Category{
-			Name: gofakeit.Animal(),
-		}
-
+	for category := range categories {
 		if err := app.DB.Create(category).Error; err != nil {
 			return nil, err
 		}
-
-		categories = append(categories, category)
 	}
 
 	return categories, nil
@@ -90,7 +98,7 @@ func generateOrganizations(count int, categories []*models.Category) ([]*models.
 			Longitude: lon,
 			TaxCode:   gofakeit.LetterN(10),
 			VATCode:   gofakeit.LetterN(10),
-			Category:  models.Category{ID: categories[gofakeit.Number(0, len(categories)-1)].ID},
+			Category:  &models.Category{ID: categories[gofakeit.Number(0, len(categories)-1)].ID},
 			Published: true,
 		}
 

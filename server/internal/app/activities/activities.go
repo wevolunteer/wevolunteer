@@ -6,6 +6,7 @@ import (
 
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/app/accounts"
+	"github.com/wevolunteer/wevolunteer/internal/app/experiences"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 	"gorm.io/gorm"
 )
@@ -157,7 +158,7 @@ func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activit
 	}
 
 	experience := models.Experience{}
-	if err := app.DB.Where("id = ?", data.ExperienceID).First(&experience).Error; err != nil {
+	if err := experiences.ExperienceQuery(ctx).Where("id = ?", data.ExperienceID).First(&experience).Error; err != nil {
 		return nil, fmt.Errorf("experience not found")
 	}
 
@@ -165,7 +166,7 @@ func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activit
 	// todo is a timerange available for experience?
 
 	activityCheck := models.Activity{}
-	if err := app.DB.Where("experience_id = ? AND user_id = ?", data.ExperienceID, ctx.User.ID).First(&activityCheck).Error; err == nil {
+	if err := ActivityQuery(ctx).Where("experience_id = ? AND user_id = ? AND status not in ('rejected','canceled') AND end_date < ? ", data.ExperienceID, ctx.User.ID, data.StartDate).First(&activityCheck).Error; err == nil {
 		return nil, fmt.Errorf("already enrolled")
 	}
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/wevolunteer/wevolunteer/internal/app"
+	"github.com/wevolunteer/wevolunteer/internal/models"
 )
 
 type OrganizationListResponse struct {
@@ -58,7 +59,7 @@ type OrganizationCreateRequest struct {
 }
 
 type OrganizationCreateResponse struct {
-	Body ExtendedOrganization
+	Body models.Organization
 }
 
 func OrganizationCreateController(
@@ -69,14 +70,13 @@ func OrganizationCreateController(
 	data, err := OrganizationCreate(ctx, &input.Body)
 
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
 	resp := &OrganizationCreateResponse{}
 
-	resp.Body = ExtendedOrganization{
-		Organization: *data,
-	}
+	resp.Body = *data
 
 	return resp, nil
 }
@@ -87,7 +87,7 @@ type OrganizationUpdateRequest struct {
 }
 
 type OrganizationUpdateResponse struct {
-	Body ExtendedOrganization
+	Body models.Organization
 }
 
 func OrganizationUpdateController(

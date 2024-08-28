@@ -39,6 +39,19 @@ func OrganizationGet(c *app.Context, id uint) (*ExtendedOrganization, error) {
 	return &organization, nil
 }
 
+func OrganizationGetByExternalID(c *app.Context, externalId string) (*ExtendedOrganization, error) {
+	var organization ExtendedOrganization
+
+	if err := OrganizationQuery(c).
+		Select("organizations.*, COALESCE(favorite_organizations.user_id IS NOT NULL, false) AS is_favorite").
+		Joins("LEFT JOIN favorite_organizations ON favorite_organizations.organization_id = organizations.id AND favorite_organizations.user_id = ?", c.User.ID).
+		Where("organizations.external_id = ?", externalId).First(&organization).Error; err != nil {
+		return nil, err
+	}
+
+	return &organization, nil
+}
+
 type OrganizationFilters struct {
 	app.PaginationInput
 	Query    string `query:"q"`
@@ -104,20 +117,133 @@ func OrganizationsList(c *app.Context, filters *OrganizationFilters) (*Organizat
 }
 
 type OrganizationCreateData struct {
-	Name  string `json:"name"`
-	Phone string `json:"phone"`
+	Name       string   `json:"name"`
+	Logo       *string  `json:"logo"`
+	Tagline    *string  `json:"tagline"`
+	Email      *string  `json:"email"`
+	WebSite    *string  `json:"website"`
+	Phone      *string  `json:"phone"`
+	Address    *string  `json:"address"`
+	CategoryID uint     `json:"category_id"`
+	City       *string  `json:"city"`
+	State      *string  `json:"state"`
+	ZipCode    *string  `json:"zip_code"`
+	Country    *string  `json:"country"`
+	Latitude   *float64 `json:"latitude"`
+	Longitude  *float64 `json:"longitude"`
+	TaxCode    *string  `json:"tax_code"`
+	VATCode    *string  `json:"vat_code"`
+	ExternalId *string  `json:"external_id"`
 }
 
 func OrganizationCreate(c *app.Context, data *OrganizationCreateData) (*models.Organization, error) {
+	fmt.Printf("data: %v\n", data)
 	uuid := uuid.New()
 
-	organization := models.Organization{
-		Name:  data.Name,
-		Phone: data.Phone,
-		UID:   uuid.String(),
+	existingOrganization := models.Organization{}
+
+	if data.ExternalId != nil {
+		if err := app.DB.Where("external_id = ?", *data.ExternalId).First(&existingOrganization).Error; err == nil {
+			fmt.Printf("existingOrganization\n")
+			return OrganizationUpdate(
+				c,
+				existingOrganization.ID,
+				&OrganizationUpdateData{
+					Name:       &data.Name,
+					Logo:       data.Logo,
+					Tagline:    data.Tagline,
+					Email:      data.Email,
+					WebSite:    data.WebSite,
+					Phone:      data.Phone,
+					CategoryID: &data.CategoryID,
+					Address:    data.Address,
+					City:       data.City,
+					State:      data.State,
+					ZipCode:    data.ZipCode,
+					Country:    data.Country,
+					Latitude:   data.Latitude,
+					Longitude:  data.Longitude,
+					TaxCode:    data.TaxCode,
+					VATCode:    data.VATCode,
+					ExternalId: data.ExternalId,
+				},
+			)
+		}
 	}
 
+	organization := models.Organization{
+		Name: data.Name,
+		UID:  uuid.String(),
+	}
+
+	if data.Logo != nil {
+		organization.Logo = *data.Logo
+	}
+
+	if data.Tagline != nil {
+		organization.Tagline = *data.Tagline
+	}
+
+	if data.Email != nil {
+		organization.Email = *data.Email
+	}
+
+	if data.WebSite != nil {
+		organization.WebSite = *data.WebSite
+	}
+
+	if data.Phone != nil {
+		organization.Phone = *data.Phone
+	}
+
+	organization.CategoryID = &data.CategoryID
+
+	if data.Address != nil {
+		organization.Address = *data.Address
+	}
+
+	if data.City != nil {
+		organization.City = *data.City
+	}
+
+	if data.State != nil {
+		organization.State = *data.State
+	}
+
+	if data.ZipCode != nil {
+
+		organization.ZipCode = *data.ZipCode
+
+	}
+
+	if data.Country != nil {
+		organization.Country = *data.Country
+	}
+
+	if data.Latitude != nil {
+		organization.Latitude = *data.Latitude
+	}
+
+	if data.Longitude != nil {
+		organization.Longitude = *data.Longitude
+	}
+
+	if data.TaxCode != nil {
+		organization.TaxCode = *data.TaxCode
+	}
+
+	if data.VATCode != nil {
+		organization.VATCode = *data.VATCode
+	}
+
+	if data.ExternalId != nil {
+		organization.ExternalId = *data.ExternalId
+	}
+
+	fmt.Printf("organization: %v\n", organization)
+
 	if err := app.DB.Create(&organization).Error; err != nil {
+		fmt.Printf("error: %v\n", err)
 		return nil, err
 	}
 
@@ -125,14 +251,27 @@ func OrganizationCreate(c *app.Context, data *OrganizationCreateData) (*models.O
 }
 
 type OrganizationUpdateData struct {
-	Name       string `json:"name"`
-	Phone      string `json:"phone"`
-	Email      string `json:"email"`
-	ExternalId string `json:"external_id"`
+	Name       *string  `json:"name"`
+	Logo       *string  `json:"logo"`
+	Tagline    *string  `json:"tagline"`
+	CategoryID *uint    `json:"category_id"`
+	Email      *string  `json:"email"`
+	WebSite    *string  `json:"website"`
+	Phone      *string  `json:"phone"`
+	Address    *string  `json:"address"`
+	City       *string  `json:"city"`
+	State      *string  `json:"state"`
+	ZipCode    *string  `json:"zip_code"`
+	Country    *string  `json:"country"`
+	Latitude   *float64 `json:"latitude"`
+	Longitude  *float64 `json:"longitude"`
+	TaxCode    *string  `json:"tax_code"`
+	VATCode    *string  `json:"vat_code"`
+	ExternalId *string  `json:"external_id"`
 }
 
-func OrganizationUpdate(c *app.Context, id uint, data *OrganizationUpdateData) (*ExtendedOrganization, error) {
-	var organization ExtendedOrganization
+func OrganizationUpdate(c *app.Context, id uint, data *OrganizationUpdateData) (*models.Organization, error) {
+	var organization models.Organization
 
 	if err := OrganizationQuery(c).Where("id = ?", id).First(&organization).Error; err != nil {
 		return nil, &app.ErrNotAuthorized{
@@ -140,10 +279,73 @@ func OrganizationUpdate(c *app.Context, id uint, data *OrganizationUpdateData) (
 		}
 	}
 
-	organization.Name = data.Name
-	organization.Phone = data.Phone
-	organization.Email = data.Email
-	organization.ExternalId = data.ExternalId
+	if data.Name != nil {
+		organization.Name = *data.Name
+	}
+
+	if data.Logo != nil {
+		organization.Logo = *data.Logo
+	}
+
+	if data.Tagline != nil {
+		organization.Tagline = *data.Tagline
+	}
+
+	if data.CategoryID != nil {
+		organization.CategoryID = data.CategoryID
+	}
+
+	if data.Email != nil {
+		organization.Email = *data.Email
+	}
+
+	if data.WebSite != nil {
+		organization.WebSite = *data.WebSite
+	}
+
+	if data.Phone != nil {
+		organization.Phone = *data.Phone
+	}
+
+	if data.Address != nil {
+		organization.Address = *data.Address
+	}
+
+	if data.City != nil {
+		organization.City = *data.City
+	}
+
+	if data.State != nil {
+		organization.State = *data.State
+	}
+
+	if data.ZipCode != nil {
+		organization.ZipCode = *data.ZipCode
+	}
+
+	if data.Country != nil {
+		organization.Country = *data.Country
+	}
+
+	if data.Latitude != nil {
+		organization.Latitude = *data.Latitude
+	}
+
+	if data.Longitude != nil {
+		organization.Longitude = *data.Longitude
+	}
+
+	if data.TaxCode != nil {
+		organization.TaxCode = *data.TaxCode
+	}
+
+	if data.VATCode != nil {
+		organization.VATCode = *data.VATCode
+	}
+
+	if data.ExternalId != nil {
+		organization.ExternalId = *data.ExternalId
+	}
 
 	if err := app.DB.Save(&organization).Error; err != nil {
 		return nil, err

@@ -38,7 +38,7 @@ func RegisterRoutes(api huma.API) {
 
 	huma.Register(api, huma.Operation{
 		OperationID: "organizations-create",
-		Summary:     "Create organization",
+		Summary:     "Create organization---------",
 		Method:      http.MethodPost,
 		Path:        "/organizations",
 		Tags:        RouteTag,

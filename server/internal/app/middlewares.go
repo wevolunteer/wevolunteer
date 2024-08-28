@@ -32,8 +32,18 @@ func AuthMiddleware(api huma.API) func(ctx huma.Context, next func(huma.Context)
 		})
 
 		if err != nil || !token.Valid {
-			log.Debugf("Invalid token provided: %v", err)
-			huma.WriteErr(api, ctx, http.StatusUnauthorized, "Unauthorized")
+			// Try to find a service account related to the token
+			var serviceAccount models.ServiceAccount
+
+			if err := DB.Model(&serviceAccount).Preload("User").Where("token = ?", tokenString).First(&serviceAccount).Error; err != nil {
+				log.Debugf("Invalid token provided: %s", tokenString)
+				huma.WriteErr(api, ctx, http.StatusUnauthorized, "Unauthorized")
+				return
+			}
+			ctx = huma.WithValue(ctx, "user", &serviceAccount.User)
+			ctx = huma.WithValue(ctx, "role", RoleSuperUser) // Service accounts are always super users
+			next(ctx)
+
 			return
 		}
 

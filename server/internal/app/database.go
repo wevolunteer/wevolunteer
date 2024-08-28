@@ -61,6 +61,7 @@ func DatabaseInit(config *DatabaseConfig) error {
 		&models.Experience{},
 		&models.Category{},
 		&models.Place{},
+		&models.ServiceAccount{},
 	)
 
 	if err != nil {

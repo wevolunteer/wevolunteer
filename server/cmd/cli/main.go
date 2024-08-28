@@ -134,5 +134,28 @@ func main() {
 		}),
 	})
 
+	cmd.AddCommand(&cobra.Command{
+		Use:   "createserviceaccount",
+		Short: "Create service account",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return fmt.Errorf("requires exactly 1 arguments")
+			}
+			return nil
+		},
+		Run: humacli.WithOptions(func(cmd *cobra.Command, args []string, opts *CLIOptions) {
+
+			_, err := app.Init(opts.ConfigFile)
+			if err != nil {
+				panic(err)
+			}
+
+			commands.CreateServiceAccountCommand(commands.CreateServiceAccountInput{
+				Email: args[0],
+			})
+			fmt.Println("")
+		}),
+	})
+
 	cli.Run()
 }

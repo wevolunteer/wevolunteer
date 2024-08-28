@@ -27,9 +27,10 @@ type Experience struct {
 	Country   string  `json:"country"`
 
 	//Contact
-	ContactName  string `json:"contact_name"`
-	ContactEmail string `json:"contact_email"`
-	ContactPhone string `json:"contact_phone"`
+	ContactName                string `json:"contact_name"`
+	ContactEmail               string `json:"contact_email"`
+	ContactPhone               string `json:"contact_phone"`
+	PostEnrollmentInstructions string `json:"post_enrollment_instructions"`
 
 	// Dates
 	StartDate time.Time `json:"start_date"`
@@ -51,4 +52,6 @@ type Experience struct {
 
 	// Visibility
 	Published bool `json:"published"`
+
+	ExternalID string `json:"external_id"`
 }
