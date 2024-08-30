@@ -1,6 +1,8 @@
 import { Create, ImageField, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Switch } from "antd";
+import { Flex, Form, Input, Switch, Typography } from "antd";
 import { Select } from "antd/lib";
+import UploadButton from "../../components/UploadButton";
+import ImageItem from "../../components/ImageItem";
 
 export const ExperienceCreate = () => {
   const {
@@ -60,13 +62,7 @@ export const ExperienceCreate = () => {
           <Input.TextArea />
         </Form.Item>
 
-        <Form.Item label={"Image URL"} name={["image"]}>
-          <ImageField
-            value={formProps.initialValues?.image}
-            title={"Image"}
-            width={200}
-          />
-        </Form.Item>
+        <ImageItem label="Image" name={"image"} setFieldValue={setFieldValue} />
 
         <Form.Item
           label={"Category"}

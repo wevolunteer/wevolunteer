@@ -1,5 +1,7 @@
 import { Edit, useForm, ImageField } from "@refinedev/antd";
 import { Flex, Form, Input, Switch, Typography } from "antd";
+import UploadButton from "../../components/UploadButton";
+import ImageItem from "../../components/ImageItem";
 
 export const OrganizationEdit = () => {
   const {
@@ -7,7 +9,7 @@ export const OrganizationEdit = () => {
     saveButtonProps,
     formLoading,
     form: { setFieldValue },
-    query
+    query,
   } = useForm({});
 
   return (
@@ -53,29 +55,7 @@ export const OrganizationEdit = () => {
           <Input />
         </Form.Item>
 
-        <Form.Item label={"Logo"} name={["logo"]} style={{ height: "100%" }}>
-          <Flex justify="normal" gap={20} style={{ height: "100%" }}>
-            <Form.Item name={["logo"]} noStyle>
-              {/* @ts-expect-error value handled */}
-              <ImageField title={"Logo"} width={300} />
-            </Form.Item>
-            <Flex vertical gap={5}>
-              <Typography.Text>URL</Typography.Text>
-              <Form.Item name={["logo"]} noStyle>
-                <Input
-                  style={{ width: 500 }}
-                  onChange={(e) => {
-                    setFieldValue("logo", e.target.value);
-                  }}
-                  allowClear
-                  onClear={() => {
-                    setFieldValue("logo", null);
-                  }}
-                />
-              </Form.Item>
-            </Flex>
-          </Flex>
-        </Form.Item>
+        <ImageItem label="Logo" name={"logo"} setFieldValue={setFieldValue} />
 
         <Form.Item label={"Address"} name={["address"]}>
           <Input />
@@ -118,7 +98,7 @@ export const OrganizationEdit = () => {
         </Form.Item>
 
         <Form.Item label={"Published"} name={["published"]}>
-        <Switch
+          <Switch
             defaultChecked={query?.data?.data.published}
             onChange={(e) => {
               setFieldValue("published", e);

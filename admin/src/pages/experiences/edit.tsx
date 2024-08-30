@@ -1,6 +1,8 @@
 import { Edit, ImageField, useForm, useSelect } from "@refinedev/antd";
 import { useUpdate } from "@refinedev/core";
 import { Button, Flex, Form, Input, Select, Switch, Typography } from "antd";
+import UploadButton from "../../components/UploadButton";
+import ImageItem from "../../components/ImageItem";
 
 export const ExperienceEdit = () => {
   const {
@@ -56,29 +58,7 @@ export const ExperienceEdit = () => {
           <Input.TextArea />
         </Form.Item>
 
-        <Form.Item label={"Image"} name={["image"]} style={{ height: "100%" }}>
-          <Flex justify="normal" gap={20} style={{ height: "100%" }}>
-          <Form.Item name={["image"]} noStyle>
-            {/* @ts-expect-error value handled */}
-            <ImageField title={"Image"} width={300} />
-          </Form.Item>
-            <Flex vertical gap={5}>
-              <Typography.Text>URL</Typography.Text>
-              <Form.Item name={["image"]} noStyle>
-                <Input
-                style={{ width: 500 }}
-                  onChange={(e) => {
-                    setFieldValue("image", e.target.value);
-                  }}
-                  allowClear
-                  onClear={() => {
-                    setFieldValue("image", null);
-                  }}
-                />
-              </Form.Item>
-            </Flex>
-          </Flex>
-        </Form.Item>
+        <ImageItem label="Image" name={"image"} setFieldValue={setFieldValue} />
 
         <Form.Item
           label={"Category"}
