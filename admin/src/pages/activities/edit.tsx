@@ -1,4 +1,4 @@
-import { Edit, useForm, useSelect } from "@refinedev/antd";
+import { Edit, useForm } from "@refinedev/antd";
 import { useList, useShow } from "@refinedev/core";
 import { AutoComplete, Form, Input, Select } from "antd";
 import { useEffect, useState } from "react";
@@ -8,7 +8,6 @@ export const ActivityEdit = () => {
     formProps,
     saveButtonProps,
     formLoading,
-    query: activityData,
     form: { setFieldValue },
   } = useForm({});
 
@@ -66,7 +65,7 @@ export const ActivityEdit = () => {
                 />
               );
             }}
-            options={data?.data.map((item) => ({
+            options={data?.data?.map((item) => ({
               label: item.title,
               value: item.id,
             }))}

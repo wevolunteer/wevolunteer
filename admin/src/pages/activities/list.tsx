@@ -6,15 +6,28 @@ import {
   useTable,
 } from "@refinedev/antd";
 import { BaseRecord } from "@refinedev/core";
-import { Space, Table } from "antd";
+import { Input, Space, Table } from "antd";
+import { useState } from "react";
 
 export const ActivityList = () => {
+  const [search, setSearch] = useState("");
+
   const { tableProps, tableQueryResult } = useTable({
     syncWithLocation: true,
+    filters: {
+      defaultBehavior: "replace",
+      permanent: [{ field: "q", operator: "eq", value: search }],
+    },
   });
 
   return (
     <List>
+    <Input
+      placeholder={"Search"}
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      style={{ marginBottom: 16 }}
+    />
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title={"ID"} />
         <Table.Column

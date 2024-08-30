@@ -3,18 +3,32 @@ import {
   EditButton,
   List,
   ShowButton,
-  useTable
+  useTable,
 } from "@refinedev/antd";
 import { BaseRecord, useMany } from "@refinedev/core";
-import { Space, Table } from "antd";
+import { Input, Space, Table } from "antd";
+import { useState } from "react";
 
 export const ExperienceList = () => {
+  const [search, setSearch] = useState("");
+
   const { tableProps } = useTable({
     syncWithLocation: true,
+    filters: {
+      defaultBehavior: "replace",
+      permanent: [{ field: "q", operator: "eq", value: search }],
+    },
   });
-  
+
   return (
     <List>
+      <Input
+        placeholder={"Search"}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        style={{ marginBottom: 16 }}
+      />
+
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title={"ID"} />
         <Table.Column dataIndex="title" title={"Title"} />
@@ -27,13 +41,16 @@ export const ExperienceList = () => {
         <Table.Column dataIndex="city" title={"City"} />
         <Table.Column dataIndex="start_date" title={"Start Date"} />
         <Table.Column dataIndex="end_date" title={"End Date"} />
-        <Table.Column dataIndex="published" title={"Published"} render={
-          (published) => published ? "Yes" : "No"
-        } />
-        <Table.Column dataIndex="organization" title={"Organization"} 
+        <Table.Column
+          dataIndex="published"
+          title={"Published"}
+          render={(published) => (published ? "Yes" : "No")}
+        />
+        <Table.Column
+          dataIndex="organization"
+          title={"Organization"}
           render={(organization) => organization?.name}
-          />
-
+        />
 
         <Table.Column
           title={"Actions"}

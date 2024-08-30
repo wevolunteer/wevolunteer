@@ -1,5 +1,5 @@
-import { Edit, useForm, ImageField } from "@refinedev/antd";
-import { Flex, Form, Input, Switch, Typography } from "antd";
+import { Edit, useForm, ImageField, useSelect } from "@refinedev/antd";
+import { Flex, Form, Input, Select, Switch, Typography } from "antd";
 import UploadButton from "../../components/UploadButton";
 import ImageItem from "../../components/ImageItem";
 
@@ -11,6 +11,15 @@ export const OrganizationEdit = () => {
     form: { setFieldValue },
     query,
   } = useForm({});
+
+  const { selectProps: categorySelectProps, query: categoriesResult } =
+    useSelect({
+      resource: "categories",
+      defaultValue: query?.data?.data.category_id,
+      optionLabel: "name",
+      optionValue: "id",
+    });
+
 
   return (
     <Edit saveButtonProps={saveButtonProps} isLoading={formLoading}>
@@ -37,6 +46,18 @@ export const OrganizationEdit = () => {
           ]}
         >
           <Input />
+        </Form.Item>
+
+        <Form.Item
+          label={"Category"}
+          name={["category_id"]}
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
+          <Select style={{ width: "100%" }} {...categorySelectProps} />
         </Form.Item>
 
         <Form.Item

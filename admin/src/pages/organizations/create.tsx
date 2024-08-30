@@ -1,7 +1,8 @@
-import { Create, useForm, ImageField } from "@refinedev/antd";
-import { Flex, Form, Input, Switch, Typography } from "antd";
+import { Create, useForm, ImageField, useSelect } from "@refinedev/antd";
+import { Flex, Form, Input, Select, Switch, Typography } from "antd";
 import UploadButton from "../../components/UploadButton";
 import ImageItem from "../../components/ImageItem";
+
 
 export const OrganizationCreate = () => {
   const {
@@ -10,6 +11,13 @@ export const OrganizationCreate = () => {
     form: { setFieldValue },
     query,
   } = useForm({});
+
+  const { selectProps: categorySelectProps, query: categoriesResult } =
+    useSelect({
+      resource: "categories",
+      optionLabel: "name",
+      optionValue: "id",
+    });
 
   return (
     <Create saveButtonProps={saveButtonProps}>
@@ -26,6 +34,18 @@ export const OrganizationCreate = () => {
           <Input />
         </Form.Item>
 
+        <Form.Item
+          label={"Category"}
+          name={["category_id"]}
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
+          <Select style={{ width: "100%" }} {...categorySelectProps} />
+        </Form.Item>
+        
         <Form.Item
           label={"Phone"}
           name={["phone"]}
