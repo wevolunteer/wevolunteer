@@ -118,22 +118,23 @@ func OrganizationsList(c *app.Context, filters *OrganizationFilters) (*Organizat
 
 type OrganizationCreateData struct {
 	Name       string   `json:"name"`
-	Logo       *string  `json:"logo"`
-	Tagline    *string  `json:"tagline"`
+	Logo       *string  `json:"logo,omitempty"`
+	Tagline    *string  `json:"tagline,omitempty"`
 	Email      *string  `json:"email"`
-	WebSite    *string  `json:"website"`
-	Phone      *string  `json:"phone"`
-	Address    *string  `json:"address"`
-	CategoryID uint     `json:"category_id"`
-	City       *string  `json:"city"`
-	State      *string  `json:"state"`
-	ZipCode    *string  `json:"zip_code"`
-	Country    *string  `json:"country"`
-	Latitude   *float64 `json:"latitude"`
-	Longitude  *float64 `json:"longitude"`
-	TaxCode    *string  `json:"tax_code"`
-	VATCode    *string  `json:"vat_code"`
-	ExternalId *string  `json:"external_id"`
+	WebSite    *string  `json:"website,omitempty"`
+	Phone      *string  `json:"phone,omitempty"`
+	Address    *string  `json:"address,omitempty"`
+	CategoryID uint     `json:"category_id,omitempty"`
+	City       *string  `json:"city,omitempty"`
+	State      *string  `json:"state,omitempty"`
+	ZipCode    *string  `json:"zip_code,omitempty"`
+	Country    *string  `json:"country,omitempty"`
+	Latitude   *float64 `json:"latitude,omitempty"`
+	Longitude  *float64 `json:"longitude,omitempty"`
+	TaxCode    *string  `json:"tax_code,omitempty"`
+	VATCode    *string  `json:"vat_code,omitempty"`
+	ExternalId *string  `json:"external_id,omitempty"`
+	Published  *bool    `json:"published,omitempty"`
 }
 
 func OrganizationCreate(c *app.Context, data *OrganizationCreateData) (*models.Organization, error) {
@@ -149,13 +150,13 @@ func OrganizationCreate(c *app.Context, data *OrganizationCreateData) (*models.O
 				c,
 				existingOrganization.ID,
 				&OrganizationUpdateData{
-					Name:       &data.Name,
+					Name:       data.Name,
 					Logo:       data.Logo,
 					Tagline:    data.Tagline,
 					Email:      data.Email,
 					WebSite:    data.WebSite,
 					Phone:      data.Phone,
-					CategoryID: &data.CategoryID,
+					CategoryID: data.CategoryID,
 					Address:    data.Address,
 					City:       data.City,
 					State:      data.State,
@@ -240,6 +241,10 @@ func OrganizationCreate(c *app.Context, data *OrganizationCreateData) (*models.O
 		organization.ExternalId = *data.ExternalId
 	}
 
+	if data.Published != nil {
+		organization.Published = *data.Published
+	}
+
 	fmt.Printf("organization: %v\n", organization)
 
 	if err := app.DB.Create(&organization).Error; err != nil {
@@ -251,23 +256,24 @@ func OrganizationCreate(c *app.Context, data *OrganizationCreateData) (*models.O
 }
 
 type OrganizationUpdateData struct {
-	Name       *string  `json:"name"`
-	Logo       *string  `json:"logo"`
-	Tagline    *string  `json:"tagline"`
-	CategoryID *uint    `json:"category_id"`
+	Name       string   `json:"name"`
+	Logo       *string  `json:"logo,omitempty"`
+	Tagline    *string  `json:"tagline,omitempty"`
 	Email      *string  `json:"email"`
-	WebSite    *string  `json:"website"`
-	Phone      *string  `json:"phone"`
-	Address    *string  `json:"address"`
-	City       *string  `json:"city"`
-	State      *string  `json:"state"`
-	ZipCode    *string  `json:"zip_code"`
-	Country    *string  `json:"country"`
-	Latitude   *float64 `json:"latitude"`
-	Longitude  *float64 `json:"longitude"`
-	TaxCode    *string  `json:"tax_code"`
-	VATCode    *string  `json:"vat_code"`
-	ExternalId *string  `json:"external_id"`
+	WebSite    *string  `json:"website,omitempty"`
+	Phone      *string  `json:"phone,omitempty"`
+	Address    *string  `json:"address,omitempty"`
+	CategoryID uint     `json:"category_id,omitempty"`
+	City       *string  `json:"city,omitempty"`
+	State      *string  `json:"state,omitempty"`
+	ZipCode    *string  `json:"zip_code,omitempty"`
+	Country    *string  `json:"country,omitempty"`
+	Latitude   *float64 `json:"latitude,omitempty"`
+	Longitude  *float64 `json:"longitude,omitempty"`
+	TaxCode    *string  `json:"tax_code,omitempty"`
+	VATCode    *string  `json:"vat_code,omitempty"`
+	ExternalId *string  `json:"external_id,omitempty"`
+	Published  *bool    `json:"published,omitempty"`
 }
 
 func OrganizationUpdate(c *app.Context, id uint, data *OrganizationUpdateData) (*models.Organization, error) {
@@ -279,8 +285,8 @@ func OrganizationUpdate(c *app.Context, id uint, data *OrganizationUpdateData) (
 		}
 	}
 
-	if data.Name != nil {
-		organization.Name = *data.Name
+	if data.Name != "" {
+		organization.Name = data.Name
 	}
 
 	if data.Logo != nil {
@@ -291,8 +297,8 @@ func OrganizationUpdate(c *app.Context, id uint, data *OrganizationUpdateData) (
 		organization.Tagline = *data.Tagline
 	}
 
-	if data.CategoryID != nil {
-		organization.CategoryID = data.CategoryID
+	if data.CategoryID != 0 {
+		organization.CategoryID = &data.CategoryID
 	}
 
 	if data.Email != nil {
@@ -345,6 +351,10 @@ func OrganizationUpdate(c *app.Context, id uint, data *OrganizationUpdateData) (
 
 	if data.ExternalId != nil {
 		organization.ExternalId = *data.ExternalId
+	}
+
+	if data.Published != nil {
+		organization.Published = *data.Published
 	}
 
 	if err := app.DB.Save(&organization).Error; err != nil {
