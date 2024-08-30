@@ -1,8 +1,8 @@
-import { Create, useForm, useSelect } from "@refinedev/antd";
-import { useList, useResource, useShow } from "@refinedev/core";
-import { AutoComplete, Form, Input, Switch } from "antd";
+import { Create, useForm } from "@refinedev/antd";
+import { useList } from "@refinedev/core";
+import { AutoComplete, Form, Input } from "antd";
 import { Select } from "antd/lib";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 export const ActivityCreate = () => {
   const { formProps, saveButtonProps } = useForm({});

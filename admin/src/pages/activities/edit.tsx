@@ -3,17 +3,16 @@ import { useList, useShow } from "@refinedev/core";
 import { AutoComplete, Form, Input, Select } from "antd";
 import { useEffect, useState } from "react";
 
-let initialized = false
-
 export const ActivityEdit = () => {
   const {
     formProps,
     saveButtonProps,
     formLoading,
     query: activityData,
-    form: { getFieldValue },
+    form: { setFieldValue },
   } = useForm({});
 
+  const [initialized, setInitialized] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
   const { data } = useList({
@@ -29,7 +28,8 @@ export const ActivityEdit = () => {
   useEffect(() => {
     if (experience.data?.data && !initialized) {
       setSearchValue(experience.data.data.title);
-      initialized = true;
+      setFieldValue("experience_id", experience.data.data.id);
+      setInitialized(true);
     }
   }, [experience]);
 
