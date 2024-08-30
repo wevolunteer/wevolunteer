@@ -1,5 +1,6 @@
-import { Edit, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select, Switch } from "antd";
+import { Edit, ImageField, useForm, useSelect } from "@refinedev/antd";
+import { useUpdate } from "@refinedev/core";
+import { Button, Flex, Form, Input, Select, Switch, Typography } from "antd";
 
 export const ExperienceEdit = () => {
   const {
@@ -10,7 +11,7 @@ export const ExperienceEdit = () => {
     form: { setFieldValue },
   } = useForm({});
 
-  const { selectProps: categorySelectProps, queryResult: categoriesResult } =
+  const { selectProps: categorySelectProps, query: categoriesResult } =
     useSelect({
       resource: "categories",
       defaultValue: experienceData?.data?.data.category_id,
@@ -55,8 +56,28 @@ export const ExperienceEdit = () => {
           <Input.TextArea />
         </Form.Item>
 
-        <Form.Item label={"Image URL"} name={["image"]}>
-          <Input />
+        <Form.Item label={"Image"} name={["image"]} style={{ height: "100%" }}>
+          <Flex justify="normal" gap={20} style={{ height: "100%" }}>
+          <Form.Item name={["image"]} noStyle>
+            {/* @ts-expect-error value handled */}
+            <ImageField title={"Image"} width={300} />
+          </Form.Item>
+            <Flex vertical gap={5}>
+              <Typography.Text>URL</Typography.Text>
+              <Form.Item name={["image"]} noStyle>
+                <Input
+                style={{ width: 500 }}
+                  onChange={(e) => {
+                    setFieldValue("image", e.target.value);
+                  }}
+                  allowClear
+                  onClear={() => {
+                    setFieldValue("image", null);
+                  }}
+                />
+              </Form.Item>
+            </Flex>
+          </Flex>
         </Form.Item>
 
         <Form.Item

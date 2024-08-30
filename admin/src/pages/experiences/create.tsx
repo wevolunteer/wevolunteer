@@ -1,19 +1,21 @@
-import { Create, useForm, useSelect } from "@refinedev/antd";
+import { Create, ImageField, useForm, useSelect } from "@refinedev/antd";
 import { Form, Input, Switch } from "antd";
 import { Select } from "antd/lib";
 
 export const ExperienceCreate = () => {
-  const { formProps, saveButtonProps } = useForm({});
+  const {
+    formProps,
+    saveButtonProps,
+    form: { setFieldValue },
+  } = useForm({});
 
-  const { selectProps: categorySelectProps,} =
-    useSelect({
-      resource: "categories",
-      optionLabel: "name",
-      optionValue: "id",
-    });
+  const { selectProps: categorySelectProps } = useSelect({
+    resource: "categories",
+    optionLabel: "name",
+    optionValue: "id",
+  });
 
-  const { selectProps: organizationsSelectProps,} =
-  useSelect({
+  const { selectProps: organizationsSelectProps } = useSelect({
     resource: "organizations",
     optionLabel: "name",
     optionValue: "id",
@@ -22,8 +24,7 @@ export const ExperienceCreate = () => {
   return (
     <Create saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
-
-      <Form.Item
+        <Form.Item
           label={"Organization"}
           name={["organization_id"]}
           rules={[
@@ -32,7 +33,7 @@ export const ExperienceCreate = () => {
             },
           ]}
         >
-          <Select style={{width: "100%"}} {...organizationsSelectProps} />
+          <Select style={{ width: "100%" }} {...organizationsSelectProps} />
         </Form.Item>
 
         <Form.Item
@@ -59,12 +60,13 @@ export const ExperienceCreate = () => {
           <Input.TextArea />
         </Form.Item>
 
-         <Form.Item
-          label={"Image URL"}
-          name={["image"]}
-        >
-          <Input />
-        </Form.Item> 
+        <Form.Item label={"Image URL"} name={["image"]}>
+          <ImageField
+            value={formProps.initialValues?.image}
+            title={"Image"}
+            width={200}
+          />
+        </Form.Item>
 
         <Form.Item
           label={"Category"}
@@ -75,7 +77,7 @@ export const ExperienceCreate = () => {
             },
           ]}
         >
-          <Select style={{width: "100%"}} {...categorySelectProps} />
+          <Select style={{ width: "100%" }} {...categorySelectProps} />
         </Form.Item>
 
         <Form.Item label={"Latitude"} name={["latitude"]}>
@@ -167,7 +169,12 @@ export const ExperienceCreate = () => {
         </Form.Item>
 
         <Form.Item label={"Published"} name={["published"]}>
-          <Switch />
+          <Switch
+            defaultChecked={formProps.initialValues?.published}
+            onChange={(e) => {
+              setFieldValue("published", e);
+            }}
+          />
         </Form.Item>
       </Form>
     </Create>
