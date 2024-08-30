@@ -75,6 +75,7 @@ type UserCreateData struct {
 	LastName    string `json:"last_name"`
 	Phone       string `json:"phone,omitempty"`
 	Email       string `json:"email"`
+	Avatar      string `json:"avatar,omitempty"`
 	Password    string `json:"password"`
 	TaxCode     string `json:"tax_code,omitempty"`
 	IsSuperUser bool   `json:"is_superuser"`
@@ -115,6 +116,7 @@ type UserUpdateData struct {
 	Phone       string `json:"phone,omitempty"`
 	Email       string `json:"email"`
 	TaxCode     string `json:"tax_code,omitempty"`
+	Avatar      string `json:"avatar,omitempty"`
 	Password    string `json:"password,omitempty"`
 	IsSuperUser bool   `json:"is_superuser,omitempty"`
 }
