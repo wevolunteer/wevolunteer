@@ -27,6 +27,9 @@ import {
   ActivityList,
   ActivityShow,
 } from "./pages/activities";
+import { ForgotPassword } from "./pages/auth/forgotPassword";
+import { Login } from "./pages/auth/login";
+import { RecoverPassword } from "./pages/auth/recoverPassword";
 import {
   CategoryCreate,
   CategoryEdit,
@@ -39,8 +42,6 @@ import {
   ExperienceList,
   ExperienceShow,
 } from "./pages/experiences";
-import { ForgotPassword } from "./pages/forgotPassword";
-import { Login } from "./pages/login";
 import {
   OrganizationCreate,
   OrganizationEdit,
@@ -204,6 +205,7 @@ function App() {
               >
                 <Route path="/login" element={<Login />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/recover-password/:token" element={<RecoverPassword />} />
               </Route>
             </Routes>
 
