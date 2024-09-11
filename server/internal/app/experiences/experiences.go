@@ -131,6 +131,15 @@ type ExperienceCreateData struct {
 	StartTime string `json:"start_time"`
 	EndTime   string `json:"end_time"`
 
+	IsRecurring *bool `json:"is_recurring"`
+	Monday      *bool `json:"monday"`
+	Tuesday     *bool `json:"tuesday"`
+	Wednesday   *bool `json:"wednesday"`
+	Thursday    *bool `json:"thursday"`
+	Friday      *bool `json:"friday"`
+	Saturday    *bool `json:"saturday"`
+	Sunday      *bool `json:"sunday"`
+
 	Published bool `json:"published,omitempty"`
 
 	ExternalID string `json:"external_id,omitempty"`
@@ -183,8 +192,9 @@ func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Exp
 				EndDate:                    &data.EndDate,
 				StartTime:                  &data.StartTime,
 				EndTime:                    &data.EndTime,
-				Published:                  &data.Published,
-				ExternalID:                 &data.ExternalID,
+
+				Published:  &data.Published,
+				ExternalID: &data.ExternalID,
 			})
 		}
 	}
@@ -213,6 +223,38 @@ func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Exp
 		StartTime:                  data.StartTime,
 		EndTime:                    data.EndTime,
 		Published:                  data.Published,
+	}
+
+	if data.IsRecurring != nil {
+		experience.IsRecurring = *data.IsRecurring
+	}
+
+	if data.Monday != nil {
+		experience.Monday = *data.Monday
+	}
+
+	if data.Tuesday != nil {
+		experience.Tuesday = *data.Tuesday
+	}
+
+	if data.Wednesday != nil {
+		experience.Wednesday = *data.Wednesday
+	}
+
+	if data.Thursday != nil {
+		experience.Thursday = *data.Thursday
+	}
+
+	if data.Friday != nil {
+		experience.Friday = *data.Friday
+	}
+
+	if data.Saturday != nil {
+		experience.Saturday = *data.Saturday
+	}
+
+	if data.Sunday != nil {
+		experience.Sunday = *data.Sunday
 	}
 
 	if err := app.DB.Create(&experience).Error; err != nil {
@@ -247,6 +289,15 @@ type ExperienceUpdateData struct {
 
 	StartTime *string `json:"start_time"`
 	EndTime   *string `json:"end_time"`
+
+	IsRecurring *bool `json:"is_recurring"`
+	Monday      *bool `json:"monday"`
+	Tuesday     *bool `json:"tuesday"`
+	Wednesday   *bool `json:"wednesday"`
+	Thursday    *bool `json:"thursday"`
+	Friday      *bool `json:"friday"`
+	Saturday    *bool `json:"saturday"`
+	Sunday      *bool `json:"sunday"`
 
 	Published *bool `json:"published,omitempty"`
 
@@ -350,6 +401,38 @@ func ExperienceUpdate(ctx *app.Context, id uint, data *ExperienceUpdateData) (*m
 
 	if data.EndTime != nil {
 		experience.EndTime = *data.EndTime
+	}
+
+	if data.IsRecurring != nil {
+		experience.IsRecurring = *data.IsRecurring
+	}
+
+	if data.Monday != nil {
+		experience.Monday = *data.Monday
+	}
+
+	if data.Tuesday != nil {
+		experience.Tuesday = *data.Tuesday
+	}
+
+	if data.Wednesday != nil {
+		experience.Wednesday = *data.Wednesday
+	}
+
+	if data.Thursday != nil {
+		experience.Thursday = *data.Thursday
+	}
+
+	if data.Friday != nil {
+		experience.Friday = *data.Friday
+	}
+
+	if data.Saturday != nil {
+		experience.Saturday = *data.Saturday
+	}
+
+	if data.Sunday != nil {
+		experience.Sunday = *data.Sunday
 	}
 
 	if data.Published != nil {

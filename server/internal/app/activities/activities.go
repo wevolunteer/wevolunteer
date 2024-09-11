@@ -174,11 +174,17 @@ func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activit
 		UserID:         ctx.User.ID,
 		ExperienceID:   data.ExperienceID,
 		OrganizationID: experience.OrganizationID,
-		StartDate:      startDate,
-		EndDate:        endDate,
 		StartTime:      data.StartTime,
 		EndTime:        data.EndTime,
 		Message:        data.Message,
+	}
+
+	if startDate != (time.Time{}) {
+		activity.StartDate = startDate
+	}
+
+	if endDate != (time.Time{}) {
+		activity.EndDate = endDate
 	}
 
 	if err := app.DB.Create(&activity).Error; err != nil {
