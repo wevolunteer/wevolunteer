@@ -64,11 +64,25 @@ export default function RegistrationScreen() {
     try {
       setIsLoading(true);
 
+      let hasError = false;
+
       if (data.tax_code && !validateCF(data.tax_code)) {
         setError("tax_code", {
           type: "manual",
           message: t("Invalid tax code"),
         });
+        hasError = true;
+      }
+
+      if (data.date_of_birth && !isOlderThan(data.date_of_birth, 14)) {
+        setError("date_of_birth", {
+          type: "manual",
+          message: t("mustBy14older", "You must be at least 14 years old"),
+        });
+        hasError = true;
+      }
+
+      if (hasError) {
         setIsLoading(false);
         return;
       }
@@ -186,10 +200,14 @@ export default function RegistrationScreen() {
                 />
               )}
             />
+            {errors.date_of_birth && (
+              <Text marginTop="s" variant="error">
+                {errors.date_of_birth.message}
+              </Text>
+            )}
             <Text variant="secondary" marginTop="s">
-              {errors.date_of_birth && <Text variant="error">{errors.date_of_birth.message}</Text>}
               <Trans i18nKey="registrationAgeDescription">
-                To register for FaXTe you must be at least 16 years old.
+                To register for FaXTe you must be at least 14 years old.
               </Trans>
             </Text>
           </Box>
@@ -256,4 +274,21 @@ export default function RegistrationScreen() {
       </ScrollView>
     </SafeAreaView>
   );
+}
+
+function isOlderThan(birthdate: string, age: number): boolean {
+  const birthDate = new Date(birthdate);
+  const currentDate = new Date();
+
+  let calculatedAge = currentDate.getFullYear() - birthDate.getFullYear();
+  const monthDifference = currentDate.getMonth() - birthDate.getMonth();
+
+  if (
+    monthDifference < 0 ||
+    (monthDifference === 0 && currentDate.getDate() < birthDate.getDate())
+  ) {
+    calculatedAge--;
+  }
+
+  return calculatedAge > age;
 }

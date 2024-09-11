@@ -16,7 +16,7 @@
     "ios": {
       "bundleIdentifier": "org.wevolunteer.attivati",
       "supportsTablet": true,
-      "buildNumber": "12"
+      "buildNumber": "13"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,7 +24,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.metadonors.wevolunteer",
-      "versionCode": 24,
+      "versionCode": 25,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyBHAIlIrdW_sepiJyVuBE8KDaosCNwvQK0"

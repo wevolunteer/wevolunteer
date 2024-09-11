@@ -98,24 +98,29 @@ export default function ExperienceEnrollScreen() {
         return;
       }
 
-      const start_date = values.from_date.split("/").reverse().join("-");
-      const end_date = values.to_date.split("/").reverse().join("-");
+      let start_date = "";
+      let end_date = "";
 
-      if (new Date(start_date) > new Date(end_date)) {
-        setError("to_date", {
-          type: "manual",
-          message: t("endDateBeforeStartDate", "End date must be after start date"),
-        });
+      if (values.from_date && values.to_date) {
+        start_date = values.from_date.split("/").reverse().join("-");
+        end_date = values.to_date.split("/").reverse().join("-");
 
-        return;
+        if (new Date(start_date) > new Date(end_date)) {
+          setError("to_date", {
+            type: "manual",
+            message: t("endDateBeforeStartDate", "End date must be after start date"),
+          });
+
+          return;
+        }
       }
 
       const res = await client.POST("/activities", {
         body: {
           start_date,
-          start_time: values.from_time,
+          start_time: values.from_time || "",
           end_date,
-          end_time: values.to_time,
+          end_time: values.to_time || "",
           experience_id: experienceId,
           tax_code: values.tax_code || "",
           message: values.message || "",
@@ -153,13 +158,70 @@ export default function ExperienceEnrollScreen() {
           </Text>
           <Text variant="header">{data.organization.name}</Text>
         </Box>
+
         <Box marginHorizontal="m" gap="l">
-          <Box flexDirection="row" justifyContent="space-between" marginVertical="m" gap="m">
+          <Text fontWeight="bold">{t("activityMessageLabel", "Why you would like to help")}</Text>
+          <Controller
+            control={control}
+            name="message"
+            render={({ field: { onChange, value } }) => (
+              <InputText
+                value={value}
+                style={{ height: 100 }}
+                onChangeText={onChange}
+                placeholder={t(
+                  "activityWriteMessagePlaceholder",
+                  "Your message to the organization (optional)",
+                )}
+                multiline
+              />
+            )}
+          />
+          <Text fontWeight="bold">Quali sono le tue disponibilità?</Text>
+          <Box flexDirection="row" justifyContent="space-between" gap="m">
+            <Box flex={1}>
+              <Controller
+                control={control}
+                name="from_date"
+                render={({ field: { onChange, value } }) => (
+                  <InputDate
+                    label={t("fromDay", "Of the day")}
+                    value={value}
+                    minimumDate={new Date()}
+                    maximumDate={convertToDate(data.end_date)}
+                    error={errors.from_date?.message}
+                    onChangeText={onChange}
+                    placeholder="GG/MM/AAAA"
+                  />
+                )}
+              />
+            </Box>
+            <Box flex={1}>
+              <Controller
+                control={control}
+                name="to_date"
+                render={({ field: { onChange, value } }) => (
+                  <InputDate
+                    label={t("toDate", "Of the day")}
+                    value={value}
+                    error={errors.to_date?.message}
+                    minimumDate={new Date()}
+                    maximumDate={convertToDate(data.end_date)}
+                    onChangeText={onChange}
+                    placeholder="GG/MM/AAAA"
+                  />
+                )}
+              />
+            </Box>
+          </Box>
+        </Box>
+
+        <Box marginHorizontal="m" marginVertical="m" gap="l">
+          <Box flexDirection="row" justifyContent="space-between" marginVertical="s" gap="m">
             <Box flex={1}>
               <Controller
                 control={control}
                 name="from_time"
-                rules={{ required: t("requiredField", "This field is required") }}
                 render={({ field: { onChange, value } }) => (
                   <InputTime
                     label={t("fromTime", "From hour")}
@@ -174,31 +236,7 @@ export default function ExperienceEnrollScreen() {
             <Box flex={1}>
               <Controller
                 control={control}
-                name="from_date"
-                rules={{ required: t("requiredField", "This field is required") }}
-                render={({ field: { onChange, value } }) => (
-                  <InputDate
-                    label={t("fromDay", "Of the day")}
-                    value={value}
-                    minimumDate={convertToDate(data.start_date)}
-                    maximumDate={convertToDate(data.end_date)}
-                    error={errors.from_date?.message}
-                    onChangeText={onChange}
-                    placeholder="GG/MM/AAAA"
-                  />
-                )}
-              />
-            </Box>
-          </Box>
-        </Box>
-
-        <Box marginHorizontal="m" gap="l">
-          <Box flexDirection="row" justifyContent="space-between" marginVertical="s" gap="m">
-            <Box flex={1}>
-              <Controller
-                control={control}
                 name="to_time"
-                rules={{ required: t("requiredField", "This field is required") }}
                 render={({ field: { onChange, value } }) => (
                   <InputTime
                     label={t("toTime", "To hour")}
@@ -206,22 +244,6 @@ export default function ExperienceEnrollScreen() {
                     error={errors.to_time?.message}
                     onChangeText={onChange}
                     placeholder="HH:MM"
-                  />
-                )}
-              />
-            </Box>
-            <Box flex={1}>
-              <Controller
-                control={control}
-                name="to_date"
-                rules={{ required: t("requiredField", "This field is required") }}
-                render={({ field: { onChange, value } }) => (
-                  <InputDate
-                    label={t("toDate", "Of the day")}
-                    value={value}
-                    error={errors.to_date?.message}
-                    onChangeText={onChange}
-                    placeholder="GG/MM/AAAA"
                   />
                 )}
               />
@@ -248,24 +270,6 @@ export default function ExperienceEnrollScreen() {
 
           <Controller
             control={control}
-            name="message"
-            render={({ field: { onChange, value } }) => (
-              <InputText
-                label={t("activityMessageLabel", "Why you would like to help")}
-                value={value}
-                onChangeText={onChange}
-                placeholder={t(
-                  "activityWriteMessagePlaceholder",
-                  "Your message to the organization (optional)",
-                )}
-                multiline
-                numberOfLines={4}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
             name="accepted_requirements"
             render={({ field: { onChange, value } }) => (
               <Checkbox
@@ -280,12 +284,12 @@ export default function ExperienceEnrollScreen() {
                     </Trans>
                   </Text>
                   <Box marginLeft="s">
-                    <Text variant="body" color="secondaryText">
-                      • Maggiore età
+                    {/* <Text variant="body" color="secondaryText">
+                      • Avere almeno 14 anni
                     </Text>
                     <Text variant="body" color="secondaryText">
                       • Auto
-                    </Text>
+                    </Text> */}
                   </Box>
                 </Box>
               </Checkbox>

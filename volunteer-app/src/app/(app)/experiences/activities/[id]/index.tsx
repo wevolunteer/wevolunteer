@@ -152,10 +152,7 @@ export default function ActivityScreen() {
 
           <Box marginLeft="s">
             <Text variant="body" color="secondaryText">
-              • Maggiore età
-            </Text>
-            <Text variant="body" color="secondaryText">
-              • Auto
+              • Avere almeno 14 anni
             </Text>
           </Box>
 

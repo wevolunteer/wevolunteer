@@ -8,12 +8,8 @@ import { Trans, useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
-  const { session, isLoading } = useSession();
+  const { session } = useSession();
   const { t } = useTranslation();
-
-  if (isLoading) {
-    return <Text>Loading...</Text>;
-  }
 
   if (session) {
     return <Redirect href="/explore" />;
@@ -43,6 +39,21 @@ export default function Index() {
           </Text>
           <Image
             source={require("@/assets/images/logo-trentovolo.png")}
+            style={{
+              width: 113,
+              height: 86,
+              marginTop: 0,
+              marginBottom: 16,
+              objectFit: "contain",
+            }}
+          />
+        </Box>
+        <Box alignItems="center" px="l" mt="3xl" gap="s">
+          <Text variant="secondary" textAlign="center">
+            <Trans i18nKey="inColaborationWith">In collaboration with</Trans>
+          </Text>
+          <Image
+            source={require("@/assets/images/logos/csv-trentino.png")}
             style={{
               width: 113,
               height: 86,

@@ -9,7 +9,7 @@ import { validateEmail } from "@/utils/validators";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignInScreen() {
@@ -82,6 +82,12 @@ export default function SignInScreen() {
             {error}
           </Text>
         )}
+
+        <Text variant="secondary">
+          <Trans i18nKey="privacyAcceptance">
+            By clicking "continue," you declare that you have read the privacy policy.
+          </Trans>
+        </Text>
 
         <Button
           label={t("continue", "Continue")}

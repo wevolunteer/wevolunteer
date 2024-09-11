@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { TextInput, TextInputProps } from "react-native";
 import Box from "./Box";
 import Text from "./Text";
@@ -27,8 +27,18 @@ const InputText: FC<TextInputProps & InputTextProps> = ({ label, size, error, ..
     }
   }
 
+  const getHeigth = useMemo(() => {
+    if (rest.multiline) {
+      return { height: 100, minHeight: 100 };
+    }
+    return {
+      height: size ? SIZES[size] : SIZES.m,
+      minHeight: size ? SIZES[size] : SIZES.m,
+    };
+  }, [rest.multiline, size]);
+
   return (
-    <Box width="100%">
+    <Box>
       {label && <Text variant="inputLabel">{label}</Text>}
       <Box
         alignItems="center"
@@ -37,7 +47,7 @@ const InputText: FC<TextInputProps & InputTextProps> = ({ label, size, error, ..
         borderRadius="m"
         width="100%"
         position="relative"
-        height={size ? SIZES[size] : SIZES.m}
+        height={getHeigth.height}
       >
         <TextInput
           {...rest}
@@ -46,9 +56,12 @@ const InputText: FC<TextInputProps & InputTextProps> = ({ label, size, error, ..
             width: "100%",
             paddingHorizontal: 16,
             paddingVertical: rest.multiline ? 16 : 0,
-            height: rest.multiline ? 300 : "auto",
+            height: getHeigth.height,
+            minHeight: getHeigth.height,
             textAlignVertical: rest.multiline ? "top" : "center",
           }}
+          multiline={rest.multiline}
+          numberOfLines={10}
           onChangeText={handleTextChange}
           secureTextEntry={isSecure}
         />

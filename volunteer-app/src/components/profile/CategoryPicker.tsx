@@ -18,7 +18,7 @@ const CategoryPicker: FC<CategoryPickerProps> = ({ label, value, onChange }) => 
       <Box mb="l">
         <Text variant="body">{label}</Text>
       </Box>
-      <Box ml="l" borderTopWidth={1} borderTopColor="mainBorder">
+      <Box ml="l" borderTopWidth={1} borderTopColor="mainBorder" flex={1}>
         {!isLoading &&
           categories?.results?.map((category) => (
             <Box
@@ -28,9 +28,10 @@ const CategoryPicker: FC<CategoryPickerProps> = ({ label, value, onChange }) => 
               borderBottomColor="mainBorder"
               justifyContent="space-between"
               flexDirection="row"
-              alignItems="center"
             >
-              <Text>{category.name}</Text>
+              <Box>
+                <Text>{category.name}</Text>
+              </Box>
               <Checkbox
                 value={value.includes(category.id)}
                 accent

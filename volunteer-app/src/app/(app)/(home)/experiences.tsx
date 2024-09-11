@@ -12,14 +12,14 @@ import { router } from "expo-router";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function ExperiencesScreen() {
+export default function ActivitiesScreen() {
   const { t } = useTranslation();
   const listRef = useRef<FlashList<Activity>>(null);
 
   const { filters } = useFilters<ActivityFilters>();
 
   const { activities, fetchNextPage, refetch, isLoading } = useActivities({
-    end_date_from: new Date().toISOString().split("T")[0],
+    // end_date_from: new Date().toISOString().split("T")[0],
   });
 
   useEffect(() => {
