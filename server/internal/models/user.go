@@ -44,4 +44,6 @@ type User struct {
 
 	FavoriteOrganizations []*Organization `gorm:"many2many:favorite_organizations;" json:"-"`
 	FavoriteCategories    []*Category     `gorm:"many2many:categories_users;" json:"categories"`
+
+	ExternalID string `json:"external_id"`
 }

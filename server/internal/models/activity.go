@@ -27,4 +27,5 @@ type Activity struct {
 	EndTime        string         `json:"end_time"`
 	Status         ActivityStatus `json:"status" gorm:"type:varchar(20);default:pending"` // pending, approved, rejected
 	Message        string         `json:"message" gorm:"type:text"`
+	ExternalID     string         `json:"external_id"`
 }

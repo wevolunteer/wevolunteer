@@ -111,14 +111,15 @@ func UserCreate(data *UserCreateData) (*models.User, error) {
 }
 
 type UserUpdateData struct {
-	FistName    string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	Phone       string `json:"phone,omitempty"`
-	Email       string `json:"email"`
-	TaxCode     string `json:"tax_code,omitempty"`
-	Avatar      string `json:"avatar,omitempty"`
-	Password    string `json:"password,omitempty"`
-	IsSuperUser bool   `json:"is_superuser,omitempty"`
+	FistName    *string `json:"first_name"`
+	LastName    *string `json:"last_name"`
+	Phone       *string `json:"phone,omitempty"`
+	Email       *string `json:"email"`
+	TaxCode     *string `json:"tax_code,omitempty"`
+	Avatar      *string `json:"avatar,omitempty"`
+	Password    *string `json:"password,omitempty"`
+	IsSuperUser *bool   `json:"is_superuser,omitempty"`
+	ExternalID  *string `json:"external_id,omitempty"`
 }
 
 func UserUpdate(id uint, data *UserUpdateData) (*models.User, error) {
@@ -128,8 +129,8 @@ func UserUpdate(id uint, data *UserUpdateData) (*models.User, error) {
 		return nil, err
 	}
 
-	if data.Password != "" {
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
+	if data.Password != nil {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*data.Password), bcrypt.DefaultCost)
 		if err != nil {
 			return nil, err
 		}
@@ -137,12 +138,37 @@ func UserUpdate(id uint, data *UserUpdateData) (*models.User, error) {
 		user.Password = string(hashedPassword)
 	}
 
-	user.FirstName = data.FistName
-	user.LastName = data.LastName
-	user.Phone = data.Phone
-	user.Email = data.Email
-	user.IsRootAdmin = data.IsSuperUser
-	user.TaxCode = data.TaxCode
+	if data.FistName != nil {
+		user.FirstName = *data.FistName
+	}
+
+	if data.LastName != nil {
+		user.LastName = *data.LastName
+	}
+
+	if data.Phone != nil {
+		user.Phone = *data.Phone
+	}
+
+	if data.Email != nil {
+		user.Email = *data.Email
+	}
+
+	if data.TaxCode != nil {
+		user.TaxCode = *data.TaxCode
+	}
+
+	if data.Avatar != nil {
+		user.Avatar = *data.Avatar
+	}
+
+	if data.IsSuperUser != nil {
+		user.IsRootAdmin = *data.IsSuperUser
+	}
+
+	if data.ExternalID != nil {
+		user.ExternalID = *data.ExternalID
+	}
 
 	if err := app.DB.Save(&user).Error; err != nil {
 		return nil, err

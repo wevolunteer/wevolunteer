@@ -3,6 +3,7 @@ package activities
 import (
 	"context"
 
+	"github.com/danielgtaylor/huma/v2"
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 	"github.com/wevolunteer/wevolunteer/internal/utils/logger"
@@ -22,7 +23,7 @@ func ActivityListController(
 	data, err := ActivityList(ctx, input)
 
 	if err != nil {
-		return nil, err
+		return nil, huma.NewError(400, err.Error())
 	}
 
 	resp := &ActivityListResponse{}
@@ -75,7 +76,7 @@ func ActivityCreateController(
 	data, err := ActivityCreate(ctx, &input.Body)
 
 	if err != nil {
-		return nil, err
+		return nil, huma.NewError(400, err.Error())
 	}
 
 	resp := &ActivityCreateResponse{}
@@ -102,7 +103,7 @@ func ActivityUpdateController(
 	data, err := ActivityUpdate(ctx, input.ID, &input.Body)
 
 	if err != nil {
-		return nil, err
+		return nil, huma.NewError(400, err.Error())
 	}
 
 	resp := &ActivityUpdateResponse{}
@@ -126,7 +127,7 @@ func ActivityDeleteController(
 	err := ActivityDelete(ctx, input.ID)
 
 	if err != nil {
-		return nil, err
+		return nil, huma.NewError(400, err.Error())
 	}
 
 	resp := &ActivityDeleteResponse{}

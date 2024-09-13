@@ -51,6 +51,7 @@ type ActivityFilters struct {
 	EndDateTo     string `query:"end_date_to"`
 	StartDateFrom string `query:"start_date_from"`
 	StartDateTo   string `query:"start_date_to"`
+	LastUpdate    string `query:"last_update"`
 }
 
 type ActivityListData struct {
@@ -105,6 +106,14 @@ func ActivityList(ctx *app.Context, filters *ActivityFilters) (*ActivityListData
 			}
 			q = q.Where("start_date <= ?", startDate)
 		}
+
+		if filters.LastUpdate != "" {
+			lastUpdate, err := time.Parse("2006-01-02 15:04:05", filters.LastUpdate)
+			if err != nil {
+				return nil, fmt.Errorf("invalid last update")
+			}
+			q = q.Where("updated_at >= ?", lastUpdate)
+		}
 	}
 
 	pageInfo, err := app.PageInfo(q, filters.PaginationInput)
@@ -115,6 +124,8 @@ func ActivityList(ctx *app.Context, filters *ActivityFilters) (*ActivityListData
 
 	data.PageInfo = pageInfo
 
+	q = q.Scopes(app.Paginate(filters.PaginationInput))
+
 	if err := q.Find(&data.Results).Error; err != nil {
 		return nil, err
 	}
@@ -123,13 +134,15 @@ func ActivityList(ctx *app.Context, filters *ActivityFilters) (*ActivityListData
 }
 
 type ActivityCreateData struct {
-	TaxCode      string `json:"tax_code"`
-	ExperienceID uint   `json:"experience_id"`
-	StartDate    string `json:"start_date"`
-	EndDate      string `json:"end_date"`
-	StartTime    string `json:"start_time"`
-	EndTime      string `json:"end_time"`
-	Message      string `json:"message"`
+	TaxCode      *string                `json:"tax_code,omitempty"`
+	ExperienceID *uint                  `json:"experience_id,omitempty"`
+	StartDate    *string                `json:"start_date,omitempty"`
+	EndDate      *string                `json:"end_date,omitempty"`
+	StartTime    *string                `json:"start_time,omitempty"`
+	EndTime      *string                `json:"end_time,omitempty"`
+	Message      *string                `json:"message,omitempty"`
+	ExternalID   *string                `json:"external_id,omitempty"`
+	Status       *models.ActivityStatus `json:"status,omitempty"`
 }
 
 func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activity, error) {
@@ -137,21 +150,38 @@ func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activit
 
 	// todo check roles
 
-	if data.TaxCode != "" {
-		accounts.UserProfileUpdate(ctx.User, accounts.UserProfileUpdateData{TaxCode: &data.TaxCode})
+	if data.ExternalID != nil {
+		existingActivity := models.Activity{}
+		if err := ActivityQuery(ctx).Where("external_id = ?", data.ExternalID).First(&existingActivity).Error; err == nil {
+			return ActivityUpdate(ctx, existingActivity.ID, &ActivityUpdateData{
+				ExperienceID: data.ExperienceID,
+				Status:       data.Status,
+				StartDate:    data.StartDate,
+				EndDate:      data.EndDate,
+				StartTime:    data.StartTime,
+				EndTime:      data.EndTime,
+				Message:      data.Message,
+			})
+		}
+
+		return nil, fmt.Errorf("activity not found")
+	}
+
+	if data.TaxCode != nil {
+		accounts.UserProfileUpdate(ctx.User, accounts.UserProfileUpdateData{TaxCode: data.TaxCode})
 	}
 
 	startDate := time.Time{}
-	if data.StartDate != "" {
-		startDate, err = time.Parse("2006-01-02", data.StartDate)
+	if data.StartDate != nil {
+		startDate, err = time.Parse("2006-01-02", *data.StartDate)
 		if err != nil {
 			return nil, fmt.Errorf("invalid start date")
 		}
 	}
 
 	endDate := time.Time{}
-	if data.EndDate != "" {
-		endDate, err = time.Parse("2006-01-02", data.EndDate)
+	if data.EndDate != nil {
+		endDate, err = time.Parse("2006-01-02", *data.EndDate)
 		if err != nil {
 			return nil, fmt.Errorf("invalid end date")
 		}
@@ -172,11 +202,11 @@ func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activit
 
 	activity := models.Activity{
 		UserID:         ctx.User.ID,
-		ExperienceID:   data.ExperienceID,
+		ExperienceID:   *data.ExperienceID,
 		OrganizationID: experience.OrganizationID,
-		StartTime:      data.StartTime,
-		EndTime:        data.EndTime,
-		Message:        data.Message,
+		StartTime:      *data.StartTime,
+		EndTime:        *data.EndTime,
+		Message:        *data.Message,
 	}
 
 	if startDate != (time.Time{}) {
@@ -195,13 +225,14 @@ func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activit
 }
 
 type ActivityUpdateData struct {
-	ExpericeID *uint                  `json:"experience_id,omitempty"`
-	Status     *models.ActivityStatus `json:"status,omitempty"`
-	StartDate  *string                `json:"start_date,omitempty"`
-	EndDate    *string                `json:"end_date,omitempty"`
-	StartTime  *string                `json:"start_time,omitempty"`
-	EndTime    *string                `json:"end_time,omitempty"`
-	Message    *string                `json:"message,omitempty"`
+	ExperienceID *uint                  `json:"experience_id,omitempty"`
+	Status       *models.ActivityStatus `json:"status,omitempty"`
+	StartDate    *string                `json:"start_date,omitempty"`
+	EndDate      *string                `json:"end_date,omitempty"`
+	StartTime    *string                `json:"start_time,omitempty"`
+	EndTime      *string                `json:"end_time,omitempty"`
+	Message      *string                `json:"message,omitempty"`
+	ExternalID   *string                `json:"external_id,omitempty"`
 }
 
 func ActivityUpdate(ctx *app.Context, id uint, data *ActivityUpdateData) (*models.Activity, error) {
@@ -241,16 +272,16 @@ func ActivityUpdate(ctx *app.Context, id uint, data *ActivityUpdateData) (*model
 		activity.Message = *data.Message
 	}
 
-	fmt.Println(data)
+	if data.ExperienceID != nil {
+		activity.ExperienceID = *data.ExperienceID
+	}
+
+	if data.ExternalID != nil {
+		activity.ExternalID = *data.ExternalID
+	}
 
 	if data.Status != nil {
-		fmt.Println("status", *data.Status)
-		fmt.Println("role", activity.User.ID)
-		fmt.Println("role", ctx.User.ID)
-		fmt.Println("role", ctx.User.ID == activity.User.ID)
-		fmt.Println("role", *data.Status == "canceled")
 		if ctx.Role == app.RoleSuperUser || (*data.Status == "canceled" && ctx.User.ID == activity.User.ID) {
-			fmt.Println("status", *data.Status)
 			activity.Status = *data.Status
 		}
 	}

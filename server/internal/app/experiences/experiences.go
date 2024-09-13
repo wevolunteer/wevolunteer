@@ -325,12 +325,10 @@ func ExperienceUpdate(ctx *app.Context, id uint, data *ExperienceUpdateData) (*m
 
 	if data.Image != nil {
 		experience.Image = *data.Image
-
 	}
 
 	if data.CategoryID != nil {
 		experience.CategoryID = *data.CategoryID
-
 	}
 
 	if data.Latitude != nil {

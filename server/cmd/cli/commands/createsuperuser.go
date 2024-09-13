@@ -29,10 +29,11 @@ func CreateSuperUserCommand(input CreateSuperUserInput) error {
 	}
 
 	if user != nil {
+		isSuperUser := true
 		accounts.UserUpdate(user.ID, &accounts.UserUpdateData{
-			Email:       input.Email,
-			Password:    input.Password,
-			IsSuperUser: true,
+			Email:       &input.Email,
+			Password:    &input.Password,
+			IsSuperUser: &isSuperUser,
 		})
 
 		return nil
