@@ -106,6 +106,27 @@ func UserProfileUpdateController(c context.Context, input *UserProfileUpdateRequ
 
 }
 
+type UserProfileDeleteRequest struct {
+	Body UserProfileDeleteData
+}
+
+func UserProfileDeleteController(c context.Context, input *UserProfileDeleteRequest) (*struct{}, error) {
+	user, ok := c.Value("user").(*models.User)
+
+	if !ok {
+		return nil, huma.Error401Unauthorized("user not found")
+	}
+
+	err := UserProfileDelete(user, input.Body)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+
+}
+
 type UserListResponse struct {
 	Body *UserListData
 }

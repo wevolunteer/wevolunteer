@@ -1,6 +1,9 @@
 package accounts
 
 import (
+	"errors"
+	"time"
+
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 )
@@ -25,6 +28,10 @@ type UserProfileUpdateData struct {
 	NotificationsNearbyActivities      *bool    `json:"notifications_nearby_activities,omitempty" gorm:"default:true"`
 	NotificationsFollowedOrganizations *bool    `json:"notifications_followed_organizations,omitempty" gorm:"default:true"`
 	NotificationActivityReminders      *bool    `json:"notifications_activity_reminders,omitempty" gorm:"default:true"`
+}
+
+type UserProfileDeleteData struct {
+	OTP string `json:"otp"`
 }
 
 func UserProfileGet(user *models.User) (*models.User, error) {
@@ -122,6 +129,51 @@ func UserProfileUpdate(user *models.User, data UserProfileUpdateData) error {
 	if data.NotificationActivityReminders != nil {
 		user.NotificationActivityReminders = *data.NotificationActivityReminders
 	}
+
+	if err := app.DB.Save(&user).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UserProfileDelete(user *models.User, data UserProfileDeleteData) error {
+	if err := app.DB.Where("email = ?", user.Email).First(&user).Error; err != nil {
+		return errors.New("user not found")
+	}
+
+	if user.OTPCode != data.OTP || user.OTPCode == "" {
+		return errors.New("invalid code")
+	}
+
+	if user.OTPCodeExpireAt.Before(time.Now()) {
+		return errors.New("code expired")
+	}
+
+	randomString, err := generateRandomString(10)
+
+	if err != nil {
+		return err
+	}
+
+	user.Email = "deleted_user_" + randomString
+	user.OTPCode = ""
+	user.FirstName = "Deleted"
+	user.LastName = "User"
+	user.Phone = ""
+	user.TaxCode = ""
+	user.IsEmailVerified = false
+	user.OTPCodeExpireAt = time.Time{}
+	user.City = ""
+	user.Languages = ""
+	user.Job = ""
+	user.Bio = ""
+	user.Latitude = 0
+	user.Longitude = 0
+	user.DateOfBirth = ""
+	user.TaxCode = ""
+	user.HasAcceptedTOS = false
+	user.HasAcceptedNewsletter = false
 
 	if err := app.DB.Save(&user).Error; err != nil {
 		return err

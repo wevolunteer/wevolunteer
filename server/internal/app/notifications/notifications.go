@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	NotificationVerificationCode = "verification-code"
-	NotificationWelcome          = "welcome"
+	NotificationVerificationCodeAuth   = "verification-code"
+	NotificationVerificationCodeDelete = "verification-code-delete"
+	NotificationWelcome                = "welcome"
 )
 
 func Init() {

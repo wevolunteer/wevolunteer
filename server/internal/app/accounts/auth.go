@@ -13,11 +13,15 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type RequestCodeReason string
+
 const (
-	accessTokenExpiry  = time.Minute * 15
-	refreshTokenExpiry = time.Hour * 24 * 7
-	OTPCodeLength      = 5
-	OTPCodeTTL         = 30
+	accessTokenExpiry                    = time.Minute * 15
+	refreshTokenExpiry                   = time.Hour * 24 * 7
+	OTPCodeLength                        = 5
+	OTPCodeTTL                           = 30
+	RequestCodeAuth    RequestCodeReason = "verify"
+	RequestCodeDelete  RequestCodeReason = "delete"
 )
 
 type LoginData struct {
@@ -42,7 +46,8 @@ type TokenData struct {
 }
 
 type RequestCodeData struct {
-	Email string `json:"email"`
+	Email  string             `json:"email"`
+	Reason *RequestCodeReason `json:"reason"`
 }
 
 type VerifyCodeData struct {
@@ -77,12 +82,23 @@ func requestCode(data RequestCodeData) error {
 		return err
 	}
 
-	events.Publish(events.Event{
-		Type: events.UserCodeRequested,
-		Payload: events.EventPayload{
-			Data: user,
-		},
-	})
+	if data.Reason == nil || *data.Reason == RequestCodeAuth {
+		events.Publish(events.Event{
+			Type: events.UserCodeRequestedAuth,
+			Payload: events.EventPayload{
+				Data: user,
+			},
+		})
+	}
+
+	if data.Reason != nil && *data.Reason == RequestCodeDelete {
+		events.Publish(events.Event{
+			Type: events.UserCodeRequestedDelete,
+			Payload: events.EventPayload{
+				Data: user,
+			},
+		})
+	}
 
 	return nil
 }

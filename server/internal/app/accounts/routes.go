@@ -102,6 +102,24 @@ func RegisterRoutes(api huma.API) {
 	huma.Register(
 		api,
 		huma.Operation{
+			OperationID: "users-profile-delete",
+			Method:      http.MethodDelete,
+			Summary:     "Delete user profile",
+			Path:        "/auth/user",
+			Middlewares: huma.Middlewares{
+				app.AuthMiddleware(api),
+			},
+			Tags: RouteTagsAccounts,
+			Security: []map[string][]string{
+				{"bearer": {}},
+			},
+		},
+		UserProfileDeleteController,
+	)
+
+	huma.Register(
+		api,
+		huma.Operation{
 			OperationID: "users-list",
 			Method:      http.MethodGet,
 			Summary:     "List users",
