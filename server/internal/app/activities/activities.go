@@ -172,7 +172,7 @@ func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activit
 	}
 
 	startDate := time.Time{}
-	if data.StartDate != nil {
+	if data.StartDate != nil && *data.StartDate != "" {
 		startDate, err = time.Parse("2006-01-02", *data.StartDate)
 		if err != nil {
 			return nil, fmt.Errorf("invalid start date")
@@ -180,7 +180,7 @@ func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activit
 	}
 
 	endDate := time.Time{}
-	if data.EndDate != nil {
+	if data.EndDate != nil && *data.EndDate != "" {
 		endDate, err = time.Parse("2006-01-02", *data.EndDate)
 		if err != nil {
 			return nil, fmt.Errorf("invalid end date")
