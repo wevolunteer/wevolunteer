@@ -17,6 +17,8 @@ interface NetworkProviderProps {
 }
 
 export const NetworkProvider: React.FC<NetworkProviderProps> = ({ children }) => {
+  console.log("getApiUrl", getApiUrl());
+
   const client = createClient<paths>({ baseUrl: getApiUrl(), cache: "no-cache" });
 
   return (

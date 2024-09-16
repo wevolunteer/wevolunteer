@@ -30,6 +30,8 @@ export interface paths {
   "/auth/user": {
     /** Get user info */
     get: operations["user-info"];
+    /** Delete user profile */
+    delete: operations["users-profile-delete"];
     /** Update user profile */
     patch: operations["users-profile-update"];
   };
@@ -72,7 +74,7 @@ export interface paths {
   "/organizations": {
     /** List organizations */
     get: operations["organizations-list"];
-    /** Create organization */
+    /** Create organization--------- */
     post: operations["organizations-create"];
   };
   "/organizations/{id}": {
@@ -131,6 +133,7 @@ export interface components {
       end_date: string;
       end_time: string;
       experience: components["schemas"]["Experience"];
+      external_id: string;
       /** Format: int64 */
       id: number;
       message: string;
@@ -148,14 +151,16 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      end_date: string;
-      end_time: string;
+      end_date?: string;
+      end_time?: string;
       /** Format: int64 */
-      experience_id: number;
-      message: string;
-      start_date: string;
-      start_time: string;
-      tax_code: string;
+      experience_id?: number;
+      external_id?: string;
+      message?: string;
+      start_date?: string;
+      start_time?: string;
+      status?: string;
+      tax_code?: string;
     };
     ActivityListData: {
       /**
@@ -176,6 +181,7 @@ export interface components {
       end_time?: string;
       /** Format: int64 */
       experience_id?: number;
+      external_id?: string;
       message?: string;
       start_date?: string;
       start_time?: string;
@@ -276,6 +282,7 @@ export interface components {
       /** Format: date-time */
       end_date: string;
       end_time: string;
+      external_id: string;
       friday: boolean;
       /** Format: int64 */
       id: number;
@@ -289,6 +296,7 @@ export interface components {
       organization: components["schemas"]["Organization"];
       /** Format: int64 */
       organization_id: number;
+      post_enrollment_instructions: string;
       published: boolean;
       saturday: boolean;
       /** Format: date-time */
@@ -322,18 +330,29 @@ export interface components {
       description: string;
       end_date: string;
       end_time: string;
+      external_id?: string;
+      friday: boolean | null;
       image?: string;
+      is_recurring: boolean | null;
       /** Format: double */
       latitude?: number;
       /** Format: double */
       longitude?: number;
+      monday: boolean | null;
+      organization_external_id?: string;
       /** Format: int64 */
       organization_id?: number;
+      post_enrollment_instructions?: string;
       published?: boolean;
+      saturday: boolean | null;
       start_date: string;
       start_time: string;
       state?: string;
+      sunday: boolean | null;
+      thursday: boolean | null;
       title: string;
+      tuesday: boolean | null;
+      wednesday: boolean | null;
       zip_code?: string;
     };
     ExperienceListData: {
@@ -359,21 +378,32 @@ export interface components {
       contact_name?: string;
       contact_phone?: string;
       country?: string;
-      description: string;
-      end_date: string;
-      end_time: string;
+      description: string | null;
+      end_date: string | null;
+      end_time: string | null;
+      external_id?: string;
+      friday: boolean | null;
       image?: string;
+      is_recurring: boolean | null;
       /** Format: double */
       latitude?: number;
       /** Format: double */
       longitude?: number;
+      monday: boolean | null;
+      organization_external_id?: string;
       /** Format: int64 */
       organization_id?: number;
+      post_enrollment_instructions?: string;
       published?: boolean;
-      start_date: string;
-      start_time: string;
+      saturday: boolean | null;
+      start_date: string | null;
+      start_time: string | null;
       state?: string;
-      title: string;
+      sunday: boolean | null;
+      thursday: boolean | null;
+      title: string | null;
+      tuesday: boolean | null;
+      wednesday: boolean | null;
       zip_code?: string;
     };
     ExtendedOrganization: {
@@ -385,7 +415,7 @@ export interface components {
       address: string;
       category: components["schemas"]["Category"];
       /** Format: int64 */
-      category_id: number;
+      category_id: number | null;
       city: string;
       country: string;
       /** Format: date-time */
@@ -404,6 +434,7 @@ export interface components {
       phone: string;
       published: boolean;
       state: string;
+      tagline: string;
       tax_code: string;
       uid: string;
       /** Format: date-time */
@@ -425,10 +456,15 @@ export interface components {
       Url: string;
     };
     Organization: {
+      /**
+       * Format: uri
+       * @description A URL to the JSON Schema for this object.
+       */
+      $schema?: string;
       address: string;
       category: components["schemas"]["Category"];
       /** Format: int64 */
-      category_id: number;
+      category_id: number | null;
       city: string;
       country: string;
       /** Format: date-time */
@@ -446,6 +482,7 @@ export interface components {
       phone: string;
       published: boolean;
       state: string;
+      tagline: string;
       tax_code: string;
       uid: string;
       /** Format: date-time */
@@ -460,8 +497,27 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
+      address?: string;
+      /** Format: int64 */
+      category_id?: number;
+      city?: string;
+      country?: string;
+      email: string | null;
+      external_id?: string;
+      /** Format: double */
+      latitude?: number;
+      logo?: string;
+      /** Format: double */
+      longitude?: number;
       name: string;
-      phone: string;
+      phone?: string;
+      published?: boolean;
+      state?: string;
+      tagline?: string;
+      tax_code?: string;
+      vat_code?: string;
+      website?: string;
+      zip_code?: string;
     };
     OrganizationListData: {
       /**
@@ -478,10 +534,27 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      email: string;
-      external_id: string;
+      address?: string;
+      /** Format: int64 */
+      category_id?: number;
+      city?: string;
+      country?: string;
+      email: string | null;
+      external_id?: string;
+      /** Format: double */
+      latitude?: number;
+      logo?: string;
+      /** Format: double */
+      longitude?: number;
       name: string;
-      phone: string;
+      phone?: string;
+      published?: boolean;
+      state?: string;
+      tagline?: string;
+      tax_code?: string;
+      vat_code?: string;
+      website?: string;
+      zip_code?: string;
     };
     PaginationInfo: {
       has_next_page: boolean;
@@ -525,6 +598,7 @@ export interface components {
        */
       $schema?: string;
       email: string;
+      reason: string | null;
     };
     TokenData: {
       /**
@@ -551,6 +625,7 @@ export interface components {
       created_at: string;
       date_of_birth: string;
       email: string;
+      external_id: string;
       first_name: string;
       /** Format: int64 */
       id: number;
@@ -578,6 +653,7 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
+      avatar?: string;
       email: string;
       first_name: string;
       is_superuser: boolean;
@@ -634,6 +710,14 @@ export interface components {
       page_info: components["schemas"]["PaginationInfo"];
       results: components["schemas"]["User"][] | null;
     };
+    UserProfileDeleteData: {
+      /**
+       * Format: uri
+       * @description A URL to the JSON Schema for this object.
+       */
+      $schema?: string;
+      otp: string;
+    };
     UserProfileUpdateData: {
       /**
        * Format: uri
@@ -668,10 +752,12 @@ export interface components {
        * @description A URL to the JSON Schema for this object.
        */
       $schema?: string;
-      email: string;
-      first_name: string;
+      avatar?: string;
+      email: string | null;
+      external_id?: string;
+      first_name: string | null;
       is_superuser?: boolean;
-      last_name: string;
+      last_name: string | null;
       password?: string;
       phone?: string;
       tax_code?: string;
@@ -711,6 +797,7 @@ export interface operations {
         end_date_to?: string;
         start_date_from?: string;
         start_date_to?: string;
+        last_update?: string;
       };
     };
     responses: {
@@ -869,6 +956,26 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["User"];
         };
+      };
+      /** @description Error */
+      default: {
+        content: {
+          "application/problem+json": components["schemas"]["ErrorModel"];
+        };
+      };
+    };
+  };
+  /** Delete user profile */
+  "users-profile-delete": {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserProfileDeleteData"];
+      };
+    };
+    responses: {
+      /** @description No Content */
+      204: {
+        content: never;
       };
       /** @description Error */
       default: {
@@ -1211,7 +1318,7 @@ export interface operations {
       };
     };
   };
-  /** Create organization */
+  /** Create organization--------- */
   "organizations-create": {
     requestBody: {
       content: {
@@ -1222,7 +1329,7 @@ export interface operations {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["ExtendedOrganization"];
+          "application/json": components["schemas"]["Organization"];
         };
       };
       /** @description Error */
@@ -1271,7 +1378,7 @@ export interface operations {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["ExtendedOrganization"];
+          "application/json": components["schemas"]["Organization"];
         };
       };
       /** @description Error */

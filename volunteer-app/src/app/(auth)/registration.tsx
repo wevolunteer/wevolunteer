@@ -51,11 +51,6 @@ export default function RegistrationScreen() {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      // first_name: "test",
-      // last_name: "test",
-      // date_of_birth: "20/12/1980",
-      // tax_code: "test",
-      // accepted_tos: true,
       accepted_newsletter: false,
     },
   });
@@ -240,8 +235,6 @@ export default function RegistrationScreen() {
                 <Box flexDirection="row" gap="s" flexWrap="wrap">
                   <Text variant="body">Ho letto e accetto</Text>
                   <Text variant="link">i Termini di Servizio</Text>
-                  <Text variant="body">e</Text>
-                  <Text variant="link">l’Informativa sulla Privacy</Text>
                 </Box>
               </Checkbox>
             )}
@@ -281,6 +274,7 @@ function isOlderThan(birthdate: string, age: number): boolean {
   const currentDate = new Date();
 
   let calculatedAge = currentDate.getFullYear() - birthDate.getFullYear();
+
   const monthDifference = currentDate.getMonth() - birthDate.getMonth();
 
   if (
@@ -290,5 +284,5 @@ function isOlderThan(birthdate: string, age: number): boolean {
     calculatedAge--;
   }
 
-  return calculatedAge > age;
+  return calculatedAge >= age;
 }

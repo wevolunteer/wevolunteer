@@ -18,7 +18,12 @@ export default function SignInScreen() {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { control, handleSubmit, watch } = useForm<SignInData>();
+  const { control, handleSubmit, watch } = useForm<SignInData>({
+    defaultValues: {
+      email: "",
+      reasone: "verify",
+    },
+  });
 
   const email = watch("email");
 
@@ -30,7 +35,10 @@ export default function SignInScreen() {
 
     try {
       setIsLoading(true);
-      const response = await requestAuthCode(data);
+      const response = await requestAuthCode({
+        email: data.email,
+        reason: "verify",
+      });
 
       if (!response) {
         setError(t("errorRequestingVerificationCode", "Error requesting verification code"));

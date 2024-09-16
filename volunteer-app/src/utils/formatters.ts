@@ -22,12 +22,12 @@ export const convertToDDMMYYYY = (dateString: string): string => {
   }
 };
 
-export const convertToYYYYMMDD = (dateString: string): string => {
+export const convertToYYYYMMDD = (dateString: string): string | null => {
   try {
     const parsedDate = parse(dateString, "dd/MM/yyyy", new Date());
     return format(parsedDate, "yyyy-MM-dd");
   } catch (err) {
-    return "";
+    return null;
   }
 };
 

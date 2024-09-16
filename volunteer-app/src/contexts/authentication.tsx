@@ -7,6 +7,7 @@ import { useNetwork } from "./network";
 const AuthContext = React.createContext<{
   requestAuthCode: (data: RequestCodeData) => Promise<boolean>;
   verifyAuthCode: (data: VerifyCodeData) => Promise<boolean>;
+  deleteProfile: (otp: string) => Promise<boolean>;
   fetchUser: () => Promise<void>;
   signOut: () => void;
   session?: Session | null;
@@ -14,6 +15,7 @@ const AuthContext = React.createContext<{
 }>({
   requestAuthCode: () => Promise.resolve(false),
   verifyAuthCode: () => Promise.resolve(false),
+  deleteProfile: () => Promise.resolve(false),
   fetchUser: () => Promise.resolve(),
   signOut: () => null,
   getAccessToken: () => Promise.resolve(null),
@@ -194,6 +196,22 @@ export function SessionProvider(props: React.PropsWithChildren) {
         }
 
         return false;
+      },
+      deleteProfile: async (otp: string) => {
+        const response = await client.DELETE("/auth/user", {
+          body: {
+            otp,
+          },
+        });
+
+        if (response.error) {
+          console.error("delete profile error:", response.error);
+          return false;
+        }
+
+        setSession(null);
+
+        return true;
       },
       signOut: () => {
         setSession(null);

@@ -24,8 +24,6 @@ export default function SearchPage() {
   const [q, setQ] = useState<string>("");
   const listRef = useRef<FlashList<Experience>>(null);
 
-  console.log(filters);
-
   const { experiences, fetchNextPage, refetch, isLoading } = useExperiences();
 
   const { saveExperienceSearch } = useSearches();

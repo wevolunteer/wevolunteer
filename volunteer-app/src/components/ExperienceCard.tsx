@@ -17,7 +17,9 @@ const imagePlaceholder = require("@/assets/images/experience-placeholder.png");
 
 export const ExperienceCard: FC<ExperienceCardProps> = ({ experience, onPress, onClose }) => {
   const image = useMemo(() => {
-    return experience.image ? { uri: experience.image } : imagePlaceholder;
+    return experience.image && experience.image !== ""
+      ? { uri: experience.image }
+      : imagePlaceholder;
   }, [experience.image]);
 
   return (

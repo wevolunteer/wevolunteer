@@ -4,47 +4,41 @@ import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useSession } from "@/contexts/authentication";
 import { useNetwork } from "@/contexts/network";
-import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { router } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { Platform, StyleSheet } from "react-native";
+import { Platform, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
 import {
   CodeField,
   Cursor,
   useBlurOnFulfill,
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
 const CELL_COUNT = 5;
 
-export default function VerifyCodeScreen() {
-  const [value, setValue] = useState("");
-  const { email } = useLocalSearchParams();
-  const { client } = useNetwork();
-  const { verifyAuthCode, requestAuthCode } = useSession();
-  const [error, setError] = useState<string | null>(null);
+export default function SettingsConfirmDeleteAccountScreen() {
+  const [codeSent, setCodeSent] = useState(false);
   const { t } = useTranslation();
+  const [value, setValue] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const { client } = useNetwork();
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
+  const { requestAuthCode, deleteProfile, session } = useSession();
+
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
     value,
     setValue,
   });
 
-  async function handleResend() {
-    if (!email || Array.isArray(email)) {
-      return;
-    }
-
+  const handleResend = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await requestAuthCode({
-        email,
-        reason: "verify",
+        email: session!.user!.email,
+        reason: "delete",
       });
 
       if (!response) {
@@ -66,7 +60,7 @@ export default function VerifyCodeScreen() {
       setIsLoading(false);
       setError(t("errorRequestingVerificationCode", "Error requesting verification code"));
     }
-  }
+  }, [requestAuthCode, session, t]);
 
   async function onSubmit() {
     if (value.length < CELL_COUNT) {
@@ -74,13 +68,9 @@ export default function VerifyCodeScreen() {
       return;
     }
 
-    if (!email || Array.isArray(email)) {
-      return;
-    }
-
     try {
       setIsLoading(true);
-      const response = await verifyAuthCode({ email, code: value });
+      const response = await deleteProfile(value);
 
       if (!response) {
         setError(t("invalidCode", "The code entered is not valid"));
@@ -89,16 +79,8 @@ export default function VerifyCodeScreen() {
         return;
       }
 
-      const { data } = await client.GET("/auth/user");
-
-      if (data?.accepted_tos) {
-        router.dismissAll();
-        setIsLoading(false);
-        return;
-      }
-
       router.replace({
-        pathname: "/registration",
+        pathname: "/",
       });
       setIsLoading(false);
     } catch (error) {
@@ -112,28 +94,26 @@ export default function VerifyCodeScreen() {
     if (ref.current) {
       ref.current.focus();
     }
-  }, [ref]);
 
-  if (!email) {
-    router.push("/sign-in");
-    return null;
-  }
+    if (!codeSent) {
+      handleResend();
+      setCodeSent(true);
+    }
+  }, [ref, handleResend, codeSent]);
 
   return (
-    <SafeAreaView style={{ flex: 1, justifyContent: "space-between", alignItems: "center" }}>
-      <Topbar title={t("verifyEmail", "Verify Email")} goBack />
-      <Box
-        width="100%"
-        flex={1}
-        flexDirection="column"
-        paddingTop="l"
-        paddingHorizontal="m"
-        gap="l"
-      >
-        <Text variant="body">
-          <Trans i18nKey="verifyCodeDescription" email={email}>
-            Insert the 5-digit code we sent to the address {{ email }}
-          </Trans>
+    <SafeAreaView>
+      <Topbar goBack title={t("deleteAccount", "Delete account")} />
+      <Box px="m" mt="xl" gap="xl">
+        <Text variant="header" textAlign="center">
+          {t("insertConfirmationCode", "Insert confirmation code")}
+        </Text>
+
+        <Text variant="body" textAlign="center">
+          {t(
+            "deleteAccountInsertCodeReceived",
+            "Insert the code you received in your email to confirm the deletion of your account.",
+          )}
         </Text>
 
         <CodeField

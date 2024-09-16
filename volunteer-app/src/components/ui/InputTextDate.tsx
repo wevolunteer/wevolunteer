@@ -19,7 +19,11 @@ const InputTextDate: FC<InputTextProps & TextInputProps> = ({ value, onChangeTex
     setDisplayValue(maskDate(maskedValue));
 
     if (maskedValue && (maskedValue.length === 10 || maskedValue.length === 0)) {
-      onChangeText && onChangeText(convertToYYYYMMDD(text));
+      const convertedValue = convertToYYYYMMDD(maskedValue);
+
+      if (convertedValue !== null) {
+        onChangeText && onChangeText(convertedValue);
+      }
     }
   }
 
