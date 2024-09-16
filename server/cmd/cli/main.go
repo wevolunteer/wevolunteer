@@ -96,8 +96,8 @@ func main() {
 	})
 
 	cmd.AddCommand(&cobra.Command{
-		Use:   "geo-data",
-		Short: "Initialize GEO data",
+		Use:   "init-data",
+		Short: "Initialize app data",
 		Run: humacli.WithOptions(func(cmd *cobra.Command, args []string, opts *CLIOptions) {
 
 			_, err := app.Init(opts.ConfigFile)
@@ -105,7 +105,7 @@ func main() {
 				panic(err)
 			}
 
-			commands.GeoDataCommand()
+			commands.InitDataCommand()
 			fmt.Println("")
 		}),
 	})

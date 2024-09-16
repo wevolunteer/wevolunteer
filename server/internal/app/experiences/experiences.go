@@ -151,7 +151,7 @@ func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Exp
 	if data.OrganizationExternalID != "" {
 		org, err := organizations.OrganizationGetByExternalID(ctx, data.OrganizationExternalID)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Cannot find organization with external_id: %s", data.OrganizationExternalID)
 		}
 
 		data.OrganizationID = org.ID

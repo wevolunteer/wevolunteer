@@ -10,15 +10,11 @@ tasks:
     cmds:
       - go run cmd/server/main.go serve
 
-  makemigration:
-    desc: Create a new database migration
+  docker-build:
+    desc: Build and Push the Docker image
     cmds:
-      - migrate create -ext sql -dir db/migrations -seq migration
-
-  migrate:
-    desc: Run database migrations
-    cmds:
-      - migrate -database postgres://postgres:postgres@127.0.0.1:5432/wevolunteer?sslmode=disable -path db/migrations up
+      - docker build -t metadonors/wevolunteers-api:staging .
+      - docker push metadonors/wevolunteers-api:staging
 
   test:
     desc: Run tests
