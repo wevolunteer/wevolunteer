@@ -30,5 +30,8 @@
         "APP_ENV": "development"
       }
     }
+  },
+  "cli": {
+    "appVersionSource": "remote"
   }
 }
