@@ -47,7 +47,7 @@ type TokenData struct {
 
 type RequestCodeData struct {
 	Email  string             `json:"email"`
-	Reason *RequestCodeReason `json:"reason"`
+	Reason *RequestCodeReason `json:"reason,omitempty"`
 }
 
 type VerifyCodeData struct {
