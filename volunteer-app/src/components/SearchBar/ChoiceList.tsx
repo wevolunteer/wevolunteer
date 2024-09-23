@@ -3,6 +3,7 @@ import { useTheme } from "@shopify/restyle";
 import { FC } from "react";
 import { Pressable } from "react-native";
 import Box from "../ui/Box";
+import Checkbox from "../ui/Checkbox";
 import Icon from "../ui/Icon";
 import Text from "../ui/Text";
 
@@ -24,17 +25,21 @@ const ChoiceListItem: FC<ChoiceListItemProps> = ({ label, section, selected, onP
         borderBottomColor="lightBorder"
         alignItems="center"
         height={58}
+        width="100%"
         borderBottomWidth={1}
       >
-        <Text variant="body" color={selected ? "accentText" : "mainText"}>
-          {label}
-        </Text>
+        <Box flex={10}>
+          <Text variant="body" color={selected ? "accentText" : "mainText"}>
+            {label}
+          </Text>
+        </Box>
 
-        {selected && (
-          <Icon name="check" size={24} color={theme.colors.accentText} strokeWith="1.5" />
-        )}
-        {section && (
+        {section ? (
           <Icon name="chevron-right" size={24} color={theme.colors.mainText} strokeWith="1.5" />
+        ) : (
+          <Box flex={1}>
+            <Checkbox value={!!selected} accent onChange={onPress} />
+          </Box>
         )}
       </Box>
     </Pressable>

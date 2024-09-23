@@ -9,7 +9,7 @@ import Text from "./Text";
 interface CheckboxProps {
   children?: React.ReactNode;
   value: boolean;
-  onChange: (checked: boolean) => void;
+  onChange?: (checked: boolean) => void;
   accent?: boolean;
   error?: string;
 }
@@ -21,7 +21,7 @@ const Checkbox: FC<CheckboxProps> = ({ children, error, value, onChange, accent 
 
   function handlePress() {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    onChange(!value);
+    onChange && onChange(!value);
   }
 
   return (
