@@ -328,7 +328,7 @@ const ProfileDataForm: FC<ProfileDataFormProps> = ({ label, value, onSubmit, err
       justifyContent="space-between"
     >
       <When condition={!showForm}>
-        <Box>
+        <Box flex={1} marginRight="s">
           <Text variant="body">{label}</Text>
           <Text variant="secondary">{value || t("notSet", "Not set")}</Text>
         </Box>

@@ -125,9 +125,16 @@ const ProfileItem: FC<ProfileItemProps> = ({ label, value }) => {
       paddingVertical="m"
       borderBottomWidth={1}
       borderBottomColor="lightBorder"
+      gap="s"
     >
-      <Text variant="secondary">{label}</Text>
-      <Text variant="body">{value}</Text>
+      <Box flex={1}>
+        <Text variant="secondary">{label}</Text>
+      </Box>
+      <Box flex={1}>
+        <Text textAlign="right" variant="body">
+          {value}
+        </Text>
+      </Box>
     </Box>
   );
 };
