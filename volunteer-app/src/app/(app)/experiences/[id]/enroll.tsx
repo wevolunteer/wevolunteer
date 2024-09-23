@@ -70,7 +70,7 @@ export default function ExperienceEnrollScreen() {
   async function onSubmit(values: EnrollmentData) {
     let errors = false;
     try {
-      if (values.tax_code && !validateCF(values.tax_code)) {
+      if (!session?.user?.tax_code && (!values.tax_code || !validateCF(values.tax_code))) {
         errors = true;
         setError("tax_code", {
           type: "manual",
@@ -258,11 +258,10 @@ export default function ExperienceEnrollScreen() {
                   label={t("taxCode", "Tax code")}
                   value={value}
                   autoCapitalize={"characters"}
+                  error={errors.tax_code?.message}
                   uppercase
                   onChangeText={onChange}
                   placeholder={t("yourTaxCode", "Insert your tax code for insurance purposes")}
-                  multiline
-                  numberOfLines={4}
                 />
               )}
             />

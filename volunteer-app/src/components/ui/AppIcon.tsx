@@ -12,9 +12,11 @@ interface IconProps {
 const Icon: React.FC<IconProps> = ({ selected, color, size }) => {
   const theme = useTheme<Theme>();
 
+  const actualSize = size || 30;
+
   return (
-    <Box width={30} height={30}>
-      <Svg width="30" height="30" viewBox="0 0 30 28" fill="none">
+    <Box width={actualSize} height={actualSize}>
+      <Svg width={actualSize} height={actualSize} viewBox="0 0 30 28" fill="none">
         <Path
           d="M21.6136 3.82171C22.1336 3.66916 22.5788 3.68535 22.9493 3.8703C23.3405 4.04913 23.6462 4.32088 23.8661 4.68552C24.086 5.05017 24.2288 5.46002 24.2946 5.91507L26.2562 19.2989L24.478 19.8206L20.2079 7.1141C20.004 6.49628 20.0069 5.85168 20.2165 5.18031C20.42 4.48814 20.8857 4.03527 21.6136 3.82171Z"
           fill={color}

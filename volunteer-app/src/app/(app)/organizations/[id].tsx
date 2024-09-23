@@ -1,4 +1,5 @@
 import { ExperienceCard } from "@/components/ExperienceCard";
+import AppIcon from "@/components/ui/AppIcon";
 import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
 import FavoriteButton from "@/components/ui/FavoriteButton";
@@ -77,15 +78,28 @@ export default function OrganizationsListScreen() {
         ListHeaderComponent={() => (
           <>
             <Box alignItems="center" borderRadius="full" gap="m">
-              <Image
-                source={organization.logo || logo}
-                contentFit="cover"
-                style={{
-                  width: 160,
-                  height: 160,
-                  borderRadius: 1000,
-                }}
-              />
+              {organization.logo ? (
+                <Image
+                  source={organization.logo || logo}
+                  contentFit="cover"
+                  style={{
+                    width: 160,
+                    height: 160,
+                    borderRadius: 1000,
+                  }}
+                />
+              ) : (
+                <Box
+                  width={160}
+                  height={160}
+                  backgroundColor="mainBorder"
+                  borderRadius="full"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <AppIcon color="#fff" size={80} />
+                </Box>
+              )}
               <Box alignItems="center" gap="s">
                 <Text variant="header">{organization.name}</Text>
                 <Text variant="body" fontSize={20} lineHeight={20}>
