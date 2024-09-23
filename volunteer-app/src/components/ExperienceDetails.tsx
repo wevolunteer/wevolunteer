@@ -15,6 +15,7 @@ import { FC, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Linking, Pressable } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import AppIcon from "./ui/AppIcon";
 
 interface ExeperienceDetailsProps {
   experience: Experience;
@@ -78,7 +79,7 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
             borderBottomWidth={1}
             borderBottomColor="mainBorder"
           >
-            {experience.organization.logo && (
+            {experience.organization.logo ? (
               <Image
                 source={experience.organization.logo}
                 contentFit="cover"
@@ -88,6 +89,17 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
                   borderRadius: 1000,
                 }}
               />
+            ) : (
+              <Box
+                width={54}
+                height={54}
+                backgroundColor="mainBorder"
+                borderRadius="full"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <AppIcon color="#fff" />
+              </Box>
             )}
             <Box flex={1}>
               <Text variant="body">{experience.organization.name}</Text>
@@ -160,35 +172,47 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
           </Text>
         </Box>
 
-        <Divider />
+        {experience.organization.email ||
+          experience.organization.phone ||
+          (experience.organization.website && (
+            <>
+              <Divider />
+              <Text variant="title">{t("contacts", "Contacts")}</Text>
 
-        <Text variant="title">{t("contacts", "Contacts")}</Text>
-
-        <ScrollView horizontal>
-          <Box flexDirection="row" gap="m" marginBottom="3xl">
-            <Button
-              variant="secondary"
-              leftIcon="mail"
-              size="s"
-              label={t("email", "Email")}
-              onPress={() => Linking.openURL(`mailto:${experience.organization.email}`)}
-            />
-            <Button
-              variant="secondary"
-              leftIcon="phone"
-              size="s"
-              label={t("call", "Call")}
-              onPress={() => Linking.openURL(`tel:${experience.organization.phone}`)}
-            />
-            <Button
-              variant="secondary"
-              leftIcon="globe"
-              size="s"
-              label={t("website", "Website")}
-              onPress={() => Linking.openURL(`${experience.organization.website}`)}
-            />
-          </Box>
-        </ScrollView>
+              <ScrollView horizontal>
+                <Box flexDirection="row" gap="m">
+                  {experience.organization.email && (
+                    <Button
+                      variant="secondary"
+                      leftIcon="mail"
+                      size="s"
+                      label={t("email", "Email")}
+                      onPress={() => Linking.openURL(`mailto:${experience.organization.email}`)}
+                    />
+                  )}
+                  {experience.organization.phone && (
+                    <Button
+                      variant="secondary"
+                      leftIcon="phone"
+                      size="s"
+                      label={t("call", "Call")}
+                      onPress={() => Linking.openURL(`tel:${experience.organization.phone}`)}
+                    />
+                  )}
+                  {experience.organization.website && (
+                    <Button
+                      variant="secondary"
+                      leftIcon="globe"
+                      size="s"
+                      label={t("website", "Website")}
+                      onPress={() => Linking.openURL(`${experience.organization.website}`)}
+                    />
+                  )}
+                </Box>
+              </ScrollView>
+            </>
+          ))}
+        <Box marginBottom="3xl" />
       </Box>
     </ScrollView>
   );
