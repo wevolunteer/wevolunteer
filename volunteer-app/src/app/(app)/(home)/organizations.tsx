@@ -1,3 +1,4 @@
+import AppIcon from "@/components/ui/AppIcon";
 import Box from "@/components/ui/Box";
 import FavoriteButton from "@/components/ui/FavoriteButton";
 import Icon from "@/components/ui/Icon";
@@ -126,12 +127,26 @@ function OrganizationListScreen() {
                 borderBottomWidth={1}
                 alignItems="center"
               >
-                <Box width={54} height={54} backgroundColor="lightBorder" borderRadius="full">
-                  <Image
-                    source={{ uri: item.logo }}
-                    style={{ width: 54, height: 54, borderRadius: 500 }}
-                  />
-                </Box>
+                {item.logo ? (
+                  <Box width={54} height={54} backgroundColor="lightBorder" borderRadius="full">
+                    <Image
+                      source={{ uri: item.logo }}
+                      style={{ width: 54, height: 54, borderRadius: 500 }}
+                    />
+                  </Box>
+                ) : (
+                  <Box
+                    width={54}
+                    height={54}
+                    backgroundColor="mainBorder"
+                    borderRadius="full"
+                    justifyContent="center"
+                    alignItems="center"
+                  >
+                    <AppIcon color="#fff" size={30} />
+                  </Box>
+                )}
+
                 <Box flex={1}>
                   <Text variant="body">{item.name}</Text>
                   <Text variant="secondary">{item.city}</Text>
