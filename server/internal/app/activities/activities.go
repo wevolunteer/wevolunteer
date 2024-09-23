@@ -195,10 +195,10 @@ func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activit
 	// todo is timerage valid?
 	// todo is a timerange available for experience?
 
-	activityCheck := models.Activity{}
-	if err := ActivityQuery(ctx).Where("experience_id = ? AND user_id = ? AND status not in ('rejected','canceled') AND end_date < ? ", data.ExperienceID, ctx.User.ID, data.StartDate).First(&activityCheck).Error; err == nil {
-		return nil, fmt.Errorf("already enrolled")
-	}
+	// activityCheck := models.Activity{}
+	// if err := ActivityQuery(ctx).Where("experience_id = ? AND user_id = ? AND status not in ('rejected','canceled') AND end_date < ? ", data.ExperienceID, ctx.User.ID, data.StartDate).First(&activityCheck).Error; err == nil {
+	// 	return nil, fmt.Errorf("already enrolled")
+	// }
 
 	activity := models.Activity{
 		UserID:         ctx.User.ID,

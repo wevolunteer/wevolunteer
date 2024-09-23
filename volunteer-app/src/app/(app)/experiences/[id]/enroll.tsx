@@ -115,6 +115,37 @@ export default function ExperienceEnrollScreen() {
         }
       }
 
+      if (values.from_time && values.to_time) {
+        if (values.from_time > values.to_time) {
+          setError("to_time", {
+            type: "manual",
+            message: t("endTimeBeforeStartTime", "End time must be after start time"),
+          });
+
+          return;
+        }
+      }
+
+      if (values.from_time && values.from_date) {
+        // if from_date is today, check if from_time is in the future
+
+        const now = new Date();
+        const from_date = new Date(start_date);
+
+        if (now.toDateString() === from_date.toDateString()) {
+          const [hours, minutes] = values.from_time.split(":").map((v) => parseInt(v));
+
+          if (now.getHours() > hours || (now.getHours() === hours && now.getMinutes() > minutes)) {
+            setError("from_time", {
+              type: "manual",
+              message: t("startTimeInPast", "Start time must be in the future"),
+            });
+
+            return;
+          }
+        }
+      }
+
       const res = await client.POST("/activities", {
         body: {
           start_date,
