@@ -41,7 +41,9 @@ const Checkbox: FC<CheckboxProps> = ({ children, error, value, onChange, accent 
         </Box>
       </Pressable>
       <Box flex={1}>
-        {children && <Box flex={1}>{children}</Box>}
+        <Box flex={1} flexDirection="row" alignItems="center" justifyContent="center">
+          {children && <Box flex={1}>{children}</Box>}
+        </Box>
         {error && (
           <Box flex={1}>
             <Text color="errorText">{error}</Text>

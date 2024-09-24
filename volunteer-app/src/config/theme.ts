@@ -112,6 +112,14 @@ const theme = createTheme({
       lineHeight: 25,
       fontFamily: "DMSansRegular",
     },
+    subtitle: {
+      fontSize: 16,
+      lineHeight: 18.8,
+      fontWeight: "700",
+      marginBottom: "s",
+      marginTop: "m",
+      fontFamily: "DMSansRegular",
+    },
     body: {
       fontSize: 16,
       lineHeight: 18.8,

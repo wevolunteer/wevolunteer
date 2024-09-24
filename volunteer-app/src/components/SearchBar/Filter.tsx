@@ -85,6 +85,7 @@ const SearchbarFilter: FC<SearchbarFilterProps> = ({
         enablePanDownToClose={true}
         enableDynamicSizing={true}
         handleComponent={null}
+        keyboardBlurBehavior="restore"
         backgroundStyle={styles.modalBackground}
         backdropComponent={(props) => (
           <BottomSheetBackdrop opacity={0.6} {...props} disappearsOnIndex={-1} appearsOnIndex={0} />

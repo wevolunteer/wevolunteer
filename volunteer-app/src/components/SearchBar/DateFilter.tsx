@@ -1,8 +1,8 @@
 import { format } from "date-fns";
 import { FC, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import BottomSheetInputTextDate from "../ui/BottomSheetInputTextDate";
 import Box from "../ui/Box";
-import InputTextDate from "../ui/InputTextDate";
 import Text from "../ui/Text";
 import ChoiceList from "./ChoiceList";
 import SearchbarFilter from "./Filter";
@@ -92,7 +92,7 @@ const DateFilter: FC<DateFilterProps> = ({ title, value, onChange, onConfirm }) 
           >
             <Text variant="body">{t("From", "From")}:</Text>
             <Box width={150}>
-              <InputTextDate
+              <BottomSheetInputTextDate
                 value={value?.from || ""}
                 onChangeText={(from) => {
                   onChange && onChange({ from: from || null, to: value?.to || null });
@@ -109,7 +109,7 @@ const DateFilter: FC<DateFilterProps> = ({ title, value, onChange, onConfirm }) 
           >
             <Text variant="body">{t("to", "To")}:</Text>
             <Box width={150}>
-              <InputTextDate
+              <BottomSheetInputTextDate
                 value={value?.to || ""}
                 onChangeText={(to) => {
                   onChange && onChange({ from: value?.from || null, to: to || null });
