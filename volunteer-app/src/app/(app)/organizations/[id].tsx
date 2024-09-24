@@ -101,7 +101,9 @@ export default function OrganizationsListScreen() {
                 </Box>
               )}
               <Box alignItems="center" gap="s">
-                <Text variant="header">{organization.name}</Text>
+                <Text variant="header" textAlign="center">
+                  {organization.name}
+                </Text>
                 <Text variant="body" fontSize={20} lineHeight={20}>
                   {organization.city}
                 </Text>

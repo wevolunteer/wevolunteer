@@ -10,7 +10,7 @@ import { useNetwork } from "@/contexts/network";
 import { ProfileData } from "@/types/data";
 import { validateCF } from "@/utils/validators";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
@@ -233,8 +233,12 @@ export default function RegistrationScreen() {
             render={({ field: { onChange, value } }) => (
               <Checkbox value={value || false} onChange={onChange}>
                 <Box flexDirection="row" gap="s" flexWrap="wrap">
-                  <Text variant="body">Ho letto e accetto</Text>
-                  <Text variant="link">i Termini di Servizio</Text>
+                  <Text variant="body">Ho letto e accetto i</Text>
+                  <Link href="/legal/tos">
+                    <Text variant="body" textDecorationLine="underline">
+                      Termini di servizio
+                    </Text>
+                  </Link>
                 </Box>
               </Checkbox>
             )}

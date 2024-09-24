@@ -6,7 +6,7 @@ import Topbar from "@/components/ui/Topbar";
 import { useSession } from "@/contexts/authentication";
 import { SignInData } from "@/types/data";
 import { validateEmail } from "@/utils/validators";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
@@ -91,11 +91,13 @@ export default function SignInScreen() {
           </Text>
         )}
 
-        <Text variant="secondary">
-          <Trans i18nKey="privacyAcceptance">
-            By clicking "continue," you declare that you have read the privacy policy.
-          </Trans>
-        </Text>
+        <Box>
+          <Text variant="secondary">
+            <Trans i18nKey="privacyAcceptance">
+              By clicking "continue," you declare that you have read the privacy policy.
+            </Trans>
+          </Text>
+        </Box>
 
         <Button
           label={t("continue", "Continue")}
@@ -104,6 +106,14 @@ export default function SignInScreen() {
           isDisabled={!validateEmail(email) || isLoading}
           variant="primary"
         />
+
+        <Box width="100%" justifyContent="center" alignItems="center">
+          <Link href="/legal/privacy">
+            <Text variant="secondary" textAlign="center" textDecorationLine="underline">
+              {t("readPrivacyPolicy", "Read privacy policy")}
+            </Text>
+          </Link>
+        </Box>
       </Box>
     </SafeAreaView>
   );

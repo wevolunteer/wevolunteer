@@ -56,7 +56,7 @@ export default function ProfileScreen() {
           </Box>
 
           <Text variant="title">{t("profile.aboutMe", "About me")}</Text>
-          <Text variant="body">
+          <Text variant="body" lineHeight={23}>
             {user.bio || t("profile.aboutMeTellSomething", "Tell something about you")}
           </Text>
         </Box>
