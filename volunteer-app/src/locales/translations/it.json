@@ -8,7 +8,7 @@
   "activities": "Attività",
   "activityDeleted": "Attività eliminata",
   "activityMessageLabel": "Perché vorresti partecipare?",
-  "activityWriteMessagePlaceholder": "Il tuo messaggio all’organizzazione (facoltativo)",
+  "activityWriteMessagePlaceholder": "Il tuo messaggio all’organizzazione (facoltativo). Attenzione, non inserire dati sensibili.",
   "add": "Aggiungi",
   "anyDate": "Qualsiasi data",
   "approved": "Accettato",
@@ -173,6 +173,6 @@
   "youMustAcceptPrivacy": "Devi accettare la privacy per poter partecipare",
   "youMustAcceptRequirements": "Devi accettare i requisiti per poter partecipare",
   "yourLocation": "La tua posizione",
-  "yourMessageOptional": "Il tuo messaggio all'organizzazione (facoltativo). Attenzione, non inserire dati sensibili.",
+  "yourMessageOptional": "Il tuo messaggio all'organizzazione (facoltativo).",
   "yourTaxCode": "Inserisci il tuo codice fiscale per completare la registrazione"
 }
