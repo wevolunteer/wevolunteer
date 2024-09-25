@@ -12,7 +12,7 @@ import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Linking } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -47,6 +47,10 @@ export default function OrganizationsListScreen() {
       return response.data;
     },
   });
+
+  const hasContacts = useMemo(() => {
+    return organization && (organization.email || organization.phone || organization.website);
+  }, [organization]);
 
   if (!organization || !experiences) {
     return null;
@@ -109,31 +113,39 @@ export default function OrganizationsListScreen() {
                 </Text>
               </Box>
 
-              <ScrollView horizontal>
-                <Box flexDirection="row" gap="m" justifyContent="space-around" px="m">
-                  <Button
-                    variant="secondary"
-                    leftIcon="mail"
-                    size="s"
-                    label={t("email", "Email")}
-                    onPress={() => Linking.openURL(`mailto:${organization.email}`)}
-                  />
-                  <Button
-                    variant="secondary"
-                    leftIcon="phone"
-                    size="s"
-                    label={t("call", "Call")}
-                    onPress={() => Linking.openURL(`tel:${organization.phone}`)}
-                  />
-                  <Button
-                    variant="secondary"
-                    leftIcon="globe"
-                    size="s"
-                    label={t("website", "Website")}
-                    onPress={() => Linking.openURL(`${organization.website}`)}
-                  />
-                </Box>
-              </ScrollView>
+              {hasContacts && (
+                <ScrollView horizontal>
+                  <Box flexDirection="row" gap="m" justifyContent="space-around" px="m">
+                    {organization.email && (
+                      <Button
+                        variant="secondary"
+                        leftIcon="mail"
+                        size="s"
+                        label={t("email", "Email")}
+                        onPress={() => Linking.openURL(`mailto:${organization.email}`)}
+                      />
+                    )}
+                    {organization.phone && (
+                      <Button
+                        variant="secondary"
+                        leftIcon="phone"
+                        size="s"
+                        label={t("call", "Call")}
+                        onPress={() => Linking.openURL(`tel:${organization.phone}`)}
+                      />
+                    )}
+                    {organization.website && (
+                      <Button
+                        variant="secondary"
+                        leftIcon="globe"
+                        size="s"
+                        label={t("website", "Website")}
+                        onPress={() => Linking.openURL(`${organization.website}`)}
+                      />
+                    )}
+                  </Box>
+                </ScrollView>
+              )}
             </Box>
             <Box my="l" px="m">
               <Text variant="title">{t("activities", "Activities")}</Text>

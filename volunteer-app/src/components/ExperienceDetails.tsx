@@ -31,6 +31,18 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  const hasContacts = useMemo(() => {
+    return (
+      experience.organization.email ||
+      experience.organization.phone ||
+      experience.organization.website
+    );
+  }, [
+    experience.organization.email,
+    experience.organization.phone,
+    experience.organization.website,
+  ]);
+
   const image = useMemo(() => {
     return experience.image ? { uri: experience.image } : imagePlaceholder;
   }, [experience.image]);
@@ -172,46 +184,44 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
           </Text>
         </Box>
 
-        {experience.organization.email ||
-          experience.organization.phone ||
-          (experience.organization.website && (
-            <>
-              <Divider />
-              <Text variant="title">{t("contacts", "Contacts")}</Text>
+        {hasContacts && (
+          <>
+            <Divider />
+            <Text variant="title">{t("contacts", "Contacts")}</Text>
 
-              <ScrollView horizontal>
-                <Box flexDirection="row" gap="m">
-                  {experience.organization.email && (
-                    <Button
-                      variant="secondary"
-                      leftIcon="mail"
-                      size="s"
-                      label={t("email", "Email")}
-                      onPress={() => Linking.openURL(`mailto:${experience.organization.email}`)}
-                    />
-                  )}
-                  {experience.organization.phone && (
-                    <Button
-                      variant="secondary"
-                      leftIcon="phone"
-                      size="s"
-                      label={t("call", "Call")}
-                      onPress={() => Linking.openURL(`tel:${experience.organization.phone}`)}
-                    />
-                  )}
-                  {experience.organization.website && (
-                    <Button
-                      variant="secondary"
-                      leftIcon="globe"
-                      size="s"
-                      label={t("website", "Website")}
-                      onPress={() => Linking.openURL(`${experience.organization.website}`)}
-                    />
-                  )}
-                </Box>
-              </ScrollView>
-            </>
-          ))}
+            <ScrollView horizontal>
+              <Box flexDirection="row" gap="m">
+                {experience.organization.email && (
+                  <Button
+                    variant="secondary"
+                    leftIcon="mail"
+                    size="s"
+                    label={t("email", "Email")}
+                    onPress={() => Linking.openURL(`mailto:${experience.organization.email}`)}
+                  />
+                )}
+                {experience.organization.phone && (
+                  <Button
+                    variant="secondary"
+                    leftIcon="phone"
+                    size="s"
+                    label={t("call", "Call")}
+                    onPress={() => Linking.openURL(`tel:${experience.organization.phone}`)}
+                  />
+                )}
+                {experience.organization.website && (
+                  <Button
+                    variant="secondary"
+                    leftIcon="globe"
+                    size="s"
+                    label={t("website", "Website")}
+                    onPress={() => Linking.openURL(`${experience.organization.website}`)}
+                  />
+                )}
+              </Box>
+            </ScrollView>
+          </>
+        )}
         <Box marginBottom="3xl" />
       </Box>
     </ScrollView>
