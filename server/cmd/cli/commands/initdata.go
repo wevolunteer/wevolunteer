@@ -92,18 +92,16 @@ func readGEODataFile(path string) ([]models.Place, error) {
 			log.Fatal(err)
 		}
 
-		city := record[1]
-		coordinates := record[19]
-		coords := strings.Split(coordinates, ", ")
-		if len(coords) != 2 {
-			log.Fatalf("Invalid coordinates format: %s", coordinates)
-		}
+		city := record[2]
 
-		lat, err := strconv.ParseFloat(coords[0], 64)
+		lat_str := strings.Replace(record[5], ",", ".", 1)
+		lat, err := strconv.ParseFloat(lat_str, 64)
 		if err != nil {
 			log.Fatal(err)
 		}
-		long, err := strconv.ParseFloat(coords[1], 64)
+
+		long_str := strings.Replace(record[6], ",", ".", 1)
+		long, err := strconv.ParseFloat(long_str, 64)
 		if err != nil {
 			log.Fatal(err)
 		}
