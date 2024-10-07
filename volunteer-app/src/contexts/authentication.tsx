@@ -40,7 +40,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
 
   const tokenMiddleware: Middleware = {
     async onRequest({ request, options }) {
-      if (session?.token?.accessToken) {
+      if (session?.token?.accessToken && request.url !== "/auth/verify-code") {
         request.headers.set("Authorization", `Bearer ${session.token.accessToken}`);
       }
       return request;

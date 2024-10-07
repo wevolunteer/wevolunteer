@@ -4,12 +4,19 @@ import Text from "@/components/ui/Text";
 import { useSession } from "@/contexts/authentication";
 import { Image } from "expo-image";
 import { Redirect, router } from "expo-router";
+import { useEffect } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
-  const { session } = useSession();
+  const { session, fetchUser } = useSession();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (session) {
+      fetchUser();
+    }
+  }, [session, fetchUser]);
 
   if (session) {
     return <Redirect href="/explore" />;
