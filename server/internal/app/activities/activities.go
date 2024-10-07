@@ -167,12 +167,8 @@ func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activit
 		return nil, fmt.Errorf("activity not found")
 	}
 
-	if data.TaxCode != nil {
+	if data.TaxCode != nil && *data.TaxCode != "" {
 		accounts.UserProfileUpdate(ctx.User, accounts.UserProfileUpdateData{TaxCode: data.TaxCode})
-	} else {
-		if ctx.User.TaxCode == "" {
-			return nil, fmt.Errorf("Codice Fiscale mancante")
-		}
 	}
 
 	startDate := time.Time{}
