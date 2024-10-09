@@ -2,6 +2,7 @@ package notifications
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	novu "github.com/novuhq/go-novu/lib"
@@ -59,9 +60,13 @@ func NotificationTopicTrigger(key string, eventId string, payload map[string]int
 
 	ctx := context.Background()
 
-	to := map[string]interface{}{
-		"type":     "Topic",
-		"topicKey": key,
+	fmt.Printf("Notify topic %s\n", key)
+
+	to := []map[string]interface{}{
+		{
+			"type":     "Topic",
+			"topicKey": key,
+		},
 	}
 
 	data := novu.ITriggerPayloadOptions{To: to, Payload: payload}
