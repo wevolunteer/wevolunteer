@@ -1,16 +1,22 @@
 # We Volunteer
 
-Una piattaforma di matchmakig tra volontari e associazioni.
+A matchmaking platform between volunteers and associations.
 
 ## Design
 
-Il design dell'applicazione è stato realizzato con Figma e può essere visionato al seguente link: [Figma](https://www.figma.com/proto/jZMlZZmcXPJG5YQNQsKCY2/FaXTe?page-id=64%3A108&node-id=77-264&viewport=2436%2C-428%2C1.25&t=9ZMKlrQVBzCoak4g-1&scaling=scale-down)
+The application design was created with Figma and can be viewed at the following link: [Figma](https://www.figma.com/proto/jZMlZZmcXPJG5YQNQsKCY2/FaXTe?page-id=64%3A108&node-id=77-264&viewport=2436%2C-428%2C1.25&t=9ZMKlrQVBzCoak4g-1&scaling=scale-down)
 
-## Componenti
+## Components
 
-L'applicazione è composta da:
+Application is composed of:
 
-- Mobile Volunteer App: applicazione mobile per i volontari [/volunteer-app]()
-- Backend: server backend per la gestione delle richieste [/server]()
-- Admin Panel: pannello di amministrazione per le associazioni [/server/admin]()
-- Web App: applicazione web [/web]()
+- Mobile Volunteer App: mobile application for volunteers [/volunteer-app]()
+- Backend: backend server for request management [/server]()
+- Admin Panel: administration panel [/admin]()
+- Web App: landing page [/web]()
+
+Refer to each component's README for more information on how to run and deploy them.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
