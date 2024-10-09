@@ -13,8 +13,8 @@ const (
 	NotificationVerificationCodeAuth     = "verification-code"
 	NotificationVerificationCodeDelete   = "verification-code-delete"
 	NotificationActivityAccepted         = "enrollment-confirmation"
-	NotificationExeperienceCreatedOrg    = "experience-created-org"
-	NotificationExeperienceCreatedNearby = "experience-created-nearby"
+	NotificationExeperienceCreatedOrg    = "new-activity-for-organization"
+	NotificationExeperienceCreatedNearby = "new-actvity-nearby"
 	NotificationWelcome                  = "welcome"
 )
 

@@ -15,6 +15,10 @@ func usersEventsSubscribe() {
 			return fmt.Errorf("invalid data type")
 		}
 
+		if !user.User.NotificationsFollowedOrganizations {
+			return nil
+		}
+
 		go func() error {
 			fmt.Printf("User %s followed org %s\n", user.User.Email, user.Organization.Name)
 
