@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/wevolunteer/wevolunteer/internal/app"
+	"github.com/wevolunteer/wevolunteer/internal/app/events"
 	"github.com/wevolunteer/wevolunteer/internal/app/organizations"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 	"gorm.io/gorm"
@@ -151,7 +152,7 @@ func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Exp
 	if data.OrganizationExternalID != "" {
 		org, err := organizations.OrganizationGetByExternalID(ctx, data.OrganizationExternalID)
 		if err != nil {
-			return nil, fmt.Errorf("Cannot find organization with external_id: %s", data.OrganizationExternalID)
+			return nil, fmt.Errorf("cannot find organization with external_id: %s", data.OrganizationExternalID)
 		}
 
 		data.OrganizationID = org.ID
@@ -260,6 +261,15 @@ func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Exp
 	if err := app.DB.Create(&experience).Error; err != nil {
 		return nil, err
 	}
+
+	events.Publish(events.Event{
+		Type: events.ExperienceCreated,
+		Payload: events.EventPayload{
+			Data: &events.ExperienceCreatedPayload{
+				Experience: &experience,
+			},
+		},
+	})
 
 	return &experience, nil
 }

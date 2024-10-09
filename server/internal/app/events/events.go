@@ -9,13 +9,21 @@ import (
 type EventType string
 
 const (
-	UserSignup              EventType = "user.signup"
-	UserLogin               EventType = "user.login"
-	UserCodeRequestedAuth   EventType = "user.code.requested.auth"
-	UserCodeRequestedDelete EventType = "user.code.requested.verify"
-	UserCodeVerified        EventType = "user.code.verified"
-	ActivityPublished       EventType = "activity.published"
-	UserDeviceRegistered    EventType = "user.device.registered"
+	UserSignup                   EventType = "user.signup"
+	UserLogin                    EventType = "user.login"
+	UserFollowOrg                EventType = "user.follow.org"
+	UserUnfollowOrg              EventType = "user.unfollow.org"
+	UserCodeRequestedAuth        EventType = "user.code.requested.auth"
+	UserCodeRequestedDelete      EventType = "user.code.requested.verify"
+	UserCodeVerified             EventType = "user.code.verified"
+	ExperienceCreated            EventType = "experience.created"
+	ActivityCreated              EventType = "activity.created"
+	ActivityPublishedNearby      EventType = "activity.published.nearby"
+	ActivityPublishedFollowedOrg EventType = "activity.published.followed_org"
+	ActivityAccepted             EventType = "activity.accepted"
+	ActivityRejected             EventType = "activity.rejected"
+	ActivityIncoming             EventType = "activity.incoming"
+	UserDeviceRegistered         EventType = "user.device.registered"
 )
 
 type Event struct {

@@ -15,7 +15,25 @@ type UserDeviceCreatePayload struct {
 	Device *models.UserDevice
 }
 
-type UserDeviceCreateEvent struct {
+type UserDeviceCreateEventPayload struct {
 	Ctx  app.Context
 	Data UserDeviceCreatePayload
+}
+
+type ExperienceCreatedPayload struct {
+	Experience *models.Experience
+}
+
+type ActivityNotificationEventPayload struct {
+	Activity *models.Activity `json:"activity"`
+	User     *models.User     `json:"user"`
+}
+type UserFollowOrgPayload struct {
+	User         *models.User         `json:"user"`
+	Organization *models.Organization `json:"organization"`
+}
+
+type UserUnfollowOrgPayload struct {
+	User         *models.User         `json:"user"`
+	Organization *models.Organization `json:"organization"`
 }
