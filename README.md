@@ -19,4 +19,4 @@ Refer to each component's README for more information on how to run and deploy t
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE.txt](/LICENSE.txt) file for details.

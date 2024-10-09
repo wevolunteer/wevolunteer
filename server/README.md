@@ -49,4 +49,4 @@ Once you start the server, the API documentation will be available at `http://lo
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details.
+This project is licensed under the MIT License - see the [LICENSE.txt](/LICENSE.txt) file for details.
