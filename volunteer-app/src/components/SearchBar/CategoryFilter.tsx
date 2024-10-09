@@ -49,7 +49,7 @@ const CategoryFilter: FC<CategoryFilterProps> = ({ title, values, onChange }) =>
       onConfirm={() => onChange && onChange(selected)}
     >
       <ChoiceList>
-        {data?.results.map((option) => (
+        {data?.results?.map((option) => (
           <ChoiceList.Item
             key={option.id}
             label={option.name}

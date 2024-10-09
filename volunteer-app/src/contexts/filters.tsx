@@ -1,27 +1,32 @@
-import { ExperienceFilters } from "@/types/data";
 import { createContext, useContext, useState } from "react";
 
-const FiltersContext = createContext<{
-  filters: ExperienceFilters;
-  setFilters: (filters: ExperienceFilters) => void;
+export const FiltersContext = createContext<{
+  filters: Record<string, any>;
+  setFilters: (filters: Record<string, any>) => void;
 }>({
   filters: {},
   setFilters: () => null,
 });
 
-export function useFilters() {
+export function useFilters<T extends Record<string, any>>(initialFilters?: T) {
   const value = useContext(FiltersContext);
+
+  // useMemo(() => value.setFilters(initialFilters || {}), [initialFilters]);
+
   if (process.env.NODE_ENV !== "production") {
     if (!value) {
       throw new Error("useFilters must be wrapped in a <FiltersProvider />");
     }
   }
 
-  return value;
+  return {
+    filters: value.filters as T,
+    setFilters: value.setFilters as (filters: T) => void,
+  };
 }
 
 export function FiltersProvider(props: React.PropsWithChildren) {
-  const [filters, setFilters] = useState<ExperienceFilters>({});
+  const [filters, setFilters] = useState<Record<string, any>>({});
 
   return (
     <FiltersContext.Provider value={{ filters, setFilters }}>
@@ -29,3 +34,13 @@ export function FiltersProvider(props: React.PropsWithChildren) {
     </FiltersContext.Provider>
   );
 }
+
+export const withFilters = <T extends Record<string, any>>(Component: React.ComponentType<T>) => {
+  return (props: T) => {
+    return (
+      <FiltersProvider>
+        <Component {...props} />
+      </FiltersProvider>
+    );
+  };
+};

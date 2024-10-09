@@ -44,6 +44,7 @@ export default function VerifyCodeScreen() {
       setIsLoading(true);
       const response = await requestAuthCode({
         email,
+        reason: "verify",
       });
 
       if (!response) {
@@ -55,7 +56,7 @@ export default function VerifyCodeScreen() {
       Toast.show({
         type: "success",
         props: {
-          icon: "mail-outline",
+          icon: "mail",
         },
         text1: t("codeSent", "Code sent"),
         text2: t("codeSentDescription", "We sent a new verification code to the email address"),
@@ -96,7 +97,9 @@ export default function VerifyCodeScreen() {
         return;
       }
 
-      router.replace("registration");
+      router.replace({
+        pathname: "/registration",
+      });
       setIsLoading(false);
     } catch (error) {
       setError(t("invalidCode", "The code entered is not valid"));

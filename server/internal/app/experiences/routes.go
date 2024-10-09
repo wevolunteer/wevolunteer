@@ -40,6 +40,9 @@ func RegisterRoutes(api huma.API) {
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.ExperienceWrite),
 		},
+		Security: []map[string][]string{
+			{"bearer": {}},
+		},
 	}, ExperienceCreateController)
 
 	huma.Register(api, huma.Operation{
@@ -52,6 +55,9 @@ func RegisterRoutes(api huma.API) {
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.ExperienceWrite),
 		},
+		Security: []map[string][]string{
+			{"bearer": {}},
+		},
 	}, ExperienceUpdateController)
 
 	huma.Register(api, huma.Operation{
@@ -63,6 +69,9 @@ func RegisterRoutes(api huma.API) {
 		Middlewares: huma.Middlewares{
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.ExperienceWrite),
+		},
+		Security: []map[string][]string{
+			{"bearer": {}},
 		},
 	}, ExperienceDeleteController)
 

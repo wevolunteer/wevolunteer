@@ -6,10 +6,10 @@ import Topbar from "@/components/ui/Topbar";
 import { useSession } from "@/contexts/authentication";
 import { SignInData } from "@/types/data";
 import { validateEmail } from "@/utils/validators";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignInScreen() {
@@ -18,7 +18,12 @@ export default function SignInScreen() {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { control, handleSubmit, watch } = useForm<SignInData>();
+  const { control, handleSubmit, watch } = useForm<SignInData>({
+    defaultValues: {
+      email: "",
+      reasone: "verify",
+    },
+  });
 
   const email = watch("email");
 
@@ -30,7 +35,10 @@ export default function SignInScreen() {
 
     try {
       setIsLoading(true);
-      const response = await requestAuthCode(data);
+      const response = await requestAuthCode({
+        email: data.email,
+        reason: "verify",
+      });
 
       if (!response) {
         setError(t("errorRequestingVerificationCode", "Error requesting verification code"));
@@ -43,6 +51,10 @@ export default function SignInScreen() {
       setError(t("errorRequestingVerificationCode", "Error requesting verification code"));
       setIsLoading(false);
     }
+  }
+
+  function handleEmailChange(value: string, onChange: (value: string) => void) {
+    onChange(value.toLocaleLowerCase());
   }
 
   return (
@@ -65,7 +77,7 @@ export default function SignInScreen() {
               value={value}
               autoFocus
               keyboardType="email-address"
-              onChangeText={onChange}
+              onChangeText={(value) => handleEmailChange(value, onChange)}
               placeholder={t("emailPlaceholder", "Insert your email")}
             />
           )}
@@ -79,6 +91,14 @@ export default function SignInScreen() {
           </Text>
         )}
 
+        <Box>
+          <Text variant="secondary">
+            <Trans i18nKey="privacyAcceptance">
+              By clicking "continue," you declare that you have read the privacy policy.
+            </Trans>
+          </Text>
+        </Box>
+
         <Button
           label={t("continue", "Continue")}
           onPress={handleSubmit(onSubmit)}
@@ -86,6 +106,14 @@ export default function SignInScreen() {
           isDisabled={!validateEmail(email) || isLoading}
           variant="primary"
         />
+
+        <Box width="100%" justifyContent="center" alignItems="center">
+          <Link href="/legal/privacy">
+            <Text variant="secondary" textAlign="center" textDecorationLine="underline">
+              {t("readPrivacyPolicy", "Read privacy policy")}
+            </Text>
+          </Link>
+        </Box>
       </Box>
     </SafeAreaView>
   );

@@ -109,6 +109,8 @@ const Button = ({
         return "mainText";
       case "disabled":
         return "whiteText";
+      default:
+        return "whiteText";
     }
   }, [rest.variant]);
 
@@ -127,7 +129,9 @@ const Button = ({
         {renderLeftIcon ? (
           <Box>{renderLeftIcon()}</Box>
         ) : (
-          <Box>{leftIcon && <Icon name={leftIcon} color={iconColor} />}</Box>
+          <Box style={{ minWidth: rightIcon ? 28 : 0 }}>
+            {leftIcon && <Icon name={leftIcon} color={iconColor} />}
+          </Box>
         )}
 
         {isLoading ? (
@@ -137,8 +141,11 @@ const Button = ({
             {label}
           </Text>
         )}
-
-        <Box>{rightIcon && <Icon name={rightIcon} color={iconColor} />}</Box>
+        {rightIcon ? (
+          <Box>{<Icon name={rightIcon} color={iconColor} />}</Box>
+        ) : (
+          <Box style={{ minWidth: leftIcon ? 28 : 0 }}></Box>
+        )}
       </Box>
     </TouchableOpacity>
   );

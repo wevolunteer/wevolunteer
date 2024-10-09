@@ -1,18 +1,19 @@
 import { useFilters } from "@/contexts/filters";
 import { useNetwork } from "@/contexts/network";
+import { ExperienceFilters } from "@/types/data";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-export function useExperiences() {
+export function useExperiences(initialFilters: ExperienceFilters = {}) {
   const { client } = useNetwork();
-  const { filters } = useFilters();
-
+  const { filters } = useFilters<ExperienceFilters>(); // do not works
   const { data, fetchNextPage, refetch, isLoading } = useInfiniteQuery({
-    queryKey: ["experiences"],
+    queryKey: ["experiences", filters, initialFilters],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await client.GET("/experiences", {
         params: {
           query: {
+            ...initialFilters,
             ...filters,
             page: pageParam,
           },
@@ -20,7 +21,8 @@ export function useExperiences() {
       });
       return response.data;
     },
-    getNextPageParam: (lastPage) => (lastPage?.page_info.page ? lastPage?.page_info.page + 1 : 1),
+    getNextPageParam: (lastPage) =>
+      lastPage?.page_info.has_next_page ? lastPage?.page_info.page + 1 : null,
     initialPageParam: 1,
   });
 

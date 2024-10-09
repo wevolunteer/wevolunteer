@@ -19,7 +19,7 @@ func accountsEventsSubscribe() {
 		return nil
 	})
 
-	events.Subscribe(events.UserCodeRequested, func(event events.Event) error {
+	events.Subscribe(events.UserCodeRequestedAuth, func(event events.Event) error {
 		user, ok := event.Payload.Data.(*models.User)
 
 		if !ok {
@@ -28,7 +28,7 @@ func accountsEventsSubscribe() {
 
 		fmt.Printf("User requested code: email %s code %s\n", user.Email, user.OTPCode)
 
-		err := NotificationTrigger(user, NotificationVerificationCode, map[string]interface{}{
+		err := NotificationTrigger(user, NotificationVerificationCodeAuth, map[string]interface{}{
 			"verification_code": user.OTPCode,
 		})
 
@@ -40,6 +40,28 @@ func accountsEventsSubscribe() {
 		return nil
 	})
 
+	events.Subscribe(events.UserCodeRequestedDelete, func(event events.Event) error {
+		user, ok := event.Payload.Data.(*models.User)
+
+		if !ok {
+			return fmt.Errorf("invalid data type")
+		}
+
+		fmt.Printf("User requested delete: email %s code %s\n", user.Email, user.OTPCode)
+
+		err := NotificationTrigger(user, NotificationVerificationCodeDelete, map[string]interface{}{
+			"verification_code": user.OTPCode,
+		})
+
+		if err != nil {
+			log.Fatal("novu error", err.Error())
+			return err
+		}
+
+		return nil
+
+	})
+
 	events.Subscribe(events.UserCodeVerified, func(event events.Event) error {
 		user, ok := event.Payload.Data.(*models.User)
 
@@ -48,6 +70,20 @@ func accountsEventsSubscribe() {
 		}
 
 		fmt.Printf("User verified code: email %s", user.Email)
+		return nil
+	})
+
+	events.Subscribe(events.UserDeviceRegistered, func(event events.Event) error {
+		payload, ok := event.Payload.Data.(events.UserDeviceCreatePayload)
+
+		if !ok {
+			fmt.Println("User device registered: error")
+
+			return fmt.Errorf("invalid data type")
+		}
+
+		NotificationAddDevice(payload.User, payload.Device.Token)
+
 		return nil
 	})
 }

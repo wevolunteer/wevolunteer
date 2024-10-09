@@ -1,0 +1,40 @@
+name: WEB | Build image (staging)
+
+on:
+  push:
+    paths:
+      - "web/**"
+      - ".github/workflows/*web*"
+    branches:
+      - "develop"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: develop
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./web
+          push: true
+          tags: metadonors/wevolunteers-web:staging
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Update service
+        run: |
+          curl -X POST ${{ secrets.WEB_STAGING_WEBHOOK }}

@@ -2,6 +2,7 @@ package experiences
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
@@ -69,10 +70,12 @@ func ExperienceCreateController(
 	input *ExperienceCreateRequest,
 ) (*ExperienceCreateResponse, error) {
 	ctx := app.FromHTTPContext(c)
+
 	data, err := ExperienceCreate(ctx, &input.Body)
 
 	if err != nil {
-		return nil, err
+		fmt.Printf("error creating experience: %v\n", err)
+		return nil, fmt.Errorf("error creating experience: %w", err)
 	}
 
 	resp := &ExperienceCreateResponse{}

@@ -57,7 +57,6 @@ export function SearchesProvider(props: React.PropsWithChildren) {
 
   const setSearches = useCallback(
     (searches: RecentSearches) => {
-      console.log("setSearches", searches);
       setSearchesState(searches);
       storeSearches(searches);
     },
@@ -86,7 +85,6 @@ export function SearchesProvider(props: React.PropsWithChildren) {
 
   useEffect(() => {
     loadSearches();
-    console.log("loadSearches effect");
   }, [loadSearches]);
 
   return (

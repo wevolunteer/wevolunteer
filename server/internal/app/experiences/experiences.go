@@ -1,7 +1,12 @@
 package experiences
 
 import (
+	"fmt"
+	"time"
+
+	"github.com/google/uuid"
 	"github.com/wevolunteer/wevolunteer/internal/app"
+	"github.com/wevolunteer/wevolunteer/internal/app/organizations"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 	"gorm.io/gorm"
 )
@@ -32,7 +37,8 @@ type ExperienceListData struct {
 type ExperienceFilters struct {
 	app.PaginationInput
 	Query        string  `query:"q"`
-	Distance     float64 `query:"distance"`
+	Latitude     float64 `query:"lat"`
+	Longitude    float64 `query:"lng"`
 	DateStart    string  `query:"date_start"`
 	DateEnd      string  `query:"date_end"`
 	Categories   []uint  `query:"categories"`
@@ -45,20 +51,30 @@ func ExperienceList(ctx *app.Context, filters *ExperienceFilters) (*ExperienceLi
 	q := ExperienceQuery(ctx)
 
 	if filters != nil {
+		if filters.DateStart != "" && filters.DateEnd != "" {
+			filters.DateEnd = filters.DateStart
+		}
+
 		if filters.DateStart != "" {
-			q = q.Where("start_time >= ?", filters.DateStart)
+			q = q.Where("end_date >= ?", filters.DateStart)
 		}
 
 		if filters.DateEnd != "" {
-			q = q.Where("end_time <= ?", filters.DateEnd)
+			q = q.Where("start_date <= ?", filters.DateEnd)
 		}
 
-		if filters.Distance != 0 && ctx.User != nil && ctx.User.Latitude != 0 && ctx.User.Longitude != 0 {
-			q = q.Where("ST_Distance_Sphere(point(longitude, latitude), point(?, ?)) <= ?", ctx.User.Longitude, ctx.User.Latitude, filters.Distance)
+		if filters.Latitude != 0 && filters.Longitude != 0 {
+			q = q.Order(fmt.Sprintf(
+				"ST_Distance(ST_SetSRID(ST_Point(experiences.longitude, experiences.latitude), 4326)::geography, ST_SetSRID(ST_Point(%f, %f), 4326)::geography) ASC",
+				filters.Longitude, filters.Latitude))
 		}
 
 		if filters.Query != "" {
-			q = q.Where("title LIKE ?", "%"+filters.Query+"%")
+
+			q = q.
+				Joins("LEFT JOIN organizations on organizations.id = experiences.organization_id").
+				Where("experiences.title ILIKE ?", "%"+filters.Query+"%").
+				Or("organizations.name ILIKE ?", "%"+filters.Query+"%")
 		}
 
 		if len(filters.Categories) > 0 {
@@ -81,7 +97,7 @@ func ExperienceList(ctx *app.Context, filters *ExperienceFilters) (*ExperienceLi
 
 	q = q.Scopes(app.Paginate(filters.PaginationInput))
 
-	if err := q.Find(&data.Results).Error; err != nil {
+	if err := q.Debug().Find(&data.Results).Error; err != nil {
 		return nil, err
 	}
 
@@ -90,11 +106,155 @@ func ExperienceList(ctx *app.Context, filters *ExperienceFilters) (*ExperienceLi
 
 type ExperienceCreateData struct {
 	Title string `json:"title"`
+
+	OrganizationID         uint   `json:"organization_id,omitempty"`
+	OrganizationExternalID string `json:"organization_external_id,omitempty"`
+
+	Description                string  `json:"description"`
+	Image                      string  `json:"image,omitempty"`
+	CategoryID                 uint    `json:"category_id,omitempty"`
+	Latitude                   float64 `json:"latitude,omitempty"`
+	Longitude                  float64 `json:"longitude,omitempty"`
+	Address                    string  `json:"address,omitempty"`
+	City                       string  `json:"city,omitempty"`
+	State                      string  `json:"state,omitempty"`
+	ZipCode                    string  `json:"zip_code,omitempty"`
+	Country                    string  `json:"country,omitempty"`
+	ContactName                string  `json:"contact_name,omitempty"`
+	ContactEmail               string  `json:"contact_email,omitempty"`
+	ContactPhone               string  `json:"contact_phone,omitempty"`
+	PostEnrollmentInstructions string  `json:"post_enrollment_instructions,omitempty"`
+
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+
+	IsRecurring *bool `json:"is_recurring"`
+	Monday      *bool `json:"monday"`
+	Tuesday     *bool `json:"tuesday"`
+	Wednesday   *bool `json:"wednesday"`
+	Thursday    *bool `json:"thursday"`
+	Friday      *bool `json:"friday"`
+	Saturday    *bool `json:"saturday"`
+	Sunday      *bool `json:"sunday"`
+
+	Published bool `json:"published,omitempty"`
+
+	ExternalID string `json:"external_id,omitempty"`
 }
 
 func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Experience, error) {
+	fmt.Printf("data: %s\n", data.StartDate)
+
+	if data.OrganizationExternalID != "" {
+		org, err := organizations.OrganizationGetByExternalID(ctx, data.OrganizationExternalID)
+		if err != nil {
+			return nil, fmt.Errorf("Cannot find organization with external_id: %s", data.OrganizationExternalID)
+		}
+
+		data.OrganizationID = org.ID
+	}
+
+	startDate, err := time.Parse("2006-01-02", data.StartDate)
+	if err != nil {
+		return nil, err
+	}
+
+	endDate, err := time.Parse("2006-01-02", data.EndDate)
+	if err != nil {
+		return nil, err
+	}
+
+	if data.ExternalID != "" {
+		existingExp := models.Experience{}
+
+		if err := ExperienceQuery(ctx).Where("external_id = ?", data.ExternalID).First(&existingExp).Error; err == nil {
+			return ExperienceUpdate(ctx, existingExp.ID, &ExperienceUpdateData{
+				Title:                      &data.Title,
+				OrganizationID:             &data.OrganizationID,
+				Description:                &data.Description,
+				Image:                      &data.Image,
+				CategoryID:                 &data.CategoryID,
+				Latitude:                   &data.Latitude,
+				Longitude:                  &data.Longitude,
+				Address:                    &data.Address,
+				City:                       &data.City,
+				State:                      &data.State,
+				ZipCode:                    &data.ZipCode,
+				Country:                    &data.Country,
+				ContactName:                &data.ContactName,
+				ContactEmail:               &data.ContactEmail,
+				ContactPhone:               &data.ContactPhone,
+				PostEnrollmentInstructions: &data.PostEnrollmentInstructions,
+				StartDate:                  &data.StartDate,
+				EndDate:                    &data.EndDate,
+				StartTime:                  &data.StartTime,
+				EndTime:                    &data.EndTime,
+
+				Published:  &data.Published,
+				ExternalID: &data.ExternalID,
+			})
+		}
+	}
+	uuid := uuid.New().String()
 	experience := models.Experience{
-		Title: data.Title,
+		Title:                      data.Title,
+		UID:                        uuid,
+		ExternalID:                 data.ExternalID,
+		OrganizationID:             data.OrganizationID,
+		Description:                data.Description,
+		Image:                      data.Image,
+		CategoryID:                 data.CategoryID,
+		Latitude:                   data.Latitude,
+		Longitude:                  data.Longitude,
+		Address:                    data.Address,
+		City:                       data.City,
+		State:                      data.State,
+		ZipCode:                    data.ZipCode,
+		Country:                    data.Country,
+		ContactName:                data.ContactName,
+		ContactEmail:               data.ContactEmail,
+		ContactPhone:               data.ContactPhone,
+		PostEnrollmentInstructions: data.PostEnrollmentInstructions,
+		StartDate:                  startDate,
+		EndDate:                    endDate,
+		StartTime:                  data.StartTime,
+		EndTime:                    data.EndTime,
+		Published:                  data.Published,
+	}
+
+	if data.IsRecurring != nil {
+		experience.IsRecurring = *data.IsRecurring
+	}
+
+	if data.Monday != nil {
+		experience.Monday = *data.Monday
+	}
+
+	if data.Tuesday != nil {
+		experience.Tuesday = *data.Tuesday
+	}
+
+	if data.Wednesday != nil {
+		experience.Wednesday = *data.Wednesday
+	}
+
+	if data.Thursday != nil {
+		experience.Thursday = *data.Thursday
+	}
+
+	if data.Friday != nil {
+		experience.Friday = *data.Friday
+	}
+
+	if data.Saturday != nil {
+		experience.Saturday = *data.Saturday
+	}
+
+	if data.Sunday != nil {
+		experience.Sunday = *data.Sunday
 	}
 
 	if err := app.DB.Create(&experience).Error; err != nil {
@@ -105,7 +265,43 @@ func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Exp
 }
 
 type ExperienceUpdateData struct {
-	Title string `json:"title"`
+	Title *string `json:"title"`
+
+	OrganizationID             *uint    `json:"organization_id,omitempty"`
+	OrganizationExternalID     *string  `json:"organization_external_id,omitempty"`
+	Description                *string  `json:"description"`
+	Image                      *string  `json:"image,omitempty"`
+	CategoryID                 *uint    `json:"category_id,omitempty"`
+	Latitude                   *float64 `json:"latitude,omitempty"`
+	Longitude                  *float64 `json:"longitude,omitempty"`
+	Address                    *string  `json:"address,omitempty"`
+	City                       *string  `json:"city,omitempty"`
+	State                      *string  `json:"state,omitempty"`
+	ZipCode                    *string  `json:"zip_code,omitempty"`
+	Country                    *string  `json:"country,omitempty"`
+	ContactName                *string  `json:"contact_name,omitempty"`
+	ContactEmail               *string  `json:"contact_email,omitempty"`
+	ContactPhone               *string  `json:"contact_phone,omitempty"`
+	PostEnrollmentInstructions *string  `json:"post_enrollment_instructions,omitempty"`
+
+	StartDate *string `json:"start_date"`
+	EndDate   *string `json:"end_date"`
+
+	StartTime *string `json:"start_time"`
+	EndTime   *string `json:"end_time"`
+
+	IsRecurring *bool `json:"is_recurring"`
+	Monday      *bool `json:"monday"`
+	Tuesday     *bool `json:"tuesday"`
+	Wednesday   *bool `json:"wednesday"`
+	Thursday    *bool `json:"thursday"`
+	Friday      *bool `json:"friday"`
+	Saturday    *bool `json:"saturday"`
+	Sunday      *bool `json:"sunday"`
+
+	Published *bool `json:"published,omitempty"`
+
+	ExternalID *string `json:"external_id,omitempty"`
 }
 
 func ExperienceUpdate(ctx *app.Context, id uint, data *ExperienceUpdateData) (*models.Experience, error) {
@@ -115,7 +311,135 @@ func ExperienceUpdate(ctx *app.Context, id uint, data *ExperienceUpdateData) (*m
 		return nil, err
 	}
 
-	experience.Title = data.Title
+	if data.Title != nil {
+		experience.Title = *data.Title
+	}
+
+	if data.OrganizationID != nil {
+		experience.OrganizationID = *data.OrganizationID
+	}
+
+	if data.Description != nil {
+		experience.Description = *data.Description
+	}
+
+	if data.Image != nil {
+		experience.Image = *data.Image
+	}
+
+	if data.CategoryID != nil {
+		experience.CategoryID = *data.CategoryID
+	}
+
+	if data.Latitude != nil {
+		experience.Latitude = *data.Latitude
+	}
+
+	if data.Longitude != nil {
+		experience.Longitude = *data.Longitude
+	}
+
+	if data.Address != nil {
+		experience.Address = *data.Address
+	}
+
+	if data.City != nil {
+		experience.City = *data.City
+	}
+
+	if data.State != nil {
+		experience.State = *data.State
+	}
+
+	if data.ZipCode != nil {
+		experience.ZipCode = *data.ZipCode
+	}
+
+	if data.Country != nil {
+		experience.Country = *data.Country
+	}
+
+	if data.ContactName != nil {
+		experience.ContactName = *data.ContactName
+	}
+
+	if data.ContactEmail != nil {
+		experience.ContactEmail = *data.ContactEmail
+	}
+
+	if data.ContactPhone != nil {
+		experience.ContactPhone = *data.ContactPhone
+	}
+
+	if data.PostEnrollmentInstructions != nil {
+		experience.PostEnrollmentInstructions = *data.PostEnrollmentInstructions
+	}
+
+	if data.StartDate != nil {
+		startDate, err := time.Parse("2006-01-02", *data.StartDate)
+		if err != nil {
+			return nil, err
+		}
+
+		experience.StartDate = startDate
+	}
+
+	if data.EndDate != nil {
+		endDate, err := time.Parse("2006-01-02", *data.EndDate)
+		if err != nil {
+			return nil, err
+		}
+
+		experience.EndDate = endDate
+	}
+
+	if data.StartTime != nil {
+		experience.StartTime = *data.StartTime
+	}
+
+	if data.EndTime != nil {
+		experience.EndTime = *data.EndTime
+	}
+
+	if data.IsRecurring != nil {
+		experience.IsRecurring = *data.IsRecurring
+	}
+
+	if data.Monday != nil {
+		experience.Monday = *data.Monday
+	}
+
+	if data.Tuesday != nil {
+		experience.Tuesday = *data.Tuesday
+	}
+
+	if data.Wednesday != nil {
+		experience.Wednesday = *data.Wednesday
+	}
+
+	if data.Thursday != nil {
+		experience.Thursday = *data.Thursday
+	}
+
+	if data.Friday != nil {
+		experience.Friday = *data.Friday
+	}
+
+	if data.Saturday != nil {
+		experience.Saturday = *data.Saturday
+	}
+
+	if data.Sunday != nil {
+		experience.Sunday = *data.Sunday
+	}
+
+	if data.Published != nil {
+		experience.Published = *data.Published
+	}
+
+	if data.ExternalID != nil {
+		experience.ExternalID = *data.ExternalID
+	}
 
 	if err := app.DB.Save(&experience).Error; err != nil {
 		return nil, err

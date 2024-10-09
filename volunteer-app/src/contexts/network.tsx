@@ -1,7 +1,7 @@
 import { getApiUrl } from "@/config/network";
 import type { paths } from "@/types/api";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import createClient, { Middleware } from "openapi-fetch";
+import createClient from "openapi-fetch";
 import React, { ReactNode, createContext, useContext } from "react";
 
 const queryClient = new QueryClient();
@@ -16,23 +16,10 @@ interface NetworkProviderProps {
   children: ReactNode;
 }
 
-const loggerMiddleware: Middleware = {
-  async onRequest(req, options) {
-    console.log("request", req, null, 2);
-    return req;
-  },
-  async onResponse(res) {
-    console.log("response", res, null, 2);
-    return res;
-  },
-};
-
 export const NetworkProvider: React.FC<NetworkProviderProps> = ({ children }) => {
-  const client = createClient<paths>({ baseUrl: getApiUrl() });
+  console.log("getApiUrl", getApiUrl());
 
-  // if (__DEV__) {
-  //   client.use(loggerMiddleware);
-  // }
+  const client = createClient<paths>({ baseUrl: getApiUrl(), cache: "no-cache" });
 
   return (
     <NetworkContext.Provider value={{ client }}>

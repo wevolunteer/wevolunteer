@@ -4,8 +4,9 @@ import SafeAreaView from "@/components/ui/SafeAreaView";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useSession } from "@/contexts/authentication";
+import { useNetwork } from "@/contexts/network";
 import { Link, router } from "expo-router";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -27,7 +28,7 @@ export default function ProfileScreen() {
           empty
           rightComponent={
             <Link href="/profile/edit">
-              <Text variant="link">{t("edit", "Edit")}</Text>
+              <Text variant="link">{t("Edit", "Edit")}</Text>
             </Link>
           }
         />
@@ -39,22 +40,24 @@ export default function ProfileScreen() {
             </Text>
           </Box>
 
-          <ProfileStats years={2} experiences={14} />
+          <ProfileStats />
 
           <Box>
-            <ProfileItem label={t("profile.iLiveIn", "I live in")} value={user.phone || "-"} />
-            <ProfileItem label={t("profile.myJob", "My Job")} value={user.phone || "-"} />
-            <ProfileItem label={t("profile.myCauses", "My Causes")} value={user.phone || "-"} />
+            <ProfileItem label={t("profile.iLiveIn", "I live in")} value={user.city || "-"} />
+            <ProfileItem label={t("profile.myJob", "My Job")} value={user.job || "-"} />
+            <ProfileItem
+              label={t("profile.myCauses", "My Causes")}
+              value={user.categories?.map((c) => c.name).join(", ") || "-"}
+            />
             <ProfileItem
               label={t("profile.myLanguages", "My Languages")}
-              value={user.phone || "-"}
+              value={user.languages || "-"}
             />
           </Box>
 
           <Text variant="title">{t("profile.aboutMe", "About me")}</Text>
-          <Text variant="body">
-            {user.bio ||
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse eget orci fermentum, maximus augue id, rutrum eros. Proin rutrum, lorem in iaculis varius, justo erat feugiat nulla, nec volutpat lorem nunc non leo. Vivamus in dapibus purus. Proin sollicitudin rhoncus egestas. Vestibulum id lorem sagittis, iaculis ante ac, suscipit dolor. Fusce vulputate nibh sit amet tristique scelerisque. Ut pharetra, diam ac porta porta, lectus eros aliquam lacus, at iaculis velit est in lacus."}
+          <Text variant="body" lineHeight={23}>
+            {user.bio || t("profile.aboutMeTellSomething", "Tell something about you")}
           </Text>
         </Box>
       </ScrollView>
@@ -62,13 +65,24 @@ export default function ProfileScreen() {
   );
 }
 
-interface ProfileStatsProps {
-  years: number;
-  experiences: number;
-}
-
-const ProfileStats: FC<ProfileStatsProps> = ({ years, experiences }) => {
+const ProfileStats = () => {
   const { t } = useTranslation();
+  const { client } = useNetwork();
+  const { session } = useSession();
+
+  const [days, setDays] = useState<number | null>(daysFromDate(session?.user?.created_at || ""));
+  const [activityCount, setActivityCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    async function getActivityCount() {
+      const response = await client.GET("/activities");
+      if (response.data) {
+        setActivityCount(response.data.page_info.total);
+      }
+    }
+    getActivityCount();
+  }, [setActivityCount, client]);
+
   return (
     <Box
       borderRadius="m"
@@ -79,19 +93,19 @@ const ProfileStats: FC<ProfileStatsProps> = ({ years, experiences }) => {
     >
       <Box padding="m" flex={1}>
         <Text textAlign="center" variant="header">
-          {years}
+          {days || "-"}
         </Text>
         <Text textAlign="center" variant="secondary">
-          {t("yearOnFaxte", "years on FaXte")}
+          {t("daysOnApp", "Days on App")}
         </Text>
       </Box>
       <Box width={1} height="100%" borderLeftWidth={1} borderLeftColor="lightBorder" />
       <Box padding="m" flex={1}>
         <Text textAlign="center" variant="header">
-          {experiences}
+          {activityCount || "-"}
         </Text>
         <Text textAlign="center" variant="secondary">
-          {t("experiences", "experiences")}
+          {t("Experiences", "Experiences")}
         </Text>
       </Box>
     </Box>
@@ -111,9 +125,21 @@ const ProfileItem: FC<ProfileItemProps> = ({ label, value }) => {
       paddingVertical="m"
       borderBottomWidth={1}
       borderBottomColor="lightBorder"
+      gap="s"
     >
-      <Text variant="secondary">{label}</Text>
-      <Text variant="body">{value}</Text>
+      <Box flex={1}>
+        <Text variant="secondary">{label}</Text>
+      </Box>
+      <Box flex={1}>
+        <Text textAlign="right" variant="body">
+          {value}
+        </Text>
+      </Box>
     </Box>
   );
 };
+
+function daysFromDate(date: string) {
+  const diff = new Date().getTime() - new Date(date).getTime();
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
+}

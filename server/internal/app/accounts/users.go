@@ -12,6 +12,16 @@ func UserQuery() *gorm.DB {
 	return app.DB.Model(&models.User{})
 }
 
+func UserGetByEmail(email string) (*models.User, error) {
+	var user models.User
+
+	if err := app.DB.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func UserGet(id uint) (*models.User, error) {
 	var user models.User
 
@@ -63,9 +73,11 @@ func UsersList(ctx *app.Context, filters *UserFilters) (*UserListData, error) {
 type UserCreateData struct {
 	FirstName   string `json:"first_name"`
 	LastName    string `json:"last_name"`
-	Phone       string `json:"phone"`
+	Phone       string `json:"phone,omitempty"`
 	Email       string `json:"email"`
+	Avatar      string `json:"avatar,omitempty"`
 	Password    string `json:"password"`
+	TaxCode     string `json:"tax_code,omitempty"`
 	IsSuperUser bool   `json:"is_superuser"`
 }
 
@@ -99,11 +111,15 @@ func UserCreate(data *UserCreateData) (*models.User, error) {
 }
 
 type UserUpdateData struct {
-	FistName    string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	Phone       string `json:"phone"`
-	Email       string `json:"email"`
-	IsSuperUser bool   `json:"is_superuser"`
+	FistName    *string `json:"first_name"`
+	LastName    *string `json:"last_name"`
+	Phone       *string `json:"phone,omitempty"`
+	Email       *string `json:"email"`
+	TaxCode     *string `json:"tax_code,omitempty"`
+	Avatar      *string `json:"avatar,omitempty"`
+	Password    *string `json:"password,omitempty"`
+	IsSuperUser *bool   `json:"is_superuser,omitempty"`
+	ExternalID  *string `json:"external_id,omitempty"`
 }
 
 func UserUpdate(id uint, data *UserUpdateData) (*models.User, error) {
@@ -113,11 +129,46 @@ func UserUpdate(id uint, data *UserUpdateData) (*models.User, error) {
 		return nil, err
 	}
 
-	user.FirstName = data.FistName
-	user.LastName = data.LastName
-	user.Phone = data.Phone
-	user.Email = data.Email
-	user.IsRootAdmin = data.IsSuperUser
+	if data.Password != nil {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*data.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return nil, err
+		}
+
+		user.Password = string(hashedPassword)
+	}
+
+	if data.FistName != nil {
+		user.FirstName = *data.FistName
+	}
+
+	if data.LastName != nil {
+		user.LastName = *data.LastName
+	}
+
+	if data.Phone != nil {
+		user.Phone = *data.Phone
+	}
+
+	if data.Email != nil {
+		user.Email = *data.Email
+	}
+
+	if data.TaxCode != nil {
+		user.TaxCode = *data.TaxCode
+	}
+
+	if data.Avatar != nil {
+		user.Avatar = *data.Avatar
+	}
+
+	if data.IsSuperUser != nil {
+		user.IsRootAdmin = *data.IsSuperUser
+	}
+
+	if data.ExternalID != nil {
+		user.ExternalID = *data.ExternalID
+	}
 
 	if err := app.DB.Save(&user).Error; err != nil {
 		return nil, err

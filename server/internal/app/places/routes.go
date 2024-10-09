@@ -17,5 +17,8 @@ func RegisterRoutes(api huma.API) {
 		Middlewares: huma.Middlewares{
 			app.AuthMiddleware(api),
 		},
+		Security: []map[string][]string{
+			{"bearer": {}},
+		},
 	}, PlaceListController)
 }

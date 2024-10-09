@@ -14,7 +14,7 @@ type Context struct {
 
 func FromHTTPContext(c context.Context) *Context {
 	user, ok := c.Value("user").(*models.User)
-	if ok {
+	if !ok {
 		user = nil
 	}
 
@@ -30,7 +30,7 @@ func FromHTTPContext(c context.Context) *Context {
 	}
 }
 
-func SetHumaContext(c huma.Context, user models.User, role Role) {
+func SetHumaContext(c huma.Context, user *models.User, role Role) {
 	huma.WithValue(c, "user", user)
 	huma.WithValue(c, "role", role)
 }

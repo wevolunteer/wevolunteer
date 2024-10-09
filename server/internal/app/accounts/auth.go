@@ -13,11 +13,15 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type RequestCodeReason string
+
 const (
-	accessTokenExpiry  = time.Minute * 15
-	refreshTokenExpiry = time.Hour * 24 * 7
-	OTPCodeLength      = 5
-	OTPCodeTTL         = 30
+	accessTokenExpiry                    = time.Minute * 15
+	refreshTokenExpiry                   = time.Hour * 24 * 7
+	OTPCodeLength                        = 5
+	OTPCodeTTL                           = 30
+	RequestCodeAuth    RequestCodeReason = "verify"
+	RequestCodeDelete  RequestCodeReason = "delete"
 )
 
 type LoginData struct {
@@ -42,7 +46,8 @@ type TokenData struct {
 }
 
 type RequestCodeData struct {
-	Email string `json:"email"`
+	Email  string             `json:"email"`
+	Reason *RequestCodeReason `json:"reason,omitempty"`
 }
 
 type VerifyCodeData struct {
@@ -77,14 +82,23 @@ func requestCode(data RequestCodeData) error {
 		return err
 	}
 
-	fmt.Println(user)
+	if data.Reason == nil || *data.Reason == RequestCodeAuth {
+		events.Publish(events.Event{
+			Type: events.UserCodeRequestedAuth,
+			Payload: events.EventPayload{
+				Data: user,
+			},
+		})
+	}
 
-	events.Publish(events.Event{
-		Type: events.UserCodeRequested,
-		Payload: events.EventPayload{
-			Data: user,
-		},
-	})
+	if data.Reason != nil && *data.Reason == RequestCodeDelete {
+		events.Publish(events.Event{
+			Type: events.UserCodeRequestedDelete,
+			Payload: events.EventPayload{
+				Data: user,
+			},
+		})
+	}
 
 	return nil
 }
@@ -127,7 +141,8 @@ func verifyCode(data VerifyCodeData) (*TokenData, error) {
 	return token, nil
 }
 
-func login(data LoginData) (*TokenData, error) {
+func superUserLogin(data LoginData) (*TokenData, error) {
+	// TODO: auth user only if admin
 	var user models.User
 	if err := app.DB.Where("email = ?", data.Email).First(&user).Error; err != nil {
 		return nil, &app.ErrBadInput{Message: "user not found"}
@@ -137,29 +152,7 @@ func login(data LoginData) (*TokenData, error) {
 		return nil, &app.ErrBadInput{Message: "invalid email or password"}
 	}
 
-	return generateToken(&user, app.RoleVolunteer)
-}
-
-func register(data SignupData) (*TokenData, error) {
-	var existingUser models.User
-	if err := app.DB.Where("email = ?", data.Email).First(&existingUser).Error; err == nil {
-		return nil, errors.New("user already exists")
-	}
-
-	user, err := UserCreate(&UserCreateData{
-		FirstName:   data.FirstName,
-		LastName:    data.LastName,
-		Email:       data.Email,
-		Password:    data.Password,
-		IsSuperUser: false,
-	})
-
-	if err != nil {
-		fmt.Println("err 1")
-		return nil, err
-	}
-
-	return generateToken(user, app.RoleVolunteer)
+	return generateToken(&user, app.RoleSuperUser)
 }
 
 func refreshToken(data RefreshTokenData) (*TokenData, error) {
@@ -167,7 +160,7 @@ func refreshToken(data RefreshTokenData) (*TokenData, error) {
 
 	claims := &app.JWTClaims{}
 	token, err := jwt.ParseWithClaims(data.RefreshToken, claims, func(token *jwt.Token) (interface{}, error) {
-		return app.Config.JWT_SECRET, nil
+		return []byte(app.Config.JWT_SECRET), nil
 	})
 
 	if err != nil || !token.Valid {

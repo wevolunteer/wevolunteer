@@ -30,18 +30,23 @@ var rolePermissions = map[Role][]Permission{
 	RolePublic: {
 		OrganizationRead,
 		ExperienceRead,
+		CategoryRead,
 	},
 	RoleVolunteer: {
 		OrganizationRead,
-		ActivityRead,
 		ExperienceRead,
-		ExperienceWrite,
+		ActivityRead,
+		ActivityWrite,
+		CategoryRead,
 	},
 	RoleOrganization: {
 		OrganizationRead,
 		OrganizationWrite,
 		ExperienceRead,
 		ExperienceWrite,
+		ActivityRead,
+		ActivityWrite,
+		CategoryRead,
 	},
 	RoleSuperUser: {
 		OrganizationRead,
@@ -52,6 +57,8 @@ var rolePermissions = map[Role][]Permission{
 		ExperienceWrite,
 		UserRead,
 		UserWrite,
+		CategoryRead,
+		CategoryWrite,
 	},
 }
 

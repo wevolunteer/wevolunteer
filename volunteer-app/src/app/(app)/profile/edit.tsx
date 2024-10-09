@@ -1,47 +1,49 @@
+import CategoryPicker from "@/components/profile/CategoryPicker";
 import ProfileAvatar from "@/components/profile/ProfileAvatar";
 import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
 import InputText from "@/components/ui/InputText";
+import InputTextDate from "@/components/ui/InputTextDate";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useSession } from "@/contexts/authentication";
+import useProfile from "@/hooks/useProfile";
+import { ProfileData } from "@/types/data";
+import { convertToDDMMYYYY } from "@/utils/formatters";
+import { validateCF } from "@/utils/validators";
 import { router } from "expo-router";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { When } from "react-if";
 import { LayoutAnimation, Pressable } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-interface ProfileData {
-  avatar: string | null;
-  first_name: string;
-  last_name: string;
-  tax_code: string;
-  date_of_birth: string;
-  city: string;
-  job: string;
-  preferred_causes: string;
-  languages: string;
-  bio: string;
-}
-
 export default function ProfileEditScreen() {
   const { t } = useTranslation();
-  const { session } = useSession();
+  const { session, fetchUser } = useSession();
+  const { updateProfile } = useProfile();
 
-  const { control, handleSubmit, watch } = useForm<ProfileData>({
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    setError,
+    formState: { errors },
+  } = useForm<ProfileData>({
     defaultValues: {
-      avatar: session?.user.avatar,
-      first_name: session?.user.first_name,
-      last_name: session?.user.last_name,
-      tax_code: session?.user.tax_code,
-      date_of_birth: session?.user.date_of_birth,
-      city: session?.user.city,
-      job: session?.user.job,
-      preferred_causes: session?.user.preferred_causes,
-      languages: session?.user.languages,
-      bio: session?.user.bio,
+      avatar: session?.user?.avatar,
+      first_name: session?.user?.first_name,
+      last_name: session?.user?.last_name,
+      tax_code: session?.user?.tax_code,
+      date_of_birth: session?.user?.date_of_birth,
+      city: session?.user?.city,
+      job: session?.user?.job,
+      categories: session?.user?.categories?.map((category) => category.id) || [],
+      // preferred_causes: session?.user?.preferred_causes,
+      languages: session?.user?.languages,
+      bio: session?.user?.bio,
     },
   });
 
@@ -49,21 +51,59 @@ export default function ProfileEditScreen() {
     router.push("/");
     return null;
   }
-
-  async function onSubmit(values: ProfileData) {
-    console.log(values);
-  }
-
   const values = watch();
 
-  console.log(values.first_name);
+  async function handleAvatarChange(url: string) {
+    if (!session?.user) {
+      return;
+    }
+
+    setValue("avatar", url);
+
+    handleSubmit(onSubmit)();
+  }
+
+  async function onSubmit(values: ProfileData) {
+    if (!session?.user) {
+      return;
+    }
+
+    if (values.tax_code && !validateCF(values.tax_code)) {
+      setError("tax_code", {
+        type: "manual",
+        message: t("Invalid tax code"),
+      });
+      return;
+    }
+
+    values.notifications_activity_reminders = session?.user?.notifications_activity_reminders;
+    values.notifications_followed_organizations =
+      session?.user?.notifications_followed_organizations;
+    values.notifications_nearby_activities = session?.user?.notifications_nearby_activities;
+
+    updateProfile.mutate(values, {
+      onSuccess: () => {
+        fetchUser();
+      },
+    });
+  }
 
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }} automaticallyAdjustKeyboardInsets={true}>
       <Topbar empty goBack title={t("editProfile", "Edit Profile")} />
       <Box px="m" mt="l">
         <Box alignItems="center" gap="l">
-          <ProfileAvatar url={session.user.avatar || undefined} editable />
+          <Controller
+            control={control}
+            name="avatar"
+            render={({ field }) => (
+              <ProfileAvatar
+                url={field.value || undefined}
+                editable
+                onChange={handleAvatarChange}
+              />
+            )}
+          />
         </Box>
 
         <Box borderTopColor="lightBorder" borderTopWidth={1} my="l">
@@ -98,7 +138,8 @@ export default function ProfileEditScreen() {
           </ProfileDataForm>
           <ProfileDataForm
             label={t("tax_code", "Tax Code")}
-            value={values.tax_code || "-"}
+            value={values.tax_code || t("notSpecified", "Not specified")}
+            error={errors.tax_code?.message}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
@@ -107,6 +148,9 @@ export default function ProfileEditScreen() {
               render={({ field }) => (
                 <InputText
                   value={field.value}
+                  autoCapitalize={"characters"}
+                  uppercase
+                  error={errors.tax_code?.message}
                   onChangeText={field.onChange}
                   label={t("taxCode", "Tax code")}
                 />
@@ -115,14 +159,16 @@ export default function ProfileEditScreen() {
           </ProfileDataForm>
           <ProfileDataForm
             label={t("dob", "Date of birth")}
-            value={values.date_of_birth}
+            value={
+              convertToDDMMYYYY(values.date_of_birth || "") || t("notSpecified", "Not specified")
+            }
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
               control={control}
               name="date_of_birth"
               render={({ field }) => (
-                <InputText
+                <InputTextDate
                   label={t("dateOfBirth", "Date of birth")}
                   value={field.value}
                   onChangeText={field.onChange}
@@ -135,7 +181,7 @@ export default function ProfileEditScreen() {
           </ProfileDataForm>
           <ProfileDataForm
             label={t("city", "City")}
-            value={values.city}
+            value={values.city || t("notSpecified", "Not specified")}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
@@ -152,7 +198,7 @@ export default function ProfileEditScreen() {
           </ProfileDataForm>
           <ProfileDataForm
             label={t("job", "Job")}
-            value={values.job}
+            value={values.job || t("notSpecified", "Not specified")}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
@@ -168,6 +214,27 @@ export default function ProfileEditScreen() {
             />
           </ProfileDataForm>
           <ProfileDataForm
+            label={t("favoriteCategories", "Favorite categories")}
+            value={
+              session?.user?.categories?.length
+                ? session?.user?.categories.map((c) => c.name).join(", ")
+                : t("notSpecified", "Not specified")
+            }
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <Controller
+              control={control}
+              name="categories"
+              render={({ field }) => (
+                <CategoryPicker
+                  value={field.value || []}
+                  onChange={field.onChange}
+                  label={t("favoriteCategories", "Favorite categories")}
+                />
+              )}
+            />
+          </ProfileDataForm>
+          {/* <ProfileDataForm
             label={t("preferredCauses", "Preferred causes")}
             value={values.preferred_causes}
           >
@@ -182,10 +249,10 @@ export default function ProfileEditScreen() {
                 />
               )}
             />
-          </ProfileDataForm>
+          </ProfileDataForm> */}
           <ProfileDataForm
             label={t("languages", "Languages")}
-            value={values.languages}
+            value={values.languages || t("notSpecified", "Not specified")}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
@@ -202,7 +269,7 @@ export default function ProfileEditScreen() {
           </ProfileDataForm>
           <ProfileDataForm
             label={t("aboutMe", "About me")}
-            value={values.bio}
+            value={values.bio || t("notSpecified", "Not specified")}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
@@ -226,11 +293,12 @@ export default function ProfileEditScreen() {
 interface ProfileDataFormProps {
   label: string;
   value: string;
+  error?: string;
   onSubmit?: () => void;
   children?: React.ReactNode | React.ReactNode[];
 }
 
-const ProfileDataForm: FC<ProfileDataFormProps> = ({ label, value, onSubmit, children }) => {
+const ProfileDataForm: FC<ProfileDataFormProps> = ({ label, value, onSubmit, error, children }) => {
   const { t } = useTranslation();
   const [showForm, setShowForm] = useState(false);
 
@@ -244,6 +312,12 @@ const ProfileDataForm: FC<ProfileDataFormProps> = ({ label, value, onSubmit, chi
     onSubmit && onSubmit();
   }
 
+  useEffect(() => {
+    if (error) {
+      setShowForm(true);
+    }
+  }, [error]);
+
   return (
     <Box
       borderBottomWidth={1}
@@ -254,12 +328,12 @@ const ProfileDataForm: FC<ProfileDataFormProps> = ({ label, value, onSubmit, chi
       justifyContent="space-between"
     >
       <When condition={!showForm}>
-        <Box>
+        <Box flex={1} marginRight="s">
           <Text variant="body">{label}</Text>
           <Text variant="secondary">{value || t("notSet", "Not set")}</Text>
         </Box>
         <Pressable onPress={handleToggle}>
-          <Text variant="link">{value ? t("edit", "Edit") : t("add", "Add")}</Text>
+          <Text variant="link">{value ? t("Edit", "Edit") : t("add", "Add")}</Text>
         </Pressable>
       </When>
       <When condition={showForm}>

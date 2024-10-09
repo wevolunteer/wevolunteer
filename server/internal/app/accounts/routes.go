@@ -7,6 +7,12 @@ import (
 	"github.com/wevolunteer/wevolunteer/internal/app"
 )
 
+var (
+	RouteTagsAuth     []string = []string{"Authentication"}
+	RouteTagsAccounts []string = []string{"Accounts"}
+	RouteTagsUsers    []string = []string{"Users"}
+)
+
 func RegisterRoutes(api huma.API) {
 	huma.Register(
 		api,
@@ -15,7 +21,7 @@ func RegisterRoutes(api huma.API) {
 			Method:      http.MethodPost,
 			Summary:     "Request code",
 			Path:        "/auth/request-code",
-			Tags:        []string{"Accounts"},
+			Tags:        RouteTagsAuth,
 		},
 		UserRequestCodeController,
 	)
@@ -27,33 +33,9 @@ func RegisterRoutes(api huma.API) {
 			Method:      http.MethodPost,
 			Summary:     "Verify code",
 			Path:        "/auth/verify-code",
-			Tags:        []string{"Accounts"},
+			Tags:        RouteTagsAuth,
 		},
 		UserVerifyCodeController,
-	)
-
-	huma.Register(
-		api,
-		huma.Operation{
-			OperationID: "login",
-			Method:      http.MethodPost,
-			Summary:     "Login",
-			Path:        "/login",
-			Tags:        []string{"Accounts"},
-		},
-		LoginController,
-	)
-
-	huma.Register(
-		api,
-		huma.Operation{
-			OperationID: "signup",
-			Method:      http.MethodPost,
-			Summary:     "Signup",
-			Path:        "/signup",
-			Tags:        []string{"Accounts"},
-		},
-		SignupController,
 	)
 
 	huma.Register(
@@ -63,7 +45,7 @@ func RegisterRoutes(api huma.API) {
 			Method:      http.MethodPost,
 			Summary:     "Refresh token",
 			Path:        "/auth/refresh",
-			Tags:        []string{"Accounts"},
+			Tags:        RouteTagsAuth,
 		},
 		RefreshTokenController,
 	)
@@ -78,9 +60,25 @@ func RegisterRoutes(api huma.API) {
 			Middlewares: huma.Middlewares{
 				app.AuthMiddleware(api),
 			},
-			Tags: []string{"Accounts"},
+			Tags: RouteTagsAccounts,
+			Security: []map[string][]string{
+				{"bearer": {}},
+			},
 		},
 		UserProfileGetController,
+	)
+
+	huma.Register(
+		api,
+		huma.Operation{
+			OperationID: "login",
+			Method:      http.MethodPost,
+			Summary:     "Admin Login",
+			Path:        "/admin/login",
+			Tags:        RouteTagsAccounts,
+			Hidden:      true,
+		},
+		AdminLoginController,
 	)
 
 	huma.Register(
@@ -93,9 +91,30 @@ func RegisterRoutes(api huma.API) {
 			Middlewares: huma.Middlewares{
 				app.AuthMiddleware(api),
 			},
-			Tags: []string{"Accounts"},
+			Tags: RouteTagsAccounts,
+			Security: []map[string][]string{
+				{"bearer": {}},
+			},
 		},
 		UserProfileUpdateController,
+	)
+
+	huma.Register(
+		api,
+		huma.Operation{
+			OperationID: "users-profile-delete",
+			Method:      http.MethodDelete,
+			Summary:     "Delete user profile",
+			Path:        "/auth/user",
+			Middlewares: huma.Middlewares{
+				app.AuthMiddleware(api),
+			},
+			Tags: RouteTagsAccounts,
+			Security: []map[string][]string{
+				{"bearer": {}},
+			},
+		},
+		UserProfileDeleteController,
 	)
 
 	huma.Register(
@@ -105,10 +124,13 @@ func RegisterRoutes(api huma.API) {
 			Method:      http.MethodGet,
 			Summary:     "List users",
 			Path:        "/users",
-			Tags:        []string{"Accounts"},
+			Tags:        RouteTagsUsers,
 			Middlewares: huma.Middlewares{
 				app.AuthMiddleware(api),
 				app.RoleMiddleware(api, app.UserRead),
+			},
+			Security: []map[string][]string{
+				{"bearer": {}},
 			},
 		},
 		UserListController,
@@ -121,10 +143,13 @@ func RegisterRoutes(api huma.API) {
 			Method:      http.MethodPost,
 			Summary:     "Create user",
 			Path:        "/users",
-			Tags:        []string{"Accounts"},
+			Tags:        RouteTagsUsers,
 			Middlewares: huma.Middlewares{
 				app.AuthMiddleware(api),
 				app.RoleMiddleware(api, app.UserWrite),
+			},
+			Security: []map[string][]string{
+				{"bearer": {}},
 			},
 		},
 		UserCreateController,
@@ -134,13 +159,16 @@ func RegisterRoutes(api huma.API) {
 		api,
 		huma.Operation{
 			OperationID: "user-update",
-			Method:      http.MethodPatch,
+			Method:      http.MethodPut,
 			Summary:     "Update user",
 			Path:        "/users/:id",
-			Tags:        []string{"Accounts"},
+			Tags:        RouteTagsUsers,
 			Middlewares: huma.Middlewares{
 				app.AuthMiddleware(api),
 				app.RoleMiddleware(api, app.UserWrite),
+			},
+			Security: []map[string][]string{
+				{"bearer": {}},
 			},
 		},
 		UserUpdateController,
@@ -153,10 +181,13 @@ func RegisterRoutes(api huma.API) {
 			Method:      http.MethodDelete,
 			Summary:     "Delete user",
 			Path:        "/users/:id",
-			Tags:        []string{"Accounts"},
+			Tags:        RouteTagsUsers,
 			Middlewares: huma.Middlewares{
 				app.AuthMiddleware(api),
 				app.RoleMiddleware(api, app.UserWrite),
+			},
+			Security: []map[string][]string{
+				{"bearer": {}},
 			},
 		},
 		UserDeleteController,
@@ -169,12 +200,52 @@ func RegisterRoutes(api huma.API) {
 			Method:      http.MethodGet,
 			Summary:     "Get user",
 			Path:        "/users/{id}",
-			Tags:        []string{"Accounts"},
+			Tags:        RouteTagsUsers,
 			Middlewares: huma.Middlewares{
 				app.AuthMiddleware(api),
 				app.RoleMiddleware(api, app.UserRead),
 			},
+			Security: []map[string][]string{
+				{"bearer": {}},
+			},
 		},
 		UserGetController,
+	)
+
+	huma.Register(
+		api,
+		huma.Operation{
+			OperationID: "user-devices-list",
+			Method:      http.MethodGet,
+			Summary:     "List users devices",
+			Path:        "/user-devices",
+			Tags:        RouteTagsUsers,
+			Hidden:      true,
+			Middlewares: huma.Middlewares{
+				app.AuthMiddleware(api),
+			},
+			Security: []map[string][]string{
+				{"bearer": {}},
+			},
+		},
+		UserDeviceListController,
+	)
+
+	huma.Register(
+		api,
+		huma.Operation{
+			OperationID: "user-device-create",
+			Method:      http.MethodPost,
+			Summary:     "Register user devices",
+			Path:        "/user-devices",
+			Tags:        RouteTagsAccounts,
+			Middlewares: huma.Middlewares{
+				app.AuthMiddleware(api),
+			},
+			Security: []map[string][]string{
+				{"bearer": {}},
+			},
+		},
+		UserDeviceCreateController,
 	)
 }

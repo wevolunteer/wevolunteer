@@ -13,12 +13,18 @@ const theme = createTheme({
     primaryBackground: palette.pink500,
     primaryLightBackground: palette.pink100,
     darkBackground: palette.gray900,
-    shadow: palette.gray700,
+    shadow: palette.black,
     lightBorder: palette.gray50,
     mainBorder: palette.gray50,
     disabledBackground: palette.gray100,
+
+    statusPending: palette.orange500,
+    statusAccepted: palette.green500,
+    statusRejected: palette.red500,
+    statusCanceled: palette.gray500,
   },
   spacing: {
+    xs: 4,
     s: 8,
     m: 16,
     l: 24,
@@ -80,8 +86,8 @@ const theme = createTheme({
       color: "mainText",
       textDecorationLine: "underline",
     },
-    default: {
-      color: "mainText",
+    defaults: {
+      color: "whiteText",
       backgroundColor: "darkBackground",
     },
   },
@@ -104,6 +110,14 @@ const theme = createTheme({
     title: {
       fontSize: 24,
       lineHeight: 25,
+      fontFamily: "DMSansRegular",
+    },
+    subtitle: {
+      fontSize: 16,
+      lineHeight: 18.8,
+      fontWeight: "700",
+      marginBottom: "s",
+      marginTop: "m",
       fontFamily: "DMSansRegular",
     },
     body: {

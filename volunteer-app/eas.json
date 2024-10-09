@@ -1,19 +1,37 @@
 {
   "build": {
-    "production": {},
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://wevolunteer.app/api",
+        "APP_ENV": "production"
+      }
+    },
+    "staging": {
+      "extends": "production",
+      "env": {
+        "APP_ENV": "staging"
+      }
+    },
     "preview": {
+      "extends": "production",
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "APP_ENV": "preview"
       }
     },
     "development": {
-      "extends": "production",
+      "extends": "preview",
       "developmentClient": true,
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
+      "env": {
+        "APP_ENV": "development"
       }
     }
+  },
+  "cli": {
+    "appVersionSource": "remote"
   }
 }

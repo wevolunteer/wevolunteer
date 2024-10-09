@@ -1,8 +1,8 @@
 import { format } from "date-fns";
 import { FC, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import BottomSheetInputTextDate from "../ui/BottomSheetInputTextDate";
 import Box from "../ui/Box";
-import InputText from "../ui/InputText";
 import Text from "../ui/Text";
 import ChoiceList from "./ChoiceList";
 import SearchbarFilter from "./Filter";
@@ -24,9 +24,10 @@ interface DateFilterProps {
   title: string;
   value?: DateInterval | null;
   onChange?: (value: DateInterval | null) => void;
+  onConfirm: () => void;
 }
 
-const DateFilter: FC<DateFilterProps> = ({ title, value, onChange }) => {
+const DateFilter: FC<DateFilterProps> = ({ title, value, onChange, onConfirm }) => {
   const { t } = useTranslation();
   const [showCustomDates, setShowCustomDates] = useState(false);
 
@@ -70,10 +71,14 @@ const DateFilter: FC<DateFilterProps> = ({ title, value, onChange }) => {
       title={showCustomDates ? t("chooseDates", "Choose dates") : title}
       label={!!value?.from || !!value?.to ? dateIntervalToString(value) : title}
       selected={!!value?.from || !!value?.to}
-      onConfirm={console.log}
+      onConfirm={() => {
+        setShowCustomDates(false);
+        onConfirm();
+      }}
       onBack={showCustomDates ? () => setShowCustomDates(false) : undefined}
       onReset={() => {
-        onChange && onChange(null);
+        onChange?.(null);
+        setShowCustomDates(false);
       }}
     >
       {showCustomDates ? (
@@ -85,15 +90,13 @@ const DateFilter: FC<DateFilterProps> = ({ title, value, onChange }) => {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Text variant="body">{t("form", "From")}:</Text>
-            <Box width={135}>
-              <InputText
+            <Text variant="body">{t("From", "From")}:</Text>
+            <Box width={150}>
+              <BottomSheetInputTextDate
                 value={value?.from || ""}
                 onChangeText={(from) => {
-                  onChange && onChange({ to: value?.to || null, from: from || null });
+                  onChange && onChange({ from: from || null, to: value?.to || null });
                 }}
-                size="s"
-                placeholder="DD/MM/YYYY"
               />
             </Box>
           </Box>
@@ -105,14 +108,12 @@ const DateFilter: FC<DateFilterProps> = ({ title, value, onChange }) => {
             alignItems="center"
           >
             <Text variant="body">{t("to", "To")}:</Text>
-            <Box width={135}>
-              <InputText
-                value={value?.from || ""}
+            <Box width={150}>
+              <BottomSheetInputTextDate
+                value={value?.to || ""}
                 onChangeText={(to) => {
                   onChange && onChange({ from: value?.from || null, to: to || null });
                 }}
-                size="s"
-                placeholder="DD/MM/YYYY"
               />
             </Box>
           </Box>

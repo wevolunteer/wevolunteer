@@ -57,7 +57,7 @@ export default function SettingsAccountScreen() {
               <Text variant="secondary">{session?.user?.email}</Text>
             </Box>
             <Pressable onPress={() => setShowForm(true)}>
-              <Text variant="link">{t("edit", "Edit")}</Text>
+              <Text variant="link">{t("Edit", "Edit")}</Text>
             </Pressable>
           </When>
           <When condition={showForm}>

@@ -2,7 +2,10 @@ import Box from "@/components/ui/Box";
 import Switch from "@/components/ui/Switch";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
-import { FC, useState } from "react";
+import { useSession } from "@/contexts/authentication";
+import useProfile from "@/hooks/useProfile";
+import { ProfileData } from "@/types/data";
+import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native";
 
@@ -27,10 +30,31 @@ const NotificationItem: FC<NotificationItemProps> = ({ text, value, onChange }) 
 
 export default function SettingsNotificationsScreen() {
   const { t } = useTranslation();
+  const { session, fetchUser } = useSession();
+  const { updateProfile } = useProfile();
+  const [nearbyActivities, setNearbyActivities] = useState<boolean>(
+    session?.user?.notifications_activity_reminders ?? true,
+  );
+  const [followedOrganizations, setFollowedOrganizations] = useState<boolean>(
+    session?.user?.notifications_followed_organizations ?? true,
+  );
+  const [activityReminders, setActivityReminders] = useState<boolean>(
+    session?.user?.notifications_nearby_activities ?? true,
+  );
 
-  const [value1, setValue1] = useState<boolean>(true);
-  const [value2, setValue2] = useState<boolean>(false);
-  const [value3, setValue3] = useState<boolean>(true);
+  useEffect(() => {
+    const data: ProfileData = {
+      notifications_activity_reminders: nearbyActivities,
+      notifications_followed_organizations: followedOrganizations,
+      notifications_nearby_activities: activityReminders,
+    };
+
+    updateProfile.mutate(data, {
+      onSuccess: () => {
+        fetchUser();
+      },
+    });
+  }, [nearbyActivities, followedOrganizations, activityReminders]);
 
   return (
     <SafeAreaView>
@@ -41,18 +65,18 @@ export default function SettingsNotificationsScreen() {
         <Box borderTopWidth={1} borderTopColor="lightBorder" mt="2xl">
           <NotificationItem
             text="Nuova richiesta di volontariato vicino a te"
-            value={value1}
-            onChange={setValue1}
+            value={nearbyActivities}
+            onChange={setNearbyActivities}
           />
           <NotificationItem
             text="Nuova richiesta di volontariato dall’organizzazione che segui"
-            value={value2}
-            onChange={setValue2}
+            value={followedOrganizations}
+            onChange={setFollowedOrganizations}
           />
           <NotificationItem
             text="La tua esperienza di volontariato si avvicina"
-            value={value3}
-            onChange={setValue3}
+            value={activityReminders}
+            onChange={setActivityReminders}
           />
         </Box>
       </Box>

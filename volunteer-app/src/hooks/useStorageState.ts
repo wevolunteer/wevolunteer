@@ -3,7 +3,7 @@ import * as SecureStore from "expo-secure-store";
 import * as React from "react";
 import { Platform } from "react-native";
 
-type UseStateHook<T> = [[boolean, T | null], (value: T | null) => void];
+type UseStateHook<T> = [T | null, (value: T | null) => void];
 
 export interface Token {
   accessToken: string;
@@ -15,9 +15,9 @@ export interface Session {
   token: Token | null;
 }
 
-function useAsyncState<T>(initialValue: [boolean, T | null] = [true, null]): UseStateHook<T> {
+function useAsyncState<T>(initialValue: T | null = null): UseStateHook<T> {
   return React.useReducer(
-    (state: [boolean, T | null], action: T | null = null): [boolean, T | null] => [false, action],
+    (state: T | null, action: T | null = null): T | null => action,
     initialValue,
   ) as UseStateHook<T>;
 }

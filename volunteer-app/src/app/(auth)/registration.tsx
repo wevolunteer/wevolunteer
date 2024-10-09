@@ -2,13 +2,15 @@ import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
 import Checkbox from "@/components/ui/Checkbox";
 import InputText from "@/components/ui/InputText";
+import InputTextDate from "@/components/ui/InputTextDate";
 import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useSession } from "@/contexts/authentication";
 import { useNetwork } from "@/contexts/network";
 import { ProfileData } from "@/types/data";
+import { validateCF } from "@/utils/validators";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
@@ -26,7 +28,7 @@ const schema = Yup.object().shape({
   first_name: Yup.string().required("Questo campo è obbligatorio"),
   last_name: Yup.string().required("Questo campo è obbligatorio"),
   date_of_birth: Yup.string().required("Questo campo è obbligatorio"),
-  tax_code: Yup.string().required("Questo campo è obbligatorio"),
+  tax_code: Yup.string(),
   accepted_tos: Yup.boolean()
     .required("Devi accettare i Termini di Servizio")
     .oneOf([true], "Devi accettare i Termini di Servizio"),
@@ -45,14 +47,10 @@ export default function RegistrationScreen() {
     watch,
     setValue,
     handleSubmit,
+    setError,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      // first_name: "test",
-      // last_name: "test",
-      // date_of_birth: "20/12/1980",
-      // tax_code: "test",
-      // accepted_tos: true,
       accepted_newsletter: false,
     },
   });
@@ -60,6 +58,30 @@ export default function RegistrationScreen() {
   async function onSubmit(data: RegistrationData) {
     try {
       setIsLoading(true);
+
+      let hasError = false;
+
+      if (data.tax_code && !validateCF(data.tax_code)) {
+        setError("tax_code", {
+          type: "manual",
+          message: t("Invalid tax code"),
+        });
+        hasError = true;
+      }
+
+      if (data.date_of_birth && !isOlderThan(data.date_of_birth, 14)) {
+        setError("date_of_birth", {
+          type: "manual",
+          message: t("mustBy14older", "You must be at least 14 years old"),
+        });
+        hasError = true;
+      }
+
+      if (hasError) {
+        setIsLoading(false);
+        return;
+      }
+
       const response = await client.PATCH("/auth/user", {
         body: data,
       });
@@ -67,16 +89,19 @@ export default function RegistrationScreen() {
       await fetchUser();
       setIsLoading(false);
 
-      if (response.data?.accepted_tos) {
+      if (!response.error) {
         router.replace("/explore");
         return;
+      } else {
+        console.log("profile error:", response.error);
+        Toast.show({
+          type: "error",
+          text2: t(
+            "profileUpdateError",
+            "An error occurred while updating your profile. Please try again later.",
+          ),
+        });
       }
-
-      Toast.show({
-        type: "success",
-        text1: t("termsOfService", "Termini di servizio"),
-        text2: t("termsOfServiceDescription", "To continue, you must accept the terms of service"),
-      });
     } catch (error) {
       console.error("profile error:", error);
       setIsLoading(false);
@@ -91,6 +116,7 @@ export default function RegistrationScreen() {
   }
 
   const dateOfBirth = watch("date_of_birth");
+  const taxCode = watch("tax_code");
 
   useEffect(() => {
     if (dateOfBirth && dateOfBirth.length === 2) {
@@ -106,9 +132,15 @@ export default function RegistrationScreen() {
     }
   }, [dateOfBirth, setValue]);
 
+  useEffect(() => {
+    if (taxCode) {
+      setValue("tax_code", taxCode.toUpperCase());
+    }
+  }, [taxCode, setValue]);
+
   return (
     <SafeAreaView>
-      <ScrollView>
+      <ScrollView automaticallyAdjustKeyboardInsets={true}>
         <Topbar
           title={t("completeRegistration", "Complete registration")}
           goBackFn={() => {
@@ -156,22 +188,23 @@ export default function RegistrationScreen() {
               control={control}
               name="date_of_birth"
               render={({ field: { onChange, value } }) => (
-                <InputText
+                <InputTextDate
                   label={t("dateOfBirth", "Date of birth")}
                   value={value}
                   onChangeText={onChange}
-                  keyboardType="numeric"
-                  maxLength={10}
-                  placeholder="GG/MM/AAAA"
                 />
               )}
             />
+            {errors.date_of_birth && (
+              <Text marginTop="s" variant="error">
+                {errors.date_of_birth.message}
+              </Text>
+            )}
             <Text variant="secondary" marginTop="s">
               <Trans i18nKey="registrationAgeDescription">
-                To register for FaXTe you must be at least 16 years old.
+                To register for FaXTe you must be at least 14 years old.
               </Trans>
             </Text>
-            {errors.date_of_birth && <Text variant="error">{errors.date_of_birth.message}</Text>}
           </Box>
 
           <Box marginVertical="s">
@@ -179,13 +212,19 @@ export default function RegistrationScreen() {
               control={control}
               name="tax_code"
               render={({ field: { onChange, value } }) => (
-                <InputText label={t("taxCode", "Tax code")} value={value} onChangeText={onChange} />
+                <InputText
+                  label={t("taxCode", "Tax code")}
+                  value={value}
+                  onChangeText={onChange}
+                  autoCapitalize={"characters"}
+                  uppercase
+                />
               )}
             />
+            {errors.tax_code && <Text variant="error">{errors.tax_code.message}</Text>}
             <Text variant="secondary" marginTop="s">
               <Trans i18nKey="registrationTaxCodeDescription">The tax code is required to...</Trans>
             </Text>
-            {errors.tax_code && <Text variant="error">{errors.tax_code.message}</Text>}
           </Box>
 
           <Controller
@@ -194,10 +233,12 @@ export default function RegistrationScreen() {
             render={({ field: { onChange, value } }) => (
               <Checkbox value={value || false} onChange={onChange}>
                 <Box flexDirection="row" gap="s" flexWrap="wrap">
-                  <Text variant="body">Ho letto e accetto</Text>
-                  <Text variant="link">i Termini di Servizio</Text>
-                  <Text variant="body">e</Text>
-                  <Text variant="link">l’Informativa sulla Privacy</Text>
+                  <Text variant="body">Ho letto e accetto i</Text>
+                  <Link href="/legal/tos">
+                    <Text variant="body" textDecorationLine="underline">
+                      Termini di servizio
+                    </Text>
+                  </Link>
                 </Box>
               </Checkbox>
             )}
@@ -230,4 +271,22 @@ export default function RegistrationScreen() {
       </ScrollView>
     </SafeAreaView>
   );
+}
+
+function isOlderThan(birthdate: string, age: number): boolean {
+  const birthDate = new Date(birthdate);
+  const currentDate = new Date();
+
+  let calculatedAge = currentDate.getFullYear() - birthDate.getFullYear();
+
+  const monthDifference = currentDate.getMonth() - birthDate.getMonth();
+
+  if (
+    monthDifference < 0 ||
+    (monthDifference === 0 && currentDate.getDate() < birthDate.getDate())
+  ) {
+    calculatedAge--;
+  }
+
+  return calculatedAge >= age;
 }

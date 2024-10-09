@@ -42,7 +42,6 @@ func TestExperienceList(t *testing.T) {
 			PerPage: 10,
 		},
 		Query:      "example",
-		Distance:   10.0,
 		DateStart:  "2022-01-01",
 		DateEnd:    "2022-12-31",
 		Categories: []uint{1, 2, 3},

@@ -1,26 +1,52 @@
-# Wevolunteer server
+# WeVolunteer Server
 
-We Volunteer è una piattaforma di matchmaking tra volontari e associazioni.
+This is the server for the WeVolunteer project. It is a RESTful API that provides endpoints for the WeVolunteer client to interact with.
 
-## Setup
+## Requirements
 
-1. Install dependencies
+- Go 1.22 or higher
+- Docker
 
-   ```bash
-   go get
-   ```
+## Getting Started
 
-2. Setup config file config.dev.yml
+To get started, clone this repository and run
 
-   Create a `config.dev.yml` file in the root directory of the project and add the following configuration:
-
-   ```yaml
-   db_dsn: postgres://postgres:postgres@localhost:5432/wevolunteer
-   jwt_secret: "verysecret"
-   ```
-
-# Run the dev server
-
-```bash
-air
 ```
+$ docker-compose up -d
+```
+
+This will start the postgres database
+
+To run the server, run
+
+```
+$ go run cmd/main.go
+```
+
+To initialized the database with base data, run
+
+```
+$ go run cmd/main.go initdata
+```
+
+To create a super user, run
+
+```
+$ go run cmd/main.go createsuperuser
+```
+
+To create a service account token, run
+
+```
+$ go run cmd/main.go createserviceaccount <email>
+```
+
+email should be the email of the user you want to create a service account for.
+
+## Documentation
+
+Once you start the server, the API documentation will be available at `http://localhost:8080/api/docs`
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details.

@@ -1,17 +1,11 @@
+import ExperienceDetails from "@/components/ExperienceDetails";
 import Box from "@/components/ui/Box";
 import Button from "@/components/ui/Button";
-import Divider from "@/components/ui/Divider";
-import Icon from "@/components/ui/Icon";
-import Text from "@/components/ui/Text";
-import Topbar from "@/components/ui/Topbar";
 import { useNetwork } from "@/contexts/network";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Linking, Pressable } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ExperienceScreen() {
@@ -24,17 +18,33 @@ export default function ExperienceScreen() {
 
   const experienceId = parseInt(id);
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["experiences", id],
     queryFn: async () => {
-      const response = await client.GET("/experiences/{id}", {
+      const experienceResponse = await client.GET("/experiences/{id}", {
         params: {
           path: {
             id: experienceId,
           },
         },
       });
-      return response.data;
+
+      if (!experienceResponse?.data?.organization) {
+        return null;
+      }
+
+      const organizationResponse = await client.GET("/organizations/{id}", {
+        params: {
+          path: {
+            id: experienceResponse.data.organization.id,
+          },
+        },
+      });
+
+      return {
+        experience: experienceResponse.data,
+        organization: organizationResponse.data,
+      };
     },
   });
 
@@ -42,123 +52,26 @@ export default function ExperienceScreen() {
     return null;
   }
 
+  if (isLoading) {
+    return (
+      <SafeAreaView>
+        <Box flex={1}>
+          <ActivityIndicator />
+        </Box>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView>
-      <ScrollView>
-        <Topbar
-          goBack
-          rightComponent={
-            <Pressable>
-              <Icon name="share" />
-            </Pressable>
-          }
-        />
-        <Image
-          source={data.image}
-          style={{
-            width: "100%",
-            height: 390,
-          }}
-        />
-        <Box marginHorizontal="m" marginVertical="l" gap="l">
-          {/* Organization and title */}
-          <Text variant="body" color="accentText">
-            {data.organization.name}
-          </Text>
-          <Text fontSize={32} fontFamily="DMSansMedium" lineHeight={38}>
-            {data.title}
-          </Text>
+      <ExperienceDetails
+        experience={data.experience}
+        isFavorite={data?.organization?.is_favorite}
+      />
 
-          {/* Location and dates */}
-          <Box borderRadius="m" borderWidth={1} borderColor="mainBorder">
-            <Box
-              flexDirection="row"
-              padding="m"
-              gap="m"
-              borderBottomWidth={1}
-              borderBottomColor="mainBorder"
-            >
-              <Icon name="marker" size={32} color="black" strokeWith="1.5" />
-              <Box>
-                <Text variant="body">{data.address}</Text>
-                <Text variant="body">{data.city}</Text>
-              </Box>
-            </Box>
-            <Box flexDirection="row" padding="m" gap="m">
-              <Icon name="calendar" size={32} color="black" strokeWith="1.5" />
-
-              <Box>
-                <Text variant="body">
-                  {data.start_date && (
-                    <>
-                      {t("from", "From")} {format(new Date(data.start_date), "d MMMM yyyy")}
-                    </>
-                  )}
-                </Text>
-                <Text variant="body">
-                  {data.end_date && (
-                    <>
-                      {t("to", "To")} {format(new Date(data.end_date), "d MMMM yyyy")}
-                    </>
-                  )}
-                </Text>
-              </Box>
-            </Box>
-          </Box>
-
-          <Text variant="title">{t("opportunity", "Opportunity")}</Text>
-
-          <Text variant="body" color="secondaryText">
-            {data.description}
-          </Text>
-
-          <Divider />
-
-          <Text variant="title">{t("requirements", "Requirements")}</Text>
-
-          <Box marginLeft="s">
-            <Text variant="body" color="secondaryText">
-              • Maggiore età
-            </Text>
-            <Text variant="body" color="secondaryText">
-              • Auto
-            </Text>
-          </Box>
-
-          <Divider />
-
-          <Text variant="title">{t("contacts", "Contacts")}</Text>
-
-          <ScrollView horizontal>
-            <Box flexDirection="row" gap="m" marginBottom="3xl">
-              <Button
-                variant="secondary"
-                leftIcon="mail"
-                size="s"
-                label={t("email", "Email")}
-                onPress={() => Linking.openURL(`mailto:${data.organization.email}`)}
-              />
-              <Button
-                variant="secondary"
-                leftIcon="phone"
-                size="s"
-                label={t("call", "Call")}
-                onPress={() => Linking.openURL(`tel:${data.organization.phone}`)}
-              />
-              <Button
-                variant="secondary"
-                leftIcon="globe"
-                size="s"
-                label={t("website", "Website")}
-                onPress={() => Linking.openURL(`${data.organization.website}`)}
-              />
-            </Box>
-          </ScrollView>
-        </Box>
-      </ScrollView>
       <Box
         position="absolute"
-        bottom={16}
+        bottom={32}
         left={0}
         right={0}
         justifyContent="center"

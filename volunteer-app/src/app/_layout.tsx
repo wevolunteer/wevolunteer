@@ -15,6 +15,7 @@ import Toast from "react-native-toast-message";
 import { NetworkProvider } from "@/contexts/network";
 import LocalesInit from "@/locales";
 import { getLocales } from "expo-localization";
+
 import i18next from "i18next";
 import { Platform, UIManager } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -37,7 +38,9 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
+      setTimeout(() => {
+        SplashScreen.hideAsync();
+      }, 1500);
     }
   }, [loaded]);
 

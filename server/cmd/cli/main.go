@@ -15,6 +15,8 @@ import (
 	"github.com/wevolunteer/wevolunteer/internal/app/activities"
 	"github.com/wevolunteer/wevolunteer/internal/app/categories"
 	"github.com/wevolunteer/wevolunteer/internal/app/experiences"
+	"github.com/wevolunteer/wevolunteer/internal/app/media"
+	"github.com/wevolunteer/wevolunteer/internal/app/notifications"
 	"github.com/wevolunteer/wevolunteer/internal/app/organizations"
 	"github.com/wevolunteer/wevolunteer/internal/app/places"
 	"github.com/wevolunteer/wevolunteer/internal/utils/logger"
@@ -50,6 +52,9 @@ func main() {
 		experiences.RegisterRoutes(a.Api)
 		categories.RegisterRoutes(a.Api)
 		places.RegisterRoutes(a.Api)
+		media.RegisterRoutes(a.Api)
+
+		notifications.Init()
 
 		hooks.OnStart(func() {
 			log.Infof("Starting API server at http://%s:%d\n", opts.Host, opts.Port)
@@ -91,8 +96,8 @@ func main() {
 	})
 
 	cmd.AddCommand(&cobra.Command{
-		Use:   "geo-data",
-		Short: "Initialize GEO data",
+		Use:   "init-data",
+		Short: "Initialize app data",
 		Run: humacli.WithOptions(func(cmd *cobra.Command, args []string, opts *CLIOptions) {
 
 			_, err := app.Init(opts.ConfigFile)
@@ -100,7 +105,54 @@ func main() {
 				panic(err)
 			}
 
-			commands.GeoDataCommand()
+			commands.InitDataCommand()
+			fmt.Println("")
+		}),
+	})
+
+	cmd.AddCommand(&cobra.Command{
+		Use:   "createsuperuser",
+		Short: "Create super user",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return fmt.Errorf("requires exactly 2 arguments")
+			}
+			return nil
+		},
+		Run: humacli.WithOptions(func(cmd *cobra.Command, args []string, opts *CLIOptions) {
+
+			_, err := app.Init(opts.ConfigFile)
+			if err != nil {
+				panic(err)
+			}
+
+			commands.CreateSuperUserCommand(commands.CreateSuperUserInput{
+				Email:    args[0],
+				Password: args[1],
+			})
+			fmt.Println("")
+		}),
+	})
+
+	cmd.AddCommand(&cobra.Command{
+		Use:   "createserviceaccount",
+		Short: "Create service account",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return fmt.Errorf("requires exactly 1 arguments")
+			}
+			return nil
+		},
+		Run: humacli.WithOptions(func(cmd *cobra.Command, args []string, opts *CLIOptions) {
+
+			_, err := app.Init(opts.ConfigFile)
+			if err != nil {
+				panic(err)
+			}
+
+			commands.CreateServiceAccountCommand(commands.CreateServiceAccountInput{
+				Email: args[0],
+			})
 			fmt.Println("")
 		}),
 	})

@@ -2,7 +2,6 @@ package accounts
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/wevolunteer/wevolunteer/internal/app"
@@ -32,8 +31,8 @@ type AuhenticationResponse struct {
 	Body TokenData
 }
 
-func LoginController(c context.Context, input *LoginInput) (*AuhenticationResponse, error) {
-	token, err := login(input.Body)
+func AdminLoginController(c context.Context, input *LoginInput) (*AuhenticationResponse, error) {
+	token, err := superUserLogin(input.Body)
 
 	if err != nil {
 		return nil, huma.Error401Unauthorized("invalid email or password")
@@ -43,22 +42,6 @@ func LoginController(c context.Context, input *LoginInput) (*AuhenticationRespon
 		Body: *token,
 	}
 
-	return resp, nil
-}
-
-type SignupInput struct {
-	Body SignupData
-}
-
-func SignupController(c context.Context, input *SignupInput) (*AuhenticationResponse, error) {
-	token, err := register(input.Body)
-
-	if err != nil {
-		return nil, huma.Error400BadRequest(err.Error())
-	}
-
-	resp := &AuhenticationResponse{}
-	resp.Body = *token
 	return resp, nil
 }
 
@@ -83,13 +66,13 @@ type UserInfoResponse struct {
 }
 
 func UserProfileGetController(c context.Context, input *struct{}) (*UserInfoResponse, error) {
-	user, ok := c.Value("user").(models.User)
+	user, ok := c.Value("user").(*models.User)
 
 	if !ok {
 		return nil, huma.Error401Unauthorized("user not found")
 	}
 
-	data, err := UserProfileGet(&user)
+	data, err := UserProfileGet(user)
 
 	if err != nil {
 		return nil, err
@@ -105,28 +88,47 @@ type UserProfileUpdateRequest struct {
 }
 
 func UserProfileUpdateController(c context.Context, input *UserProfileUpdateRequest) (*UserInfoResponse, error) {
-	var user models.User
-
-	user, ok := c.Value("user").(models.User)
+	user, ok := c.Value("user").(*models.User)
 
 	if !ok {
 		return nil, huma.Error401Unauthorized("user not found")
 	}
 
-	err := UserProfileUpdate(&user, input.Body)
+	err := UserProfileUpdate(user, input.Body)
 
 	if err != nil {
 		return nil, err
 	}
 
 	return &UserInfoResponse{
-		Body: user,
+		Body: *user,
 	}, nil
 
 }
 
+type UserProfileDeleteRequest struct {
+	Body UserProfileDeleteData
+}
+
+func UserProfileDeleteController(c context.Context, input *UserProfileDeleteRequest) (*struct{}, error) {
+	user, ok := c.Value("user").(*models.User)
+
+	if !ok {
+		return nil, huma.Error401Unauthorized("user not found")
+	}
+
+	err := UserProfileDelete(user, input.Body)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+
+}
+
 type UserListResponse struct {
-	Body []models.User
+	Body *UserListData
 }
 
 func UserListController(c context.Context, input *UserFilters) (*UserListResponse, error) {
@@ -138,7 +140,7 @@ func UserListController(c context.Context, input *UserFilters) (*UserListRespons
 	}
 
 	return &UserListResponse{
-		Body: users.Results,
+		Body: users,
 	}, nil
 }
 
@@ -225,7 +227,6 @@ type UserRequestCodeRequest struct {
 }
 
 func UserRequestCodeController(c context.Context, input *UserRequestCodeRequest) (*struct{}, error) {
-	fmt.Println("request code")
 	err := requestCode(input.Body)
 
 	if err != nil {
@@ -248,5 +249,46 @@ func UserVerifyCodeController(c context.Context, input *UserVerifyCodeRequest) (
 
 	return &AuhenticationResponse{
 		Body: *token,
+	}, nil
+}
+
+// User Devices
+
+type UserDeviceListResponse struct {
+	Body UserDeviceListData
+}
+
+func UserDeviceListController(c context.Context, input *UserDeviceFilters) (*UserDeviceListResponse, error) {
+	ctx := app.FromHTTPContext(c)
+	data, err := UserDeviceList(ctx, input)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &UserDeviceListResponse{
+		Body: *data,
+	}, nil
+}
+
+type UserDeviceCreateRequest struct {
+	Body UserDeviceCreateData
+}
+
+type UserDeviceCreateResponse struct {
+	Body models.UserDevice
+}
+
+func UserDeviceCreateController(c context.Context, input *UserDeviceCreateRequest) (*UserDeviceCreateResponse, error) {
+	ctx := app.FromHTTPContext(c)
+
+	device, err := UserDeviceCreate(ctx, &input.Body)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &UserDeviceCreateResponse{
+		Body: *device,
 	}, nil
 }

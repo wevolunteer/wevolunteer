@@ -17,7 +17,6 @@ func OrganizationListController(c context.Context, input *OrganizationFilters) (
 	data, err := OrganizationsList(ctx, input)
 
 	if err != nil {
-		fmt.Println("Error in OrganizationListController")
 		return nil, err
 	}
 
@@ -33,7 +32,7 @@ type OrganizationGetRequest struct {
 }
 
 type OrganizationGetResponse struct {
-	Body models.Organization
+	Body ExtendedOrganization
 }
 
 func OrganizationGetController(c context.Context, input *OrganizationGetRequest) (*OrganizationGetResponse, error) {
@@ -71,6 +70,7 @@ func OrganizationCreateController(
 	data, err := OrganizationCreate(ctx, &input.Body)
 
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
@@ -126,6 +126,45 @@ func OrganizationDeleteController(
 	}
 
 	resp := &OrganizationDeleteResponse{}
+
+	return resp, nil
+}
+
+type OrganizationFavoriteRequest struct {
+	ID uint `path:"id"`
+}
+
+type OrganizationFavoriteResponse struct{}
+
+func OrganizationAddToFavoritesController(
+	c context.Context,
+	input *OrganizationFavoriteRequest,
+) (*OrganizationFavoriteResponse, error) {
+	ctx := app.FromHTTPContext(c)
+	err := OrganizationFollow(ctx, input.ID)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	resp := &OrganizationFavoriteResponse{}
+
+	return resp, nil
+}
+
+func OrganizationRemoveFromFavoritesController(
+	c context.Context,
+	input *OrganizationFavoriteRequest,
+) (*OrganizationFavoriteResponse, error) {
+	ctx := app.FromHTTPContext(c)
+	err := OrganizationUnfollow(ctx, input.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &OrganizationFavoriteResponse{}
 
 	return resp, nil
 }

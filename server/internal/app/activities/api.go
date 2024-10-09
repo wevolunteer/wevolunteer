@@ -2,11 +2,14 @@ package activities
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/danielgtaylor/huma/v2"
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
+	"github.com/wevolunteer/wevolunteer/internal/utils/logger"
 )
+
+var log = logger.GetLogger()
 
 type ActivityListResponse struct {
 	Body ActivityListData
@@ -20,12 +23,37 @@ func ActivityListController(
 	data, err := ActivityList(ctx, input)
 
 	if err != nil {
+		return nil, huma.NewError(400, err.Error())
+	}
+
+	resp := &ActivityListResponse{}
+
+	resp.Body = *data
+
+	return resp, nil
+}
+
+type ActivityGetRequest struct {
+	ID uint `path:"id"`
+}
+
+type ActivityGetResponse struct {
+	Body models.Activity
+}
+
+func ActivityGetController(c context.Context, input *ActivityGetRequest) (*ActivityGetResponse, error) {
+	ctx := app.FromHTTPContext(c)
+	data, err := ActivityGet(ctx, input.ID)
+
+	if err != nil {
 		return nil, err
 	}
 
-	fmt.Println(data)
+	if data == nil {
+		return nil, &app.ErrNotAuthorized{}
+	}
 
-	resp := &ActivityListResponse{}
+	resp := &ActivityGetResponse{}
 
 	resp.Body = *data
 
@@ -48,7 +76,7 @@ func ActivityCreateController(
 	data, err := ActivityCreate(ctx, &input.Body)
 
 	if err != nil {
-		return nil, err
+		return nil, huma.NewError(400, err.Error())
 	}
 
 	resp := &ActivityCreateResponse{}
@@ -75,7 +103,7 @@ func ActivityUpdateController(
 	data, err := ActivityUpdate(ctx, input.ID, &input.Body)
 
 	if err != nil {
-		return nil, err
+		return nil, huma.NewError(400, err.Error())
 	}
 
 	resp := &ActivityUpdateResponse{}
@@ -99,7 +127,7 @@ func ActivityDeleteController(
 	err := ActivityDelete(ctx, input.ID)
 
 	if err != nil {
-		return nil, err
+		return nil, huma.NewError(400, err.Error())
 	}
 
 	resp := &ActivityDeleteResponse{}

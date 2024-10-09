@@ -1,8 +1,7 @@
-import { FiltersProvider, useFilters } from "@/contexts/filters";
-import { SearchesProvider } from "@/contexts/searches";
-import { ActivityFilters } from "@/types/data";
-import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
-import { FC, useCallback, useRef } from "react";
+import { useFilters } from "@/contexts/filters";
+import { ExperienceFilters } from "@/types/data";
+import { router } from "expo-router";
+import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Keyboard, Pressable } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -12,25 +11,14 @@ import Text from "../ui/Text";
 import CategoryFilter from "./CategoryFilter";
 import DateFilter from "./DateFilter";
 import PlaceFilter from "./PlaceFilter";
-import SearchModal from "./SearchModal";
 
-interface SearchBarProps {
-  value: ActivityFilters;
-  onChange: (value: ActivityFilters) => void;
-}
-
-const SearchBar: FC<SearchBarProps> = ({ value, onChange }) => {
+const SearchBar: FC = () => {
   const { t } = useTranslation();
-  const { filters, setFilters } = useFilters();
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
+  const { filters, setFilters } = useFilters<ExperienceFilters>();
 
   return (
     <Box>
-      <Pressable onPress={handlePresentModalPress}>
+      <Pressable onPress={() => router.push("/search")}>
         <Box
           borderRadius="full"
           height={64}
@@ -38,21 +26,31 @@ const SearchBar: FC<SearchBarProps> = ({ value, onChange }) => {
           marginBottom="m"
           backgroundColor="mainBackground"
           alignItems="center"
+          justifyContent="space-between"
           flexDirection="row"
           paddingHorizontal="m"
           shadowColor="shadow"
+          shadowOffset={{ width: -2, height: 4 }}
+          shadowOpacity={0.2}
+          shadowRadius={3}
           elevation={6}
         >
           <Icon name="search" />
-          <Box marginLeft="m">
+          <Box marginLeft="m" flex={1}>
             <Text variant="body" fontWeight="bold" lineHeight={20}>
               {t("search", "Search")}
             </Text>
             <Text variant="secondary">
-              {t("experiences", "Experiences")} • {t("organizations", "Organizations")} •{" "}
-              {t("places", "Places")}
+              {t("volunteersActvities", "Volunteer activities")} •{" "}
+              {t("organizations", "Organizations")}
             </Text>
           </Box>
+
+          {filters.q && (
+            <Pressable onPress={() => setFilters({ ...filters, q: undefined })}>
+              <Icon name="close" />
+            </Pressable>
+          )}
         </Box>
       </Pressable>
 
@@ -72,9 +70,12 @@ const SearchBar: FC<SearchBarProps> = ({ value, onChange }) => {
                 date_end: value?.to || undefined,
               });
             }}
+            onConfirm={() => {
+              Keyboard.dismiss();
+            }}
           />
           <CategoryFilter
-            title={t("causes", "Causes")}
+            title={t("categories", "Categories")}
             values={filters.categories || []}
             onChange={(values) => {
               setFilters({
@@ -85,31 +86,6 @@ const SearchBar: FC<SearchBarProps> = ({ value, onChange }) => {
           />
         </Box>
       </ScrollView>
-      <BottomSheetModal
-        ref={bottomSheetModalRef}
-        index={0}
-        snapPoints={["100%"]}
-        onDismiss={Keyboard.dismiss}
-        handleComponent={null}
-      >
-        <BottomSheetView
-          style={{
-            flex: 1,
-            alignItems: "center",
-          }}
-        >
-          <SearchesProvider>
-            <FiltersProvider>
-              <SearchModal
-                onClose={() => {
-                  Keyboard.dismiss();
-                  bottomSheetModalRef.current?.dismiss();
-                }}
-              />
-            </FiltersProvider>
-          </SearchesProvider>
-        </BottomSheetView>
-      </BottomSheetModal>
     </Box>
   );
 };

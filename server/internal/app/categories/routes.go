@@ -9,6 +9,14 @@ import (
 
 func RegisterRoutes(api huma.API) {
 	huma.Register(api, huma.Operation{
+		OperationID: "category-get",
+		Summary:     "Get category",
+		Method:      http.MethodGet,
+		Path:        "/categories/{id}",
+		Tags:        []string{"Categories"},
+	}, CategoryGetController)
+
+	huma.Register(api, huma.Operation{
 		OperationID: "category-list",
 		Summary:     "List categories",
 		Method:      http.MethodGet,
@@ -26,6 +34,9 @@ func RegisterRoutes(api huma.API) {
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.CategoryWrite),
 		},
+		Security: []map[string][]string{
+			{"bearer": {}},
+		},
 	}, CategoryCreateController)
 
 	huma.Register(api, huma.Operation{
@@ -38,6 +49,9 @@ func RegisterRoutes(api huma.API) {
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.CategoryWrite),
 		},
+		Security: []map[string][]string{
+			{"bearer": {}},
+		},
 	}, CategoryUpdateController)
 
 	huma.Register(api, huma.Operation{
@@ -49,6 +63,9 @@ func RegisterRoutes(api huma.API) {
 		Middlewares: huma.Middlewares{
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.CategoryWrite),
+		},
+		Security: []map[string][]string{
+			{"bearer": {}},
 		},
 	}, CategoryDeleteController)
 

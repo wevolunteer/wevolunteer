@@ -12,6 +12,16 @@ func CategoryQuery(ctx *app.Context) *gorm.DB {
 	return q
 }
 
+func CategoryGet(ctx *app.Context, id uint) (*models.Category, error) {
+	var category models.Category
+
+	if err := CategoryQuery(ctx).Where("id = ?", id).First(&category).Error; err != nil {
+		return nil, err
+	}
+
+	return &category, nil
+}
+
 type CategoryListData struct {
 	Results []models.Category `json:"results"`
 }
@@ -43,7 +53,7 @@ func CategoryList(ctx *app.Context, filters *CategoryFilters) (*CategoryListData
 
 type CategoryCreateData struct {
 	Name string `json:"name"`
-	Code string `json:"code"`
+	Code string `json:"code,omitempty"`
 }
 
 func CategoryCreate(ctx *app.Context, data *CategoryCreateData) (*models.Category, error) {
@@ -61,7 +71,7 @@ func CategoryCreate(ctx *app.Context, data *CategoryCreateData) (*models.Categor
 
 type CategoryUpdateData struct {
 	Name string `json:"name"`
-	Code string `json:"code"`
+	Code string `json:"code,omitempty"`
 }
 
 func CategoryUpdate(ctx *app.Context, id uint, data *CategoryUpdateData) (*models.Category, error) {

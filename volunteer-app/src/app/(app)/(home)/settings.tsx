@@ -48,7 +48,19 @@ export default function SettingsListScreen() {
           />
         </Box>
 
-        <Text variant="link">{t("credits", "Credits")}</Text>
+        <Box gap="m">
+          <Pressable onPress={() => router.push("/settings/credits")}>
+            <Text variant="link">{t("credits", "Credits")}</Text>
+          </Pressable>
+
+          <Pressable onPress={() => router.push("/legal/tos")}>
+            <Text variant="link">{t("termsOfService", "Terms of service")}</Text>
+          </Pressable>
+
+          <Pressable onPress={() => router.push("/legal/privacy")}>
+            <Text variant="link">{t("privacyPolicy", "Privacy Policy")}</Text>
+          </Pressable>
+        </Box>
       </Box>
     </SafeAreaView>
   );

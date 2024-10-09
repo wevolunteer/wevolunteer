@@ -19,6 +19,7 @@ func RegisterRoutes(api huma.API) {
 		Path:        "/organizations/{id}",
 		Tags:        RouteTag,
 		Middlewares: huma.Middlewares{
+			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.OrganizationRead),
 		},
 	}, OrganizationGetController)
@@ -30,13 +31,14 @@ func RegisterRoutes(api huma.API) {
 		Path:        "/organizations",
 		Tags:        RouteTag,
 		Middlewares: huma.Middlewares{
+			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.OrganizationRead),
 		},
 	}, OrganizationListController)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "organizations-create",
-		Summary:     "Create organization",
+		Summary:     "Create organization---------",
 		Method:      http.MethodPost,
 		Path:        "/organizations",
 		Tags:        RouteTag,
@@ -44,17 +46,23 @@ func RegisterRoutes(api huma.API) {
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.OrganizationWrite),
 		},
+		Security: []map[string][]string{
+			{"bearer": {}},
+		},
 	}, OrganizationCreateController)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "organizations-update",
 		Summary:     "Update organization",
-		Method:      http.MethodPatch,
+		Method:      http.MethodPut,
 		Path:        "/organizations/{id}",
 		Tags:        RouteTag,
 		Middlewares: huma.Middlewares{
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.OrganizationWrite),
+		},
+		Security: []map[string][]string{
+			{"bearer": {}},
 		},
 	}, OrganizationUpdateController)
 
@@ -68,6 +76,38 @@ func RegisterRoutes(api huma.API) {
 			app.AuthMiddleware(api),
 			app.RoleMiddleware(api, app.OrganizationWrite),
 		},
+		Security: []map[string][]string{
+			{"bearer": {}},
+		},
 	}, OrganizationDeleteController)
 
+	huma.Register(api, huma.Operation{
+		OperationID: "organizations-add-to-favorites",
+		Summary:     "Add organization to favorites",
+		Method:      http.MethodPost,
+		Path:        "/organizations/{id}/favorite",
+		Tags:        RouteTag,
+		Middlewares: huma.Middlewares{
+			app.AuthMiddleware(api),
+			app.RoleMiddleware(api, app.OrganizationRead),
+		},
+		Security: []map[string][]string{
+			{"bearer": {}},
+		},
+	}, OrganizationAddToFavoritesController)
+
+	huma.Register(api, huma.Operation{
+		OperationID: "organizations-remove-from-favorites",
+		Summary:     "Remove organization from favorites",
+		Method:      http.MethodDelete,
+		Path:        "/organizations/{id}/favorite",
+		Tags:        RouteTag,
+		Middlewares: huma.Middlewares{
+			app.AuthMiddleware(api),
+			app.RoleMiddleware(api, app.OrganizationRead),
+		},
+		Security: []map[string][]string{
+			{"bearer": {}},
+		},
+	}, OrganizationRemoveFromFavoritesController)
 }

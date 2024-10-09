@@ -53,14 +53,20 @@ func DatabaseInit(config *DatabaseConfig) error {
 		return fmt.Errorf("failed to open database: %w", err)
 	}
 
-	DB.AutoMigrate(
+	err = DB.AutoMigrate(
 		&models.User{},
+		&models.UserDevice{},
 		&models.Organization{},
 		&models.Activity{},
 		&models.Experience{},
 		&models.Category{},
 		&models.Place{},
+		&models.ServiceAccount{},
 	)
+
+	if err != nil {
+		panic(fmt.Errorf("failed to migrate database: %w", err))
+	}
 
 	// Set up the database connection pool
 	sqlDB, err := DB.DB()
@@ -205,9 +211,10 @@ type PaginationInput struct {
 }
 
 type PaginationInfo struct {
-	Total   int64 `json:"total"`
-	Page    int   `json:"page"`
-	PerPage int   `json:"per_page"`
+	Total       int64 `json:"total"`
+	Page        int   `json:"page"`
+	HasNextPage bool  `json:"has_next_page"`
+	PerPage     int   `json:"per_page"`
 }
 
 func Paginate(pagination PaginationInput) func(db *gorm.DB) *gorm.DB {
@@ -241,6 +248,8 @@ func PageInfo(db *gorm.DB, pagination PaginationInput) (*PaginationInfo, error) 
 	if err := db.Count(&pageInfo.Total).Error; err != nil {
 		return nil, err
 	}
+
+	pageInfo.HasNextPage = pageInfo.Total > int64(pageInfo.Page*pageInfo.PerPage)
 
 	return pageInfo, nil
 }

@@ -13,14 +13,25 @@ const (
 )
 
 var Config struct {
-	ENV                     string
-	DEBUG                   bool
+	ENV   string
+	DEBUG bool
+
 	JWT_SECRET              string
 	DB_DSN                  string
 	DB_MAX_OPEN_CONNECTIONS int
 	DB_MAX_IDLE_CONNECTIONS int
 	DB_MAX_LIFETIME         time.Duration
 	NOVU_API_KEY            string
+
+	AWS_PUBLIC_KEY string
+	AWS_SECRET_KEY string
+	AWS_ENDPOINT   string
+	AWS_REGION     string
+	AWS_BUCKET     string
+
+	CDN_ENDPOINT string
+
+	APP_URL string
 }
 
 func ParseConfig(path string) {
@@ -34,6 +45,9 @@ func ParseConfig(path string) {
 	viper.SetDefault("debug", false)
 	viper.SetDefault("db_max_open_connections", 100)
 	viper.SetDefault("db_max_idle_connections", 10)
+
+	viper.SetDefault("aws_region", "us-east-1")
+	viper.SetDefault("app_url", "http://localhost:3000")
 
 	viper.SetConfigFile(".env")
 	viper.AddConfigPath(".")
@@ -50,11 +64,20 @@ func ParseConfig(path string) {
 	Config.NOVU_API_KEY = viper.GetString("novu_apikey")
 	Config.DB_MAX_LIFETIME = time.Hour
 
+	Config.AWS_PUBLIC_KEY = viper.GetString("aws_public_key")
+	Config.AWS_SECRET_KEY = viper.GetString("aws_secret_key")
+	Config.AWS_ENDPOINT = viper.GetString("aws_endpoint")
+	Config.AWS_REGION = viper.GetString("aws_region")
+	Config.AWS_BUCKET = viper.GetString("aws_bucket")
+	Config.CDN_ENDPOINT = viper.GetString("cdn_endpoint")
+
+	Config.APP_URL = viper.GetString("app_url")
+
 	if Config.JWT_SECRET == "" {
 		log.Fatal("JWT_SECRET must be set")
 	}
 
 	if Config.NOVU_API_KEY == "" {
-		log.Fatal("NOVU_API_KEY must be set")
+		log.Debug("NOVU_API_KEY not set. Notifications are disabled")
 	}
 }

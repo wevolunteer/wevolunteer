@@ -2,11 +2,36 @@ package categories
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 )
+
+type CategoryGetRequest struct {
+	ID uint `path:"id"`
+}
+
+type CategoryGetResponse struct {
+	Body models.Category
+}
+
+func CategoryGetController(
+	c context.Context,
+	input *CategoryGetRequest,
+) (*CategoryGetResponse, error) {
+	ctx := app.FromHTTPContext(c)
+	data, err := CategoryGet(ctx, input.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &CategoryGetResponse{}
+
+	resp.Body = *data
+
+	return resp, nil
+}
 
 type CategoryListResponse struct {
 	Body CategoryListData
@@ -22,8 +47,6 @@ func CategoryListController(
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(data)
 
 	resp := &CategoryListResponse{}
 

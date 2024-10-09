@@ -29,7 +29,7 @@ type User struct {
 	IsRootAdmin           bool           `json:"is_superuser" gorm:"default:false"`
 	Latitude              float64        `json:"latitude"`
 	Longitude             float64        `json:"longitude"`
-	DateOfBirth           time.Time      `json:"date_of_birth"`
+	DateOfBirth           string         `json:"date_of_birth"`
 	City                  string         `json:"city"`
 	Languages             string         `json:"languages"`
 	Bio                   string         `json:"bio"`
@@ -37,4 +37,13 @@ type User struct {
 	IsEmailVerified       bool           `json:"is_email_verified" gorm:"default:false"`
 	HasAcceptedTOS        bool           `json:"accepted_tos" gorm:"default:false"`
 	HasAcceptedNewsletter bool           `json:"accepted_newsletter" gorm:"default:false"`
+
+	NotificationsNearbyActivities      bool `json:"notifications_nearby_activities" gorm:"default:true"`
+	NotificationsFollowedOrganizations bool `json:"notifications_followed_organizations" gorm:"default:true"`
+	NotificationActivityReminders      bool `json:"notifications_activity_reminders" gorm:"default:true"`
+
+	FavoriteOrganizations []*Organization `gorm:"many2many:favorite_organizations;" json:"-"`
+	FavoriteCategories    []*Category     `gorm:"many2many:categories_users;" json:"categories"`
+
+	ExternalID string `json:"external_id"`
 }
