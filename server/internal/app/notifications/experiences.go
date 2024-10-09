@@ -15,7 +15,7 @@ func experiencesEventsSubscribe() {
 			return fmt.Errorf("invalid data type")
 		}
 
-		fmt.Printf("Notify experience created: %v\n", payload.Experience.Title)
+		fmt.Printf("Notify experience created: %v '%v'\n", payload.Experience.Title, payload.Experience.Organization)
 
 		err := NotificationTopicTrigger(payload.Experience.Organization.UID, NotificationExeperienceCreatedOrg, map[string]interface{}{
 			"experience_id":     payload.Experience.UID,

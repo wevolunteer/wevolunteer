@@ -262,6 +262,10 @@ func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Exp
 		return nil, err
 	}
 
+	if err := app.DB.Preload("Organization").First(&experience, experience.ID).Error; err != nil {
+		return nil, err
+	}
+
 	events.Publish(events.Event{
 		Type: events.ExperienceCreated,
 		Payload: events.EventPayload{
