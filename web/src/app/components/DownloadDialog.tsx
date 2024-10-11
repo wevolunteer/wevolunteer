@@ -25,7 +25,7 @@ export default function DownloadDialog({ isOpen, onClose }: DownloadDialogProps)
 
 
   return (
-    <dialog ref={dialogRef} className={`backdrop:bg-gray-50 mx-4 lg:mx-0
+    <dialog ref={dialogRef} className={`backdrop:bg-gray-50 mx-4 lg:mx-auto
       ${isOpen ? 'showing' : 'closing'} 
       fixed bg-white rounded-lg max-w-screen-sm shadow-lg border`} >
       <div className="relative text-center border-b py-2">
