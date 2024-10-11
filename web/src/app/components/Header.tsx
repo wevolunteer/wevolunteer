@@ -13,11 +13,11 @@ export default function Header() {
 
       <div className='flex items-center space-x-4'>
         <a href={APPLE_STORE_URL}>
-          <Image src={appstorePic} alt="Scarica da App Store" width={128} />
+          <Image src={appstorePic} alt="Scarica da App Store" className='w-[128px] hidden lg:block' />
         </a>
 
         <a href={GOOGLE_PLAY_URL}>
-          <Image src={playstorePic} alt="Scarica da Play Store" width={141} />
+          <Image src={playstorePic} alt="Scarica da Play Store" className='w-[141px] hidden lg:block' />
         </a>
       </div>
 

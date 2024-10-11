@@ -12,7 +12,7 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
 
   return (
-    <main className="flex flex-col relative gap-10">
+    <main className="flex flex-col relative lg:gap-10">
       <section className="relative h-[470px] lg:h-[570px]">
         <Image src={heroPic} alt="E nata: Attivati!" className="absolute inset-0 w-full h-[470px] lg:h-[570px] object-cover" />
 
@@ -29,13 +29,13 @@ export default function Home() {
       </section>
 
       <section className='max-w-screen-lg mx-auto'>
-        <div className="flex flex-col lg:flex-row gap-4 w-full ">
+        <div className="flex flex-col lg:flex-row lg:gap-4 w-full ">
           <div className='flex-1 px-4 py-8 bg-secondary flex flex-col gap-4  items-start relative'>
             <h2 className='text-3xl'>
               Vuoi fare <br />volontariato?
             </h2>
             <p className='flex-1 pr-24'>
-              In quale ambito vorresti attivarti? Ce n’è per tutti i gusti! <br />Cominciamo da qui…
+              In quale ambito vorresti attivarti? Ce n’è per tutti i gusti! <br />Cominciamo da qui…
             </p>
             <a onClick={() => setShowModal(true)} className='mt-6 text-sm bg-primary  text-white  py-2 px-10 text-center cursor-pointer'>
               Scarica l’APP e inizia subito
