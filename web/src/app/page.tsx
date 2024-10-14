@@ -6,7 +6,7 @@ import heroPic from "./assets/images/hero.png";
 import skateGirlPic from "./assets/images/skate-girl.png";
 import personPic from "./assets/images/walk-person.png";
 import DownloadDialog from './components/DownloadDialog';
-import { INFO_URL, NEWSLETTER_URL, OPPORTUNITY_URL } from './consts';
+import { APPOINTMENT_URL, INFO_URL, NEWSLETTER_URL, OPPORTUNITY_URL } from './consts';
 
 export default function Home() {
   const [showModal, setShowModal] = useState(false);
@@ -50,7 +50,7 @@ export default function Home() {
             <p className='flex-1'>
               Stai cercando nuove volontarie e volontari da attivare nei tuoi servizi, progetti e/o eventi?
             </p>
-            <a href="#" className='mt-6 text-sm bg-secondary text-primary  py-2 px-10 text-center'>
+            <a href={OPPORTUNITY_URL} className='mt-6 text-sm bg-secondary text-primary  py-2 px-10 text-center'>
               Carica la tua richiesta
             </a>
           </div>
@@ -72,7 +72,7 @@ export default function Home() {
             <a href={INFO_URL} className='mt-6 text-sm bg-primary  text-white  py-2 px-10 text-center'>
               Richiedi più informazioni
             </a>
-            <a href={OPPORTUNITY_URL} className='mt-6 text-sm bg-secondary text-primary  py-2 px-10 text-center'>
+            <a href={APPOINTMENT_URL} className='mt-6 text-sm bg-secondary text-primary  py-2 px-10 text-center'>
               Prenota un appuntamento
             </a>
           </div>
