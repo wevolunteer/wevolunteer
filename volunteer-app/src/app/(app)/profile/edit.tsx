@@ -37,6 +37,7 @@ export default function ProfileEditScreen() {
       avatar: session?.user?.avatar,
       first_name: session?.user?.first_name,
       last_name: session?.user?.last_name,
+      phone: session?.user?.phone,
       tax_code: session?.user?.tax_code,
       date_of_birth: session?.user?.date_of_birth,
       city: session?.user?.city,
@@ -137,6 +138,27 @@ export default function ProfileEditScreen() {
                   onChangeText={field.onChange}
                   onBlur={field.onBlur}
                   label={t("lastName", "Last name")}
+                />
+              )}
+            />
+          </ProfileDataForm>
+          <ProfileDataForm
+            label={t("phone", "Phone")}
+            value={values.phone || t("notSpecified", "Not specified")}
+            error={errors.phone?.message}
+            onSubmit={handleSubmit(onSubmit)}
+            onCancel={() => setValue("phone", session?.user?.phone)}
+          >
+            <Controller
+              control={control}
+              name="phone"
+              render={({ field }) => (
+                <InputText
+                  value={field.value}
+                  keyboardType="phone-pad"
+                  error={errors.phone?.message}
+                  onChangeText={field.onChange}
+                  label={t("phone", "Phone")}
                 />
               )}
             />
