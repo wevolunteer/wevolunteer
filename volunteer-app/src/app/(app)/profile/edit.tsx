@@ -29,6 +29,7 @@ export default function ProfileEditScreen() {
     handleSubmit,
     watch,
     setValue,
+    reset,
     setError,
     formState: { errors },
   } = useForm<ProfileData>({
@@ -111,6 +112,10 @@ export default function ProfileEditScreen() {
             label={t("name", "Name")}
             value={`${values.first_name} ${values.last_name}`}
             onSubmit={handleSubmit(onSubmit)}
+            onCancel={() => {
+              setValue("first_name", session?.user?.first_name);
+              setValue("last_name", session?.user?.last_name);
+            }}
           >
             <Controller
               control={control}
@@ -141,6 +146,7 @@ export default function ProfileEditScreen() {
             value={values.tax_code || t("notSpecified", "Not specified")}
             error={errors.tax_code?.message}
             onSubmit={handleSubmit(onSubmit)}
+            onCancel={() => setValue("tax_code", session?.user?.tax_code)}
           >
             <Controller
               control={control}
@@ -163,6 +169,7 @@ export default function ProfileEditScreen() {
               convertToDDMMYYYY(values.date_of_birth || "") || t("notSpecified", "Not specified")
             }
             onSubmit={handleSubmit(onSubmit)}
+            onCancel={() => setValue("date_of_birth", session?.user?.date_of_birth)}
           >
             <Controller
               control={control}
@@ -182,6 +189,7 @@ export default function ProfileEditScreen() {
           <ProfileDataForm
             label={t("city", "City")}
             value={values.city || t("notSpecified", "Not specified")}
+            onCancel={() => setValue("city", session?.user?.city)}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
@@ -199,6 +207,7 @@ export default function ProfileEditScreen() {
           <ProfileDataForm
             label={t("job", "Job")}
             value={values.job || t("notSpecified", "Not specified")}
+            onCancel={() => setValue("job", session?.user?.job)}
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
@@ -221,6 +230,12 @@ export default function ProfileEditScreen() {
                 : t("notSpecified", "Not specified")
             }
             onSubmit={handleSubmit(onSubmit)}
+            onCancel={() =>
+              setValue(
+                "categories",
+                session?.user?.categories?.map((category) => category.id) || [],
+              )
+            }
           >
             <Controller
               control={control}
@@ -254,6 +269,7 @@ export default function ProfileEditScreen() {
             label={t("languages", "Languages")}
             value={values.languages || t("notSpecified", "Not specified")}
             onSubmit={handleSubmit(onSubmit)}
+            onCancel={() => setValue("languages", session?.user?.languages)}
           >
             <Controller
               control={control}
@@ -271,6 +287,7 @@ export default function ProfileEditScreen() {
             label={t("aboutMe", "About me")}
             value={values.bio || t("notSpecified", "Not specified")}
             onSubmit={handleSubmit(onSubmit)}
+            onCancel={() => setValue("bio", session?.user?.bio)}
           >
             <Controller
               control={control}
@@ -295,16 +312,25 @@ interface ProfileDataFormProps {
   value: string;
   error?: string;
   onSubmit?: () => void;
+  onCancel?: () => void;
   children?: React.ReactNode | React.ReactNode[];
 }
 
-const ProfileDataForm: FC<ProfileDataFormProps> = ({ label, value, onSubmit, error, children }) => {
+const ProfileDataForm: FC<ProfileDataFormProps> = ({
+  label,
+  value,
+  onSubmit,
+  onCancel,
+  error,
+  children,
+}) => {
   const { t } = useTranslation();
   const [showForm, setShowForm] = useState(false);
 
   function handleToggle() {
     LayoutAnimation.easeInEaseOut();
     setShowForm(!showForm);
+    onCancel && onCancel();
   }
 
   function handleSubmit() {
