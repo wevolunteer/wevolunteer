@@ -61,14 +61,7 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
 
   return (
     <ScrollView>
-      <Topbar
-        goBack
-        rightComponent={
-          <Pressable>
-            <Icon name="share" />
-          </Pressable>
-        }
-      />
+      <Topbar goBack />
       {activityStatus && (
         <Box backgroundColor={processColorByStatus(activityStatus)} py="m">
           <Text textAlign="center" color="whiteText">
@@ -190,7 +183,7 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
 
         <Box marginLeft="s">
           <Text variant="body" color="secondaryText">
-            • Avere almeno 14 anni
+            {experience.skills ? experience.skills : "• Avere almeno 14 anni"}
           </Text>
         </Box>
 
