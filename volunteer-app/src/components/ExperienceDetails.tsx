@@ -9,6 +9,7 @@ import { Experience } from "@/types/data";
 import { tActivityStatus } from "@/utils/enumTransl";
 import { processColorByStatus } from "@/utils/formatters";
 import { format } from "date-fns";
+import { it } from "date-fns/locale";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { FC, useMemo } from "react";
@@ -158,14 +159,18 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
               <Text variant="body">
                 {experience.start_date && (
                   <>
-                    {t("from", "From")} {format(new Date(experience.start_date), "d MMMM yyyy")}
+                    {t("from", "From")}{" "}
+                    {format(new Date(experience.start_date), "d MMMM yyyy", { locale: it })}
                   </>
                 )}
               </Text>
               <Text variant="body">
                 {experience.end_date && (
                   <>
-                    {t("to", "To")} {format(new Date(experience.end_date), "d MMMM yyyy")}
+                    {t("to", "To")}{" "}
+                    {format(new Date(experience.end_date), "d MMMM yyyy", {
+                      locale: it,
+                    })}
                   </>
                 )}
               </Text>
