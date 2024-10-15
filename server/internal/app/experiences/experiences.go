@@ -125,6 +125,7 @@ type ExperienceCreateData struct {
 	ContactEmail               string  `json:"contact_email,omitempty"`
 	ContactPhone               string  `json:"contact_phone,omitempty"`
 	PostEnrollmentInstructions string  `json:"post_enrollment_instructions,omitempty"`
+	Skills                     string  `json:"skills,omitempty"`
 
 	StartDate string `json:"start_date"`
 	EndDate   string `json:"end_date"`
@@ -193,6 +194,7 @@ func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Exp
 				EndDate:                    &data.EndDate,
 				StartTime:                  &data.StartTime,
 				EndTime:                    &data.EndTime,
+				Skills:                     &data.Skills,
 
 				Published:  &data.Published,
 				ExternalID: &data.ExternalID,
@@ -224,6 +226,7 @@ func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Exp
 		StartTime:                  data.StartTime,
 		EndTime:                    data.EndTime,
 		Published:                  data.Published,
+		Skills:                     data.Skills,
 	}
 
 	if data.IsRecurring != nil {
@@ -297,6 +300,7 @@ type ExperienceUpdateData struct {
 	ContactEmail               *string  `json:"contact_email,omitempty"`
 	ContactPhone               *string  `json:"contact_phone,omitempty"`
 	PostEnrollmentInstructions *string  `json:"post_enrollment_instructions,omitempty"`
+	Skills                     *string  `json:"skills,omitempty"`
 
 	StartDate *string `json:"start_date"`
 	EndDate   *string `json:"end_date"`
@@ -387,6 +391,10 @@ func ExperienceUpdate(ctx *app.Context, id uint, data *ExperienceUpdateData) (*m
 
 	if data.PostEnrollmentInstructions != nil {
 		experience.PostEnrollmentInstructions = *data.PostEnrollmentInstructions
+	}
+
+	if data.Skills != nil {
+		experience.Skills = *data.Skills
 	}
 
 	if data.StartDate != nil {
