@@ -82,7 +82,7 @@ export default function ActivityEditScreen() {
         }
       }
 
-      if (data.start_time && data.end_time) {
+      if (data.start_time && data.end_time && data.start_date === data.end_date) {
         if (data.start_time > data.end_time) {
           setError("end_time", {
             type: "manual",
