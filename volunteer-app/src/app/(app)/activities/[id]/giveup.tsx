@@ -8,7 +8,7 @@ import { useNetwork } from "@/contexts/network";
 import { ActivityUpdateData } from "@/types/data";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
@@ -39,7 +39,7 @@ export default function ActivityGiveupScreen() {
     },
   });
 
-  const { handleSubmit } = useForm<ActivityUpdateData>();
+  const { handleSubmit, control } = useForm<ActivityUpdateData>();
 
   if (!data) {
     return null;
@@ -98,10 +98,18 @@ export default function ActivityGiveupScreen() {
           </Text>
 
           <Box py="l">
-            <InputText
-              multiline
-              numberOfLines={10}
-              placeholder={t("yourMessageOptional", "Your message (optional)")}
+            <Controller
+              control={control}
+              name="message"
+              render={({ field: { value, onChange } }) => (
+                <InputText
+                  value={value}
+                  onChangeText={onChange}
+                  multiline
+                  numberOfLines={10}
+                  placeholder={t("yourMessageOptional", "Your message (optional)")}
+                />
+              )}
             />
           </Box>
           <Button
