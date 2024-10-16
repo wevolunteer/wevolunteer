@@ -16,6 +16,7 @@ type Experience struct {
 	Image          string       `json:"image"`
 	CategoryID     uint         `json:"category_id"`
 	Category       Category     `json:"category"`
+	Skills         string       `json:"skills"`
 
 	// Location
 	Latitude  float64 `json:"latitude"`

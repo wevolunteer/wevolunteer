@@ -9,12 +9,14 @@ import { Experience } from "@/types/data";
 import { tActivityStatus } from "@/utils/enumTransl";
 import { processColorByStatus } from "@/utils/formatters";
 import { format } from "date-fns";
+import { it } from "date-fns/locale";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { FC, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Linking, Pressable } from "react-native";
+import { Linking, Pressable, useWindowDimensions } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import RenderHtml from "react-native-render-html";
 import AppIcon from "./ui/AppIcon";
 
 interface ExeperienceDetailsProps {
@@ -29,19 +31,30 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
   isFavorite,
   activityStatus,
 }) => {
+  const { width } = useWindowDimensions();
   const { t } = useTranslation();
 
-  const hasContacts = useMemo(() => {
-    return (
-      experience.organization.email ||
-      experience.organization.phone ||
-      experience.organization.website
-    );
+  const contacts = useMemo(() => {
+    return {
+      email: experience.contact_email || experience.organization.email,
+      phone: experience.contact_phone || experience.organization.phone,
+      website: experience.organization.website,
+    };
   }, [
+    experience.contact_email,
+    experience.contact_phone,
     experience.organization.email,
     experience.organization.phone,
     experience.organization.website,
   ]);
+
+  const hasContacts = useMemo(() => {
+    return (
+      (contacts.email && contacts.email !== "") ||
+      (contacts.phone && contacts.phone !== "") ||
+      (contacts.website && contacts.website !== "")
+    );
+  }, [contacts]);
 
   const image = useMemo(() => {
     return experience.image ? { uri: experience.image } : imagePlaceholder;
@@ -49,14 +62,7 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
 
   return (
     <ScrollView>
-      <Topbar
-        goBack
-        rightComponent={
-          <Pressable>
-            <Icon name="share" />
-          </Pressable>
-        }
-      />
+      <Topbar goBack />
       {activityStatus && (
         <Box backgroundColor={processColorByStatus(activityStatus)} py="m">
           <Text textAlign="center" color="whiteText">
@@ -153,14 +159,18 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
               <Text variant="body">
                 {experience.start_date && (
                   <>
-                    {t("from", "From")} {format(new Date(experience.start_date), "d MMMM yyyy")}
+                    {t("from", "From")}{" "}
+                    {format(new Date(experience.start_date), "d MMMM yyyy", { locale: it })}
                   </>
                 )}
               </Text>
               <Text variant="body">
                 {experience.end_date && (
                   <>
-                    {t("to", "To")} {format(new Date(experience.end_date), "d MMMM yyyy")}
+                    {t("to", "To")}{" "}
+                    {format(new Date(experience.end_date), "d MMMM yyyy", {
+                      locale: it,
+                    })}
                   </>
                 )}
               </Text>
@@ -170,9 +180,7 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
 
         <Text variant="title">{t("opportunity", "Opportunity")}</Text>
 
-        <Text variant="body" color="secondaryText">
-          {experience.description}
-        </Text>
+        <RenderHtml contentWidth={width} source={{ html: experience.description }} />
 
         <Divider />
 
@@ -180,7 +188,7 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
 
         <Box marginLeft="s">
           <Text variant="body" color="secondaryText">
-            • Avere almeno 14 anni
+            {experience.skills ? experience.skills : "• Avere almeno 14 anni"}
           </Text>
         </Box>
 
@@ -191,31 +199,31 @@ const ExperienceDetails: FC<ExeperienceDetailsProps> = ({
 
             <ScrollView horizontal>
               <Box flexDirection="row" gap="m">
-                {experience.organization.email && (
+                {contacts.email && (
                   <Button
                     variant="secondary"
                     leftIcon="mail"
                     size="s"
                     label={t("email", "Email")}
-                    onPress={() => Linking.openURL(`mailto:${experience.organization.email}`)}
+                    onPress={() => Linking.openURL(`mailto:${contacts.email}`)}
                   />
                 )}
-                {experience.organization.phone && (
+                {contacts.phone && (
                   <Button
                     variant="secondary"
                     leftIcon="phone"
                     size="s"
                     label={t("call", "Call")}
-                    onPress={() => Linking.openURL(`tel:${experience.organization.phone}`)}
+                    onPress={() => Linking.openURL(`tel:${contacts.phone}`)}
                   />
                 )}
-                {experience.organization.website && (
+                {contacts.website && (
                   <Button
                     variant="secondary"
                     leftIcon="globe"
                     size="s"
                     label={t("website", "Website")}
-                    onPress={() => Linking.openURL(`${experience.organization.website}`)}
+                    onPress={() => Linking.openURL(`${contacts.website}`)}
                   />
                 )}
               </Box>

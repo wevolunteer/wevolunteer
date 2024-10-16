@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/wevolunteer/wevolunteer/internal/app"
+	"github.com/wevolunteer/wevolunteer/internal/app/events"
 	"github.com/wevolunteer/wevolunteer/internal/app/organizations"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 	"gorm.io/gorm"
@@ -124,6 +125,7 @@ type ExperienceCreateData struct {
 	ContactEmail               string  `json:"contact_email,omitempty"`
 	ContactPhone               string  `json:"contact_phone,omitempty"`
 	PostEnrollmentInstructions string  `json:"post_enrollment_instructions,omitempty"`
+	Skills                     string  `json:"skills,omitempty"`
 
 	StartDate string `json:"start_date"`
 	EndDate   string `json:"end_date"`
@@ -151,7 +153,7 @@ func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Exp
 	if data.OrganizationExternalID != "" {
 		org, err := organizations.OrganizationGetByExternalID(ctx, data.OrganizationExternalID)
 		if err != nil {
-			return nil, fmt.Errorf("Cannot find organization with external_id: %s", data.OrganizationExternalID)
+			return nil, fmt.Errorf("cannot find organization with external_id: %s", data.OrganizationExternalID)
 		}
 
 		data.OrganizationID = org.ID
@@ -192,6 +194,7 @@ func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Exp
 				EndDate:                    &data.EndDate,
 				StartTime:                  &data.StartTime,
 				EndTime:                    &data.EndTime,
+				Skills:                     &data.Skills,
 
 				Published:  &data.Published,
 				ExternalID: &data.ExternalID,
@@ -223,6 +226,7 @@ func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Exp
 		StartTime:                  data.StartTime,
 		EndTime:                    data.EndTime,
 		Published:                  data.Published,
+		Skills:                     data.Skills,
 	}
 
 	if data.IsRecurring != nil {
@@ -261,6 +265,19 @@ func ExperienceCreate(ctx *app.Context, data *ExperienceCreateData) (*models.Exp
 		return nil, err
 	}
 
+	if err := app.DB.Preload("Organization").First(&experience, experience.ID).Error; err != nil {
+		return nil, err
+	}
+
+	events.Publish(events.Event{
+		Type: events.ExperienceCreated,
+		Payload: events.EventPayload{
+			Data: &events.ExperienceCreatedPayload{
+				Experience: &experience,
+			},
+		},
+	})
+
 	return &experience, nil
 }
 
@@ -283,6 +300,7 @@ type ExperienceUpdateData struct {
 	ContactEmail               *string  `json:"contact_email,omitempty"`
 	ContactPhone               *string  `json:"contact_phone,omitempty"`
 	PostEnrollmentInstructions *string  `json:"post_enrollment_instructions,omitempty"`
+	Skills                     *string  `json:"skills,omitempty"`
 
 	StartDate *string `json:"start_date"`
 	EndDate   *string `json:"end_date"`
@@ -373,6 +391,10 @@ func ExperienceUpdate(ctx *app.Context, id uint, data *ExperienceUpdateData) (*m
 
 	if data.PostEnrollmentInstructions != nil {
 		experience.PostEnrollmentInstructions = *data.PostEnrollmentInstructions
+	}
+
+	if data.Skills != nil {
+		experience.Skills = *data.Skills
 	}
 
 	if data.StartDate != nil {

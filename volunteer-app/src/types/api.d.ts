@@ -299,6 +299,7 @@ export interface components {
       post_enrollment_instructions: string;
       published: boolean;
       saturday: boolean;
+      skills: string;
       /** Format: date-time */
       start_date: string;
       start_time: string;
@@ -345,6 +346,7 @@ export interface components {
       post_enrollment_instructions?: string;
       published?: boolean;
       saturday: boolean | null;
+      skills?: string;
       start_date: string;
       start_time: string;
       state?: string;
@@ -396,6 +398,7 @@ export interface components {
       post_enrollment_instructions?: string;
       published?: boolean;
       saturday: boolean | null;
+      skills?: string;
       start_date: string | null;
       start_time: string | null;
       state?: string;
@@ -598,7 +601,7 @@ export interface components {
        */
       $schema?: string;
       email: string;
-      reason: string | null;
+      reason?: string;
     };
     TokenData: {
       /**

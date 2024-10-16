@@ -6,6 +6,23 @@ import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+interface ListItemProps {
+  title?: string;
+  children: string | React.ReactNode;
+}
+
+function ListItem({ title, children }: ListItemProps) {
+  return (
+    <Box flexDirection="row" alignItems="flex-start" justifyContent="flex-start" paddingLeft="m">
+      <Text>• </Text>
+      <Text variant="body">
+        {title && <Text variant="subtitle">{title}:</Text>}
+        {children}
+      </Text>
+    </Box>
+  );
+}
+
 export default function PrivacyPolicy() {
   const { t } = useTranslation();
 
@@ -14,7 +31,9 @@ export default function PrivacyPolicy() {
       <Topbar goBack title={t("privacyPolicy", "Privacy Policy")} />
       <ScrollView>
         <Box px="m" py="xl">
-          <Text variant="title">Informativa sul trattamento dei dati personali</Text>
+          <Text variant="title" fontWeight="bold" fontSize={20}>
+            Informativa sul trattamento dei dati personali
+          </Text>
           <Text variant="secondary">
             Ai sensi e per gli effetti dell’art. 13 del Regolamento UE n. 2016/679
           </Text>
@@ -22,7 +41,7 @@ export default function PrivacyPolicy() {
             App Attivati!
           </Text>
 
-          <Text variant="title" my="m">
+          <Text variant="subtitle" my="m">
             Introduzione
           </Text>
           <Text variant="body">
@@ -43,68 +62,57 @@ export default function PrivacyPolicy() {
             Alcune definizioni utili per comprendere a pieno il documento
           </Text>
 
-          <Text variant="subtitle">GDPR</Text>
-          <Text variant="body">
+          <ListItem title="GDPR">
             Il GDPR è una legge europea che serve a proteggere la tua privacy e a regolare come
             vengono trattati i tuoi dati personali) soprattutto da parte delle aziende ma non solo).
-          </Text>
+          </ListItem>
 
-          <Text variant="subtitle">Dato personale</Text>
-          <Text variant="body">
+          <ListItem title="Dato personale">
             Qualsiasi informazione che permette di identificare, direttamente (come il tuo nome ed
             il tuo cognome) o indirettamente (il tuo codice fiscale) una persona. In altre parole, i
             tuoi dati personali rivelano informazioni su di te.
-          </Text>
+          </ListItem>
 
-          <Text variant="subtitle">Trattamento di dati personali</Text>
-          <Text variant="body">
+          <ListItem title="Trattamento di dati personali">
             Qualsiasi operazione effettuata sui tuoi dati. Come, ad esempio, la raccolta,
             l’organizzazione, la cancellazione, la modifica, la rielaborazione, la conservazione.
-          </Text>
+          </ListItem>
 
-          <Text variant="subtitle">Titolare del trattamento</Text>
-          <Text variant="body">
+          <ListItem title="Titolare del trattamento">
             E’ chi decide cosa fare con i tuoi dati personali. Decide: perché i dati vengono
             raccolti, come e dove devono essere conservati o comunicati, per quanto tempo devono
             essere conservati ecc.
-          </Text>
+          </ListItem>
 
-          <Text variant="subtitle">Data Protection Officer</Text>
-          <Text variant="body">
+          <ListItem title="Data Protection Officer">
             Il responsabile della protezione dati (“DPO”) è la persona incaricata di controllare che
             tutto venga fatto seguendo le leggi sulla protezione dei dati.
-          </Text>
+          </ListItem>
 
-          <Text variant="subtitle">Finalità del trattamento</Text>
-          <Text variant="body">
+          <ListItem title="Finalità del trattamento">
             Lo scopo per cui i dati personali sono trattati. Ad esempio, i dati possono essere
             trattati per offrire un servizio oppure per inviare materiale promozionale.
-          </Text>
+          </ListItem>
 
-          <Text variant="subtitle">Base giuridica</Text>
-          <Text variant="body">
+          <ListItem title="Base giuridica">
             La base giuridica è la giustificazione legale per cui un'azienda o un'organizzazione può
             raccogliere e utilizzare i tuoi dati personali. È come un "permesso" che autorizza il
             trattamento dei tuoi dati.
-          </Text>
+          </ListItem>
 
-          <Text variant="subtitle">Categorie particolari di dati personali (o dati sensibili)</Text>
-          <Text variant="body">
+          <ListItem title="Categorie particolari di dati personali (o dati sensibili)">
             I dati personali sensibili includono informazioni relative alla salute, all'etnia, alle
             opinioni politiche, alle convinzioni religiose, all'appartenenza sindacale,
             all'orientamento sessuale o ai precedenti penali. Vi chiediamo di non condividere alcun
             dato personale sensibile sulla nostra app.
-          </Text>
+          </ListItem>
 
-          <Text variant="subtitle">Responsabili del trattamento</Text>
-          <Text variant="body">
+          <ListItem title="Responsabili del trattamento">
             I soggetti che si occupano di alcune attività di trattamento su indicazione e per conto
             del Titolare del trattamento.
-          </Text>
+          </ListItem>
 
-          <Divider my="m" />
-
-          <Text variant="title" my="m">
+          <Text variant="subtitle" my="m">
             Titolarità del trattamento
           </Text>
           <Text variant="body">
@@ -112,12 +120,19 @@ export default function PrivacyPolicy() {
             gestiti da:
           </Text>
 
-          <Text variant="body" my="m">
+          <Text variant="body" my="m" fontWeight="bold">
             CSV Trentino – Non profit network ETS (“CSV”) e Comitato Trento Capitale Europea del
             Volontariato 2024 ETS (“Comitato”)
           </Text>
+          <Text variant="body">
+            che sono i due contitolari del trattamento dei tuoi dati personali. In altre parole, CSV
+            e Comitato lavorano insieme alla realizzazione del progetto “Trento Capitale Europea del
+            Volontariato 2024” e trattano i tuoi dati in collaborazione fra loro. Per avere maggiori
+            informazioni su questo rapporto puoi scrivere a uno degli indirizzi email indicati nella
+            sezione “Contatti”.
+          </Text>
 
-          <Text variant="title" my="m">
+          <Text variant="title" fontWeight="bold" fontSize={20} my="m">
             Data Protection Officer
           </Text>
           <Text variant="body">
@@ -127,151 +142,126 @@ export default function PrivacyPolicy() {
 
           <Divider my="m" />
 
-          <Text variant="title">Perché raccogliamo i tuoi dati?</Text>
+          <Text variant="title" fontWeight="bold" fontSize={20}>
+            Perché raccogliamo i tuoi dati?
+          </Text>
           <Text variant="subtitle">A. Offrirti l’App e le sue funzionalità</Text>
           <Text variant="body">
-            Raccogliamo i tuoi dati per offrirti l’App e le sue funzionalità. Questo include:
+            Per permetterti di usare la nostra applicazione e le sue funzionalità principali,
+            svolgiamo una serie di <Text fontWeight="bold">attività</Text> che comportano il
+            trattamento dei tuoi dati personali, come, per esempio:
           </Text>
-          <Box gap="s">
-            <Text variant="body">Registrazione del volontario in app;</Text>
-            <Text variant="body">Log-in del volontario;</Text>
-            <Text variant="body">Modifica dei dati e gestione del profilo;</Text>
-            <Text variant="body">
+          <Box gap="s" my="m">
+            <ListItem>Registrazione del volontario in app;</ListItem>
+            <ListItem>Log-in del volontario;</ListItem>
+            <ListItem>Modifica dei dati e gestione del profilo;</ListItem>
+            <ListItem>
               Gestione della candidatura per partecipazione ad attività di volontariato;
-            </Text>
-            <Text variant="body">
+            </ListItem>
+            <ListItem>
               Comunicazione della disponibilità del volontario e dei suoi dati agli Enti che hanno
               proposto l’iniziativa;
-            </Text>
-            <Text variant="body">
+            </ListItem>
+            <ListItem>
               Gestione della sicurezza e garanzia del corretto funzionamento dell’applicazione.
-            </Text>
+            </ListItem>
           </Box>
 
-          <Text variant="subtitle">Base giuridica</Text>
-          <Text variant="body">
-            La base giuridica che ci legittima a trattare i tuoi dati è l’articolo 6(1)(b) del GDPR
-            - Esecuzione di un contratto. In altre parole trattiamo i tuoi dati per offrirti un
-            servizio che tu stesso ci hai richiesto.
+          <Text variant="body" my="m">
+            Nello svolgimento queste attività trattiamo le{" "}
+            <Text fontWeight="bold">categorie di dati personali</Text> di seguito elencate:
           </Text>
 
-          <Text variant="subtitle">Dati trattati per questa finalità</Text>
-          <Text variant="body">
-            La base giuridica che ci legittima a trattare i tuoi dati è l’articolo 6(1)(b) del GDPR
-            - Esecuzione di un contratto. In altre parole trattiamo i tuoi dati per offrirti un
-            servizio che tu stesso ci hai richiesto.
-          </Text>
-          <Box gap="s">
-            <Text variant="body">Dati identificativi * (quali nome, cognome);</Text>
-            <Text variant="body">Dati di contatto * (indirizzo email)</Text>
-            <Text variant="body">Dati pseudo-identificativi * (codice fiscale);</Text>
-            <Text variant="body">Caratteristiche personali (data di nascita, lingue parlate);</Text>
-            <Text variant="body">Dati demografici (città di residenza);</Text>
-            <Text variant="body">
-              Dati relativi all’educazione, alla professione e all’impiego (professione esercitata);
-            </Text>
-            <Text variant="body">Immagini (foto profilo);</Text>
-            <Text variant="body">Dati d’uso (dati di navigazione);</Text>
-            <Text variant="body">
-              Altri dati (dati inseriti nello spazio note, dati gps, candidatura attività di
-              volontariato, preferenze per attività di volontariato).
-            </Text>
-          </Box>
+          <ListItem title="Dati identificativi *"> (quali nome, cognome);</ListItem>
+          <ListItem title="Dati di contatto *"> (indirizzo email)</ListItem>
+          <ListItem title="Dati pseudo-identificativi *"> (codice fiscale);</ListItem>
+          <ListItem title="Caratteristiche personali">(data di nascita, lingue parlate);</ListItem>
+          <ListItem title="Dati demografici"> (città di residenza);</ListItem>
+          <ListItem title="Dati relativi all’educazione, alla professione e all’impiego">
+            (professione esercitata);
+          </ListItem>
+          <ListItem title="Immagini"> (foto profilo);</ListItem>
+          <ListItem title="Dati d’uso"> (dati di navigazione);</ListItem>
+          <ListItem title="Altri dati">
+            (dati inseriti nello spazio note, dati gps, candidatura attività di volontariato,
+            preferenze per attività di volontariato).
+          </ListItem>
 
-          <Text variant="subtitle">E’ necessario fornire i dati? </Text>
-          <Text variant="body">
+          <Text variant="body" mt="m">
             Il conferimento delle tipologie di dati indicate sopra con “*” è obbligatorio. La
             mancata fornitura di tali dati comporterà l'impossibilità di concludere e di dare
-            esecuzione al contratto e dunque di procedere con il servizio richiesto. In altre
-            parole, non ti sarà possibile utilizzare l’App se non inserisci almeno i dati indicati
-            con “*” I restanti dati sono facoltativi e puoi scegliere liberamente di inserirli o
-            meno. I dati d’uso vengono invece raccolti automaticamente quando utilizzi
-            l’applicazione.
+            esecuzione al contratto e dunque di procedere con il servizio richiesto.{" "}
+            <Text fontWeight="bold">
+              In altre parole, non ti sarà possibile utilizzare l’App se non inserisci almeno i dati
+              indicati con “*”.
+            </Text>
           </Text>
 
-          <Divider my="m" />
+          <Text variant="body">
+            I restanti dati sono facoltativi e puoi scegliere liberamente di inserirli o meno.
+          </Text>
+          <Text variant="body">
+            I dati d’uso vengono invece raccolti automaticamente quando utilizzi l’applicazione.
+          </Text>
 
           <Text variant="subtitle">B. Marketing diretto</Text>
 
           <Text variant="body">
-            Svolgiamo le attività elencate in questa tabella per inviarti, su tua richiesta,
-            informazioni sulle nostre attività, eventi e servizi e sulle attività promosse dagli
-            Enti Non Profit che collaborano con noi.
+            Solo se sei d’accordo, trattiamo i tuoi dati personali per inviarti informazioni sulle
+            nostre attività, eventi e servizi e sulle attività promosse dagli Enti Non Profit che
+            collaborano con noi. Si tratta in particolare di invio di comunicazioni su prodotti,
+            servizi o eventi offerti da noi o dai nostri partner, compresa la nostra newsletter.
           </Text>
 
-          <Box gap="s">
-            <Text variant="body">
-              Invio di comunicazioni su prodotti, servizi o eventi offerti da noi o dai nostri
-              partner, compresa la nostra newsletter.
-            </Text>
+          <Text variant="body" my="m">
+            La base giuridica che ci rende possibile trattare i tuoi dati per questa finalità è
+            l’articolo 6(1)(a) del GDPR - <Text fontWeight="bold">Consenso</Text>.
+          </Text>
+
+          <Text variant="body">
+            Per l’invio di queste comunicazioni avremo bisogno di trattare i tuoi:
+          </Text>
+
+          <Box my="m">
+            <ListItem title="Dati identificativi *"> (quali nome, cognome);</ListItem>
+            <ListItem title="Dati di contatto *"> (indirizzo email)</ListItem>
           </Box>
 
-          <Text variant="subtitle">Base giuridica</Text>
           <Text variant="body">
-            La base giuridica che ci legittima a trattare i tuoi dati è l’articolo 6(1)(a) del GDPR
-            - Consenso.
+            Non è obbligatorio acconsentire al trattamento di questi dati per la finalità di
+            Marketing diretto. Infatti, tratteremo i tuoi dati per questa finalità solo se ci darai
+            il tuo consenso che potrai revocare in qualsiasi momento scrivendoci a
+            privacy@volontariatotrentino.it oppure utilizzando gli appositi link presenti in fondo
+            alle comunicazioni promozionali.
           </Text>
-
-          <Text variant="subtitle">Dati trattati per questa finalità</Text>
-          <Text variant="body">
-            La base giuridica che ci legittima a trattare i tuoi dati è l’articolo 6(1)(b) del GDPR
-            - Esecuzione di un contratto. In altre parole trattiamo i tuoi dati per offrirti un
-            servizio che tu stesso ci hai richiesto.
-          </Text>
-          <Box gap="s">
-            <Text variant="body">Dati identificativi * (quali nome, cognome);</Text>
-            <Text variant="body">Dati di contatto * (indirizzo email)</Text>
-          </Box>
-
-          <Text variant="subtitle">E’ necessario fornire i dati? </Text>
-          <Text variant="body">
-            No. Tratteremo i tuoi dati per questa finalità solo se ci darai il tuo consenso che
-            potrai revocare in qualsiasi momento scrivendoci a privacy@volontariatotrentino.it
-            oppure utilizzando gli appositi link presenti in fondo alle comunicazioni promozionali.
-          </Text>
-
-          <Divider my="m" />
 
           <Text variant="subtitle">C. Altre finalità </Text>
-          <Text variant="subtitle">Finalita</Text>
-          <Box gap="s">
-            <Text variant="body">
-              Rispondere ad ordini e richieste legittime provenienti da Autorità Pubbliche.
-            </Text>
-          </Box>
 
-          <Text variant="subtitle">Base giuridica</Text>
-          <Text variant="body">
-            La base giuridica è data da eventuali obblighi di legge - 6(1)(c) del GDPR.
-          </Text>
+          <ListItem title="Rispondere ad ordini e richieste legittime provenienti da Autorità Pubbliche">
+            la base giuridica è data da eventuali <Text fontWeight="bold">obblighi di legge</Text> -
+            6(1)(c) GDPR e tratteremo tutti i dati eventualmente necessari per rispondere alle
+            richieste dall’Autorità Pubblica.
+          </ListItem>
+          <ListItem title="Gestione di eventuali contenziosi davanti alle autorità competenti e difesa dei nostri diritti">
+            la base giuridica potrebbe essere data da un{" "}
+            <Text fontWeight="bold">obbligo di legge</Text> - 6(1)(c) del GDPR o da un nostro
+            <Text fontWeight="bold"> interesse legittimo</Text> (6(1)(f) GDPR) relativo alla
+            gestione di eventuali contenziosi e alla difesa dei nostri diritti. Tratteremo tutti i
+            dati necessari per la gestione di eventuali contenziosi e per la difesa dei nostri
+            diritti.
+          </ListItem>
+          <ListItem title="Garantire la sicurezza dei sistemi informatici e delle informazioni">
+            trattiamo i tuoi dati per garantire la capacità dei nostri sistemi informatici di
+            resistere, ad un dato livello di sicurezza, a eventi imprevisti o ad atti illeciti o
+            dolosi che compromettano la disponibilità, l’autenticità, l’integrità e la riservatezza
+            dei dati personali; ciò potrebbe includere, ad esempio, misure volte a prevenire
+            l’accesso non autorizzato e la diffusione di codici dannosi e a fermare gli attacchi di
+            “blocco dei servizi”. La base giuridica è data da un nostro{" "}
+            <Text fontWeight="bold"> interesse legittimo</Text> (6(1)(f) GDPR) a garantire la
+            sicurezza dei sistemi informatici utilizzati nella realizzazione di “Attivati!”.
+          </ListItem>
 
-          <Text variant="subtitle">Dati trattati per questa finalità</Text>
-          <Text variant="body">Tutti i dati eventualmente richiesti dall’Autorità Pubblica.</Text>
-
-          <Text variant="subtitle">Finalita</Text>
-          <Box gap="s">
-            <Text variant="body">
-              Gestione di eventuali contenziosi davanti alle autorità competenti e difesa dei nostri
-              diritti.
-            </Text>
-          </Box>
-
-          <Text variant="subtitle">Base giuridica</Text>
-          <Text variant="body">
-            La base giuridica potrebbe essere data da un obbligo di legge - 6(1)(c) del GDPR o da un
-            nostro interesse legittimo (6(1)(f) GDPR) relativo alla gestione di eventuali
-            contenziosi e alla difesa dei nostri diritti.
-          </Text>
-
-          <Text variant="subtitle">Dati trattati per questa finalità</Text>
-          <Text variant="body">
-            Tutti i dati necessari per la gestione di eventuali contenziosi e per la difesa dei
-            nostri diritti.
-          </Text>
-
-          <Divider my="m" />
-
-          <Text variant="title" my="m">
+          <Text variant="title" fontWeight="bold" fontSize={20} my="m">
             Categorie particolari di dati personali
           </Text>
           <Text variant="body">
@@ -281,7 +271,7 @@ export default function PrivacyPolicy() {
             applicazione.
           </Text>
 
-          <Text variant="title" my="m">
+          <Text variant="title" fontWeight="bold" fontSize={20} my="m">
             Dati giudiziari e dati relativi a condanne penali
           </Text>
           <Text variant="body">
@@ -289,7 +279,7 @@ export default function PrivacyPolicy() {
             ti invitiamo a non condividere con noi dati personali di questa natura.
           </Text>
 
-          <Text variant="title" my="m">
+          <Text variant="title" fontWeight="bold" fontSize={20} my="m">
             Cookies e tecnologie simili
           </Text>
           <Text variant="body">
@@ -304,7 +294,7 @@ export default function PrivacyPolicy() {
             all’utilizzo dei cookie
           </Text>
 
-          <Text variant="title" my="m">
+          <Text variant="title" fontWeight="bold" fontSize={20} my="m">
             Come raccogliamo i tuoi dati
           </Text>
           <Text variant="body">
@@ -324,7 +314,7 @@ export default function PrivacyPolicy() {
               funzionare l’applicazione stessa).
             </Text>
           </Box>
-          <Text variant="title" my="m">
+          <Text variant="title" fontWeight="bold" fontSize={20} my="m">
             Condivisione dei tuoi dati
           </Text>
           <Text variant="body">
@@ -365,7 +355,7 @@ export default function PrivacyPolicy() {
             </Text>
           </Box>
 
-          <Text variant="title" my="m">
+          <Text variant="title" fontWeight="bold" fontSize={20} my="m">
             Trasferimento dei dati al di fuori dell’UE/SEE
           </Text>
           <Text variant="body">
@@ -379,7 +369,7 @@ export default function PrivacyPolicy() {
             previste dal GDPR stesso. Per ulteriori dettagli sui trasferimenti puoi contattare il
             nostro DPO in qualsiasi momento.
           </Text>
-          <Text variant="title" my="m">
+          <Text variant="title" fontWeight="bold" fontSize={20} my="m">
             Conservazione dei dati personali
           </Text>
           <Text variant="body">
@@ -394,67 +384,74 @@ export default function PrivacyPolicy() {
             o per gli interessi legittimi da noi perseguiti e non si applica nessun'altra base
             giuridica, cancelleremo i tuoi dati.
           </Text>
-          <Text variant="title" my="m">
+          <Text variant="title" fontWeight="bold" fontSize={20} my="m">
             I tuoi diritti
           </Text>
-          <Box gap="s">
-            <Text variant="body">
-              Sapere se i tuoi dati personali sono o meno in fase di trattamento e, in caso
-              affermativo, richiederne l'accesso o richiedere delle copie dei tuoi dati personali.
-              Puoi inoltre chiederci ulteriori informazioni relative alla presente Informativa
-              (Diritto di accesso);
-            </Text>
-            <Text variant="body">
-              Chiederci di correggere le informazioni che ritieni inaccurate. Hai anche il diritto
-              di chiederci di completare le informazioni che ritieni incomplete. Ricorda comunque
-              che puoi modificare i tuoi dati all’interno dell’apposita sezione dell’App (Diritto di
-              rettifica);
-            </Text>
-            <Text variant="body">
-              Chiederci di cancellare i tuoi dati personali in determinate circostanze (Diritto
-              all'oblio);
-            </Text>
-            <Text variant="body">
-              Opporti al trattamento dei dati personali, per motivi connessi alla tua situazione
-              specifica (Diritto di opposizione);
-            </Text>
-            <Text variant="body">
-              Non essere sottoposto a decisioni automatizzate, inclusa la profilazione. Ti
-              ricordiamo che, come già detto sopra, la nostra App non utilizza processi decisionali
-              automatizzati (Diritti relativi al processo decisionale automatizzato individuale,
-              inclusa la profilazione);
-            </Text>
-            <Text variant="body">
-              Revocare il consenso dato in qualsiasi momento (Diritto di revoca del consenso);
-            </Text>
-            <Text variant="body">
-              Ricevere i dati personali in un formato standard nel caso in cui desideri trasferirli
+          <Box my="m">
+            <ListItem title="Sapere se i tuoi dati personali sono in fase di trattamento">
+              e, in caso affermativo, richiederne l'accesso o richiedere delle copie dei tuoi dati
+              personali. Puoi inoltre chiederci ulteriori informazioni relative alla presente
+              Informativa (Diritto di accesso);
+            </ListItem>
+
+            <ListItem title="Chiederci di correggere le informazioni che ritieni inaccurate">
+              . Hai anche il diritto di chiederci di completare le informazioni che ritieni
+              incomplete. Ricorda comunque che puoi modificare i tuoi dati all’interno dell’apposita
+              sezione dell’App (Diritto di rettifica);
+            </ListItem>
+
+            <ListItem title="Chiederci di cancellare i tuoi dati personali">
+              {" "}
+              in determinate circostanze (Diritto all'oblio);
+            </ListItem>
+
+            <ListItem title="Opporsi al trattamento dei dati personali">
+              , per motivi connessi alla tua situazione specifica (Diritto di opposizione);
+            </ListItem>
+
+            <ListItem title="Non essere sottoposto a decisioni automatizzate">
+              , inclusa la profilazione. Ti ricordiamo che, come già detto sopra, la nostra App non
+              utilizza processi decisionali automatizzati (Diritti relativi al processo decisionale
+              automatizzato individuale, inclusa la profilazione);
+            </ListItem>
+
+            <ListItem title="Revocare il consenso">
+              dato in qualsiasi momento(Diritto di revoca del consenso);
+            </ListItem>
+
+            <ListItem title="Ricevere i dati personali in un formato standard nel caso in cui desideri trasferirli">
               a un altro titolare del trattamento (Diritto alla portabilità dei dati);
-            </Text>
-            <Text variant="body">
-              Presentare un reclamo in qualsiasi momento all'Autorità Garante per la protezione dei
-              dati personali, in caso di violazione dei diritti di protezione dei dati (Diritto di
-              proporre reclamo ad un'autorità di controllo);
-            </Text>
-            <Text variant="body">
-              Chiederci di limitare il trattamento delle tue informazioni in determinate circostanze
-              (Diritto di limitazione del trattamento);
-            </Text>
-            <Text variant="body">
-              Chiederci maggiori informazioni sul rapporto di contitolarità tra Comitato e CSV, in
-              particolare per quanto riguarda il contenuto essenziale del contratto che lo regola;
-            </Text>
-            <Text variant="body">
-              Richiedere che le suddette modifiche siano comunicate ad altre parti a cui sono stati
-              comunicati i dati.
-            </Text>
+            </ListItem>
+
+            <ListItem title="Presentare un reclamo in qualsiasi momento all'Autorità Garante per la protezione dei dati personali">
+              , in caso di violazione dei diritti di protezione dei dati (Diritto di proporre
+              reclamo ad un'autorità di controllo);
+            </ListItem>
+
+            <ListItem title="Chiederci di limitare il trattamento">
+              delle tue informazioni in determinate circostanze (Diritto di limitazione del
+              trattamento);
+            </ListItem>
+
+            <ListItem title="Chiederci maggiori informazioni sul rapporto di contitolarità">
+              tra Comitato e CSV, in particolare per quanto riguarda il contenuto essenziale del
+              contratto che lo regola;
+            </ListItem>
+
+            <ListItem title="Richiedere che le suddette modifiche siano comunicate ad altre parti">
+              a cui sono stati comunicati i dati.
+            </ListItem>
           </Box>
+
           <Text variant="body">
-            L'esercizio dei diritti non è soggetto ad alcun vincolo di forma ed è gratuito. Puoi
-            esercitare i tuoi diritti contattandoci al seguente indirizzo:
+            L'esercizio dei diritti non è soggetto ad alcun vincolo di forma ed è gratuito.
+          </Text>
+          <Text variant="body">
+            Puoi esercitare i tuoi diritti contattandoci al seguente indirizzo:
             privacy@volontariatotrentino.it.
           </Text>
-          <Text variant="title" my="m">
+
+          <Text variant="title" fontWeight="bold" fontSize={20} my="m">
             Contatti
           </Text>
           <Text variant="subtitle" my="m">
@@ -474,7 +471,7 @@ export default function PrivacyPolicy() {
             <Text variant="body">E-mail: info@trentovolo.capital</Text>
             <Text variant="body">C.F. 96121400228.</Text>
           </Box>
-          <Text variant="title" my="m">
+          <Text variant="title" fontWeight="bold" fontSize={20} my="m">
             Aggiornamento dell’informativa
           </Text>
           <Text variant="body">
@@ -484,7 +481,7 @@ export default function PrivacyPolicy() {
             in modo da essere sempre informato su come trattiamo i tuoi dati personali.
           </Text>
           <Text variant="body" mt="s">
-            Ultimo aggiornamento: 23.09.2024
+            Ultimo aggiornamento: 10.08.2024
           </Text>
         </Box>
       </ScrollView>

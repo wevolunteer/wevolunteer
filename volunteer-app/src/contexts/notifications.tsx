@@ -81,21 +81,27 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const responseListener = useRef<Notifications.Subscription>();
   const { client } = useNetwork();
 
+  console.log("Expo Push Token: ", expoPushToken);
+
   useEffect(() => {
     async function registerDevice() {
       try {
         const token = await registerForPushNotificationsAsync();
         setExpoPushToken(token ?? "");
-        await client.POST("/user-devices", {
-          body: {
-            brand: Device.brand || "Unknown",
-            device_name: Device.deviceName || "Unknown",
-            model: Device.modelName || "Unknown",
-            device_type: Device.deviceType?.toString() || "Unknown",
-            os_name: Device.osName || "Unknown",
-            token: expoPushToken,
-          },
-        });
+        console.log("Registered for push notifications with token: ", token);
+        if (token) {
+          console.log("post");
+          await client.POST("/user-devices", {
+            body: {
+              brand: Device.brand || "Unknown",
+              device_name: Device.deviceName || "Unknown",
+              model: Device.modelName || "Unknown",
+              device_type: Device.deviceType?.toString() || "Unknown",
+              os_name: Device.osName || "Unknown",
+              token: token,
+            },
+          });
+        }
       } catch (error) {
         console.error(error);
       }

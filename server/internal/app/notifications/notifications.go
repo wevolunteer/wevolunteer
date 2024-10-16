@@ -2,6 +2,7 @@ package notifications
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	novu "github.com/novuhq/go-novu/lib"
@@ -10,13 +11,19 @@ import (
 )
 
 const (
-	NotificationVerificationCodeAuth   = "verification-code"
-	NotificationVerificationCodeDelete = "verification-code-delete"
-	NotificationWelcome                = "welcome"
+	NotificationVerificationCodeAuth     = "verification-code"
+	NotificationVerificationCodeDelete   = "verification-code-delete"
+	NotificationActivityAccepted         = "enrollment-confirmation"
+	NotificationExeperienceCreatedOrg    = "new-activity-for-organization"
+	NotificationExeperienceCreatedNearby = "new-actvity-nearby"
+	NotificationWelcome                  = "welcome"
 )
 
 func Init() {
 	accountsEventsSubscribe()
+	activitiesEventsSubscribe()
+	experiencesEventsSubscribe()
+	usersEventsSubscribe()
 }
 
 func NotificationTrigger(recipient *models.User, eventId string, payload map[string]interface{}) error {
@@ -38,6 +45,102 @@ func NotificationTrigger(recipient *models.User, eventId string, payload map[str
 	novuClient := novu.NewAPIClient(app.Config.NOVU_API_KEY, &novu.Config{})
 
 	_, err := novuClient.EventApi.Trigger(ctx, eventId, data)
+	if err != nil {
+		log.Fatal("novu error", err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func NotificationTopicTrigger(key string, eventId string, payload map[string]interface{}) error {
+	if app.Config.NOVU_API_KEY == "" {
+		return nil
+	}
+
+	ctx := context.Background()
+
+	fmt.Printf("Notify topic %s\n", key)
+
+	to := []map[string]interface{}{
+		{
+			"type":     "Topic",
+			"topicKey": key,
+		},
+	}
+
+	data := novu.ITriggerPayloadOptions{To: to, Payload: payload}
+
+	novuClient := novu.NewAPIClient(app.Config.NOVU_API_KEY, &novu.Config{})
+
+	_, err := novuClient.EventApi.Trigger(ctx, eventId, data)
+	if err != nil {
+		log.Fatal("novu error", err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func NotificationCreateTopic(key string, name string) error {
+	if app.Config.NOVU_API_KEY == "" {
+		return nil
+	}
+
+	ctx := context.Background()
+	novuClient := novu.NewAPIClient(app.Config.NOVU_API_KEY, &novu.Config{})
+
+	err := novuClient.TopicsApi.Create(ctx, key, name)
+	if err != nil {
+		log.Fatal("novu error", err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func NotificationGetTopic(key string) (*novu.GetTopicResponse, error) {
+	if app.Config.NOVU_API_KEY == "" {
+		return nil, nil
+	}
+
+	ctx := context.Background()
+	novuClient := novu.NewAPIClient(app.Config.NOVU_API_KEY, &novu.Config{})
+
+	topic, err := novuClient.TopicsApi.Get(ctx, key)
+	if err != nil {
+		return nil, err
+	}
+
+	return topic, nil
+}
+
+func NotificationTopicAddSubscriber(topicKey string, subscriberUID string) error {
+	if app.Config.NOVU_API_KEY == "" {
+		return nil
+	}
+
+	ctx := context.Background()
+	novuClient := novu.NewAPIClient(app.Config.NOVU_API_KEY, &novu.Config{})
+
+	err := novuClient.TopicsApi.AddSubscribers(ctx, topicKey, []string{subscriberUID})
+	if err != nil {
+		log.Fatal("novu error", err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func NotificationTopicRemoveSubscriber(topicKey string, subscriberUID string) error {
+	if app.Config.NOVU_API_KEY == "" {
+		return nil
+	}
+
+	ctx := context.Background()
+	novuClient := novu.NewAPIClient(app.Config.NOVU_API_KEY, &novu.Config{})
+
+	err := novuClient.TopicsApi.RemoveSubscribers(ctx, topicKey, []string{subscriberUID})
 	if err != nil {
 		log.Fatal("novu error", err.Error())
 		return err

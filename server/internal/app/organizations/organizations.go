@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/wevolunteer/wevolunteer/internal/app"
+	"github.com/wevolunteer/wevolunteer/internal/app/events"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 	"gorm.io/gorm"
 )
@@ -402,6 +403,16 @@ func OrganizationFollow(c *app.Context, id uint) error {
 		return err
 	}
 
+	events.Publish(events.Event{
+		Type: events.UserFollowOrg,
+		Payload: events.EventPayload{
+			Data: &events.UserFollowOrgPayload{
+				User:         c.User,
+				Organization: &organization,
+			},
+		},
+	})
+
 	return nil
 }
 
@@ -420,6 +431,16 @@ func OrganizationUnfollow(c *app.Context, id uint) error {
 	if err := app.DB.Model(&organization).Association("FavoriteUsers").Delete(&user); err != nil {
 		return err
 	}
+
+	events.Publish(events.Event{
+		Type: events.UserUnfollowOrg,
+		Payload: events.EventPayload{
+			Data: &events.UserFollowOrgPayload{
+				User:         c.User,
+				Organization: &organization,
+			},
+		},
+	})
 
 	return nil
 }

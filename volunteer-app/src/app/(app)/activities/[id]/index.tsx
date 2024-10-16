@@ -98,7 +98,7 @@ export default function ActivityScreen() {
             </Text>
           </Box>
         </Box>
-        {data.activity.status === "pending" && (
+        {["pending", "approved"].indexOf(data.activity.status) >= 0 && (
           <Button
             variant="primary"
             label={t("Edit", "Edit")}

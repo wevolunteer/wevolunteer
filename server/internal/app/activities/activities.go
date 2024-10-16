@@ -6,6 +6,7 @@ import (
 
 	"github.com/wevolunteer/wevolunteer/internal/app"
 	"github.com/wevolunteer/wevolunteer/internal/app/accounts"
+	"github.com/wevolunteer/wevolunteer/internal/app/events"
 	"github.com/wevolunteer/wevolunteer/internal/app/experiences"
 	"github.com/wevolunteer/wevolunteer/internal/models"
 	"gorm.io/gorm"
@@ -221,6 +222,16 @@ func ActivityCreate(ctx *app.Context, data *ActivityCreateData) (*models.Activit
 		return nil, err
 	}
 
+	events.Publish(events.Event{
+		Type: events.ActivityCreated,
+		Payload: events.EventPayload{
+			Data: &events.ActivityNotificationEventPayload{
+				Activity: &activity,
+				User:     ctx.User,
+			},
+		},
+	})
+
 	return &activity, nil
 }
 
@@ -237,6 +248,8 @@ type ActivityUpdateData struct {
 
 func ActivityUpdate(ctx *app.Context, id uint, data *ActivityUpdateData) (*models.Activity, error) {
 	var activity models.Activity
+
+	var newActvityStatus models.ActivityStatus
 
 	// todo check roles
 
@@ -280,14 +293,40 @@ func ActivityUpdate(ctx *app.Context, id uint, data *ActivityUpdateData) (*model
 		activity.ExternalID = *data.ExternalID
 	}
 
-	if data.Status != nil {
+	if data.Status != nil && activity.Status != *data.Status {
 		if ctx.Role == app.RoleSuperUser || (*data.Status == "canceled" && ctx.User.ID == activity.User.ID) {
 			activity.Status = *data.Status
+			newActvityStatus = *data.Status
+
 		}
 	}
 
 	if err := app.DB.Save(&activity).Error; err != nil {
 		return nil, err
+	}
+
+	if newActvityStatus != "" {
+		var eventType events.EventType
+
+		if newActvityStatus == models.ActivityApproved {
+			eventType = events.ActivityAccepted
+		}
+
+		if newActvityStatus == models.ActivityRejected {
+			eventType = events.ActivityRejected
+		}
+
+		if eventType != "" {
+			events.Publish(events.Event{
+				Type: eventType,
+				Payload: events.EventPayload{
+					Data: &events.ActivityNotificationEventPayload{
+						Activity: &activity,
+						User:     &activity.User,
+					},
+				},
+			})
+		}
 	}
 
 	return &activity, nil

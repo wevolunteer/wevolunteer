@@ -7,7 +7,7 @@ import Text from "@/components/ui/Text";
 import Topbar from "@/components/ui/Topbar";
 import { useNetwork } from "@/contexts/network";
 import { ActivityUpdateData } from "@/types/data";
-import { convertToDDMMYYYY, convertToYYYYMMDD } from "@/utils/formatters";
+import { convertToDate, convertToDDMMYYYY } from "@/utils/formatters";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
@@ -65,16 +65,52 @@ export default function ActivityEditScreen() {
 
   async function onSubmit(data: ActivityUpdateData) {
     try {
-      const start_date = convertToYYYYMMDD(data.start_date || "");
-      const end_date = convertToYYYYMMDD(data.end_date || "");
+      let start_date = "";
+      let end_date = "";
 
-      if (new Date(start_date) > new Date(end_date)) {
-        setError("end_date", {
-          type: "manual",
-          message: t("endDateBeforeStartDate", "End date must be after start date"),
-        });
+      if (data.start_date && data.end_date) {
+        start_date = data.start_date.split("/").reverse().join("-");
+        end_date = data.end_date.split("/").reverse().join("-");
 
-        return;
+        if (new Date(start_date) > new Date(end_date)) {
+          setError("end_date", {
+            type: "manual",
+            message: t("endDateBeforeStartDate", "End date must be after start date"),
+          });
+
+          return;
+        }
+      }
+
+      if (data.start_time && data.end_time && data.start_date === data.end_date) {
+        if (data.start_time > data.end_time) {
+          setError("end_time", {
+            type: "manual",
+            message: t("endTimeBeforeStartTime", "End time must be after start time"),
+          });
+
+          return;
+        }
+      }
+
+      if (data.start_time && data.start_date) {
+        // if start_date is today, check if start_time is in the future
+
+        const now = new Date();
+        const from_date = new Date(start_date);
+
+        if (now.toDateString() === from_date.toDateString()) {
+          const [hours, minutes] = data.start_time.split(":").map((v) => parseInt(v));
+
+          if (now.getHours() > hours || (now.getHours() === hours && now.getMinutes() > minutes)) {
+            setError("start_time", {
+              type: "manual",
+              message: t("startTimeInPast", "Start time must be in the future"),
+            });
+
+            return;
+          }
+        }
       }
 
       const res = await client.PUT(`/activities/{id}`, {
@@ -151,6 +187,8 @@ export default function ActivityEditScreen() {
                     label={t("fromDay", "Of the day")}
                     value={value}
                     error={errors.start_date?.message}
+                    minimumDate={new Date()}
+                    maximumDate={convertToDate(data.end_date)}
                     onChangeText={onChange}
                     placeholder="GG/MM/AAAA"
                   />
@@ -188,6 +226,8 @@ export default function ActivityEditScreen() {
                     label={t("toDate", "Of the day")}
                     value={value}
                     error={errors.end_date?.message}
+                    minimumDate={new Date()}
+                    maximumDate={convertToDate(data.end_date)}
                     onChangeText={onChange}
                     placeholder="GG/MM/AAAA"
                   />

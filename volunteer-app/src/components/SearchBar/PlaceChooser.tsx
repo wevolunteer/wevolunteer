@@ -43,6 +43,18 @@ const PlaceChooser: FC<PlaceChooserProps> = ({ value, onChange }) => {
     listRef.current?.scrollToOffset({ offset: 0, animated: true });
   }, [search, refetch]);
 
+  const sortedPlaces = useMemo(() => {
+    return (places || []).sort((a, b) => {
+      if (a.name < b.name) {
+        return -1;
+      }
+      if (a.name > b.name) {
+        return 1;
+      }
+      return 0;
+    });
+  }, [places]);
+
   return (
     <Box height="100%">
       <Box marginHorizontal="m" marginTop="m" gap="m">
@@ -71,7 +83,7 @@ const PlaceChooser: FC<PlaceChooserProps> = ({ value, onChange }) => {
             refreshing={isLoading}
             ref={listRef}
             onRefresh={() => refetch()}
-            data={places}
+            data={sortedPlaces}
             keyExtractor={(item) => `p-${item.id}`}
             onEndReachedThreshold={0.8}
             onEndReached={() => fetchNextPage()}
